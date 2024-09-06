@@ -27,7 +27,7 @@ jobs:
         npm install
     - name: Electron Forge package
       run: |
-        npm package
+        npm run package
     - name: Electron Forge make
       run: |
-        npm make
+        npm run make
