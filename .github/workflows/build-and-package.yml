@@ -1,0 +1,34 @@
+name: Build and Package
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+      - name: Install Dependencies
+        run: npm install
+      - name: Build and Package
+        run: npm run make:${{ matrix.platform }}
+        env:
+          CI: true
+        shell: bash
+      - name: Get Package Version
+        id: package_version
+        run: echo "::set-output name=VERSION::$(node -p "require('./package.json').version")"
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ runner.os }}-app-v${{ steps.package_version.outputs.VERSION }}
+          path: out/make/**
