@@ -1,6 +1,7 @@
 import { app, BrowserWindow, shell } from "electron";
 import { ipcMain } from "electron";
-import path from "path";
+import db, { createTablesIfNotExists } from "./database";
+import { v4 } from "uuid";
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -178,7 +179,11 @@ ipcMain.on("submit-credentials", (event, credentials) => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", createLoginWindow);
+app.on("ready", () => {
+  createTablesIfNotExists();
+
+  createLoginWindow();
+});
 // app.on("ready", createLoginWindow);
 
 // Quit when all windows are closed, except on macOS. There, it's common

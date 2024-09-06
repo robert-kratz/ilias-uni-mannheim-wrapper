@@ -16,6 +16,8 @@ By [Robert Julian Kratz](https://rjks.us).
 - [Run locally](#run-locally)
 - [Author and Contributors](#author-and-contributors)
 
+- [Database Schema](/docs/database-schema.md)
+
 ## Description
 
 This is a wrapper for the University of Mannheim's Ilias learning platform. The goal of the application is to make it easier and faster for students to organize files from their courses.
