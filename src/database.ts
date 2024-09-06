@@ -54,7 +54,9 @@ export function createTablesIfNotExists(): void {
         userid TEXT,
         createdAt DATE DEFAULT (datetime('now')),
         updatedAt DATE DEFAULT NULL,
+        parentId TEXT DEFAULT NULL,
         FOREIGN KEY (userid) REFERENCES user(id)
+        FOREIGN KEY (parentId) REFERENCES courses(id),
       )
     `
   ).run();

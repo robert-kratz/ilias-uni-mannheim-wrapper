@@ -35,6 +35,7 @@ Group information for users.
 | description | TEXT | Description of the group.                                 |
 | year        | TEXT | Year of the group, nullable.                              |
 | userid      | TEXT | Foreign key referencing User.                             |
+| parentId    | TEXT | Foreign key referencing Course.                           |
 | createdAt   | DATE | Date the group was created. Defaults to the current date. |
 | updatedAt   | DATE | Date the group was last updated. Defaults to null.        |
 
@@ -84,5 +85,6 @@ Files stored in directories or associated with courses.
 - `groups.userid`, `courses.userid`, `directories.userid`, and `files.userid` all reference `user.id`.
 - `directories.parentId` references `courses.id`.
 - `files.parentId` can reference either `directories.id` or `courses.id`.
+- `groups.parentId` references `courses.id`.
 
 Edited: Robert J. Kratz 6. September 2024
