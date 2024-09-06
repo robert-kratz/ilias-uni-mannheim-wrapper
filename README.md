@@ -1,3 +1,6 @@
+[![NodeJS with Webpack](https://github.com/robert-kratz/ilias-uni-mannheim-wrapper/actions/workflows/webpack.yml/badge.svg)](https://github.com/robert-kratz/ilias-uni-mannheim-wrapper/actions/workflows/webpack.yml)
+[![ESLint](https://github.com/robert-kratz/ilias-uni-mannheim-wrapper/actions/workflows/eslint.yml/badge.svg)](https://github.com/robert-kratz/ilias-uni-mannheim-wrapper/actions/workflows/eslint.yml)
+
 # 🚀 Ilias Ultimate
 
 ## Disclaimer:
