@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" fill="none" viewBox="0 0 256 256">
+  <path fill="#1A1A1A" d="M0 0h256v256H0z"/>
+  <g filter="url(#a)">
+    <path fill="url(#b)" d="m125.22 42 9.07 1.114a72.495 72.495 0 0 1 48.295 27.324 72.506 72.506 0 0 1 14.829 53.471l-5.721 46.594a38 38 0 0 1-42.348 33.086l-5.596-.687a38 38 0 0 1-33.086-42.348L125.22 42Z"/>
+  </g>
+  <g filter="url(#c)">
+    <path fill="url(#d)" d="m49.5 57.655 9.05-1.272a72.5 72.5 0 0 1 81.884 61.704l6.533 46.488a38 38 0 0 1-32.342 42.919l-5.583.784a37.998 37.998 0 0 1-42.918-32.341L49.5 57.655Z"/>
+  </g>
+  <defs>
+    <linearGradient id="b" x1="165.735" x2="89.098" y1="46.975" y2="228.419" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4E7DFF"/>
+      <stop offset="1" stop-color="#273F80"/>
+    </linearGradient>
+    <linearGradient id="d" x1="89.922" x2="139.583" y1="51.974" y2="385.698" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4EA7FF"/>
+      <stop offset="1" stop-color="#3671AB"/>
+    </linearGradient>
+    <filter id="a" width="103.574" height="177.873" x="102.38" y="37" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+      <feOffset dy="3"/>
+      <feGaussianBlur stdDeviation="4"/>
+      <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.161 0"/>
+      <feBlend in2="BackgroundImageFix" result="effect1_dropShadow_5_35"/>
+      <feBlend in="SourceGraphic" in2="effect1_dropShadow_5_35" result="shape"/>
+    </filter>
+    <filter id="c" width="113.837" height="168.971" x="41.5" y="50.677" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+      <feOffset dy="3"/>
+      <feGaussianBlur stdDeviation="4"/>
+      <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.161 0"/>
+      <feBlend in2="BackgroundImageFix" result="effect1_dropShadow_5_35"/>
+      <feBlend in="SourceGraphic" in2="effect1_dropShadow_5_35" result="shape"/>
+    </filter>
+  </defs>
+</svg>
