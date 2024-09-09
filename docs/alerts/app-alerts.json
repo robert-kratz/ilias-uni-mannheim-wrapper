@@ -3,17 +3,20 @@
         {
             "title": "Success Blue Alert",
             "description": "Alert Description",
-            "type": "info"
+            "type": "info",
+            "active": true
         },
         {
             "title": "Error Yellow Alert",
             "description": "Alert Description",
-            "type": "warning"
+            "type": "warning",
+            "active": true
         },
         {
             "title": "Error Red Alert",
             "description": "Alert Description",
-            "type": "error"
+            "type": "error",
+            "active": true
         }
     ]
 }
