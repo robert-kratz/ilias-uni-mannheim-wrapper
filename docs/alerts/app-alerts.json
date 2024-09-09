@@ -1,0 +1,19 @@
+{
+    "alerts": [
+        {
+            "title": "Success Blue Alert",
+            "description": "Alert Description",
+            "type": "info"
+        },
+        {
+            "title": "Error Yellow Alert",
+            "description": "Alert Description",
+            "type": "warning"
+        },
+        {
+            "title": "Error Red Alert",
+            "description": "Alert Description",
+            "type": "error"
+        }
+    ]
+}
