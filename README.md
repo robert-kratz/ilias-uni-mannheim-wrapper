@@ -11,35 +11,35 @@ By [Robert Julian Kratz](https://rjks.us).
 
 ## Table of Contents
 
-- [Description](#description)
-- [Bugs and Issues](#bugs-and-issues)
-- [Run locally](#run-locally)
-- [Author and Contributors](#author-and-contributors)
+-   [Description](#description)
+-   [Bugs and Issues](#bugs-and-issues)
+-   [Run locally](#run-locally)
+-   [Author and Contributors](#author-and-contributors)
 
-- [Database Schema](/docs/database-schema.md)
+-   [Database Schema](/docs/database-schema.md)
 
 ## Description
 
 This is a wrapper for the University of Mannheim's Ilias learning platform. The goal of the application is to make it easier and faster for students to organize files from their courses.
 
-- **Functionality**:
+-   **Functionality**:
 
-  - The app acts as a wrapper, simplifying access to course files.
-  - Through authentication in the app, files can be retrieved, organized, and stored.
-  - This reduces the number of links and steps between the user and the desired file.
+    -   The app acts as a wrapper, simplifying access to course files.
+    -   Through authentication in the app, files can be retrieved, organized, and stored.
+    -   This reduces the number of links and steps between the user and the desired file.
 
-- **Storage of login credentials (optional)**:
-  - The university ID and password can be securely stored in the device's operating system storage:
-    - macOS: Keychain
-    - Windows: (Windows storage solution)
-    - Linux: (Linux storage solution)
-  - This allows users to skip manual password entry. The credentials remain stored on the user's device.
+-   **Storage of login credentials (optional)**:
+    -   The university ID and password can be securely stored in the device's operating system storage:
+        -   macOS: Keychain
+        -   Windows: (Windows storage solution)
+        -   Linux: (Linux storage solution)
+    -   This allows users to skip manual password entry. The credentials remain stored on the user's device.
 
 ## Requirements
 
-- **Node.js**: The application is built with Node.js and requires it to run.
-- **Ilias Account**: The application requires a valid Ilias account to access the learning platform.
-- **Chrome**: The application uses the Chromium browser to display the Ilias platform.
+-   **Node.js**: The application is built with Node.js and requires it to run. **For macOS M1+ we recommend using Node.js v20.9.0**.
+-   **Ilias Account**: The application requires a valid Ilias account to access the learning platform.
+-   **Chrome**: The application uses the Chromium browser to display the Ilias platform.
 
 ## Bugs and Issues
 
@@ -91,4 +91,4 @@ npm run package make:linux # Linux
 
 ## Author and Contributors:
 
-- **Author**: [Robert Julian Kratz](mailto:robert.kratz@rjks.us)
+-   **Author**: [Robert Julian Kratz](mailto:robert.kratz@rjks.us)

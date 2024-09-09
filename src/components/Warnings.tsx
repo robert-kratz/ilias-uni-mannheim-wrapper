@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import SaveCredentialsDialog from './dialogs/SaveCredentialsDialog';
 import { createToast } from 'vercel-toast';
+import { StaticContentAlert } from '../types/objects';
+
+const classNames = (...classes: string[]) => {
+    return classes.filter(Boolean).join(' ');
+};
 
 type WarningProps = {
     show: boolean;
@@ -18,29 +23,138 @@ export const SaveCredentialsWarning = ({ show }: WarningProps) => {
     }
 
     return (
-        <>
+        <div className="mb-6">
             <SaveCredentialsDialog open={open} onClose={({ success }) => onDialogClose({ success })} />
-            <div
+            <AlertBox
+                className="bg-yellow-500 border-yellow-500 text-yellow-900 cursor-pointer"
                 onClick={() => setOpen(true)}
-                className="p-3 bg-yellow-500 bg-opacity-70 border border-yellow-500 rounded-md mb-6 flex justify-start items-center space-x-3 cursor-pointer">
-                <div className="h-6 w-6">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="size-6 text-yellow-900">
+                content={
+                    <p>
+                        <strong>Warning:</strong> You still haven't saved your credentials yet!{' '}
+                        <span className="underline">Click here</span> to save them in your local keychain.
+                    </p>
+                }
+                icon={
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
                         <path
                             fillRule="evenodd"
                             d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
                             clipRule="evenodd"
                         />
                     </svg>
-                </div>
-                <p className="text-yellow-900">
-                    <strong>Warning:</strong> You still haven't saved your credentials yet!{' '}
-                    <span className="underline">Click here</span> to save them in your local keychain.
+                }
+            />
+        </div>
+    );
+};
+
+export const StaticContentAlertSection = ({ alerts }: { alerts: StaticContentAlert[] }) => {
+    return (
+        <div className="space-y-2">
+            {alerts.map((alert, index) => {
+                if (!alert.active) return null;
+
+                if (alert.type === 'info') {
+                    return <InformationAlert key={index} alert={alert} />;
+                } else if (alert.type === 'warning') {
+                    return <WarningAlert key={index} alert={alert} />;
+                } else if (alert.type === 'error') {
+                    return <ErrorAlert key={index} alert={alert} />;
+                }
+            })}
+        </div>
+    );
+};
+
+export const InformationAlert = ({ alert }: { alert: StaticContentAlert }) => {
+    return (
+        <AlertBox
+            className="bg-indigo-400 border-indigo-500 text-indigo-900"
+            onClick={() => {}}
+            content={
+                <p className="space-x-2">
+                    <strong>{alert.title}:</strong>
+                    <span>{alert.description}</span>
                 </p>
-            </div>
-        </>
+            }
+            icon={
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                    <path
+                        fillRule="evenodd"
+                        d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262l-10.5 11.25a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262l10.5-11.25a.75.75 0 0 1 .913-.143Z"
+                        clipRule="evenodd"
+                    />
+                </svg>
+            }
+        />
+    );
+};
+
+export const WarningAlert = ({ alert }: { alert: StaticContentAlert }) => {
+    return (
+        <AlertBox
+            className="bg-orange-400 border-orange-500 text-orange-900"
+            onClick={() => {}}
+            content={
+                <p className="space-x-2">
+                    <strong>{alert.title}:</strong>
+                    <span>{alert.description}</span>
+                </p>
+            }
+            icon={
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                    <path
+                        fillRule="evenodd"
+                        d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
+                        clipRule="evenodd"
+                    />
+                </svg>
+            }
+        />
+    );
+};
+
+export const ErrorAlert = ({ alert }: { alert: StaticContentAlert }) => {
+    return (
+        <AlertBox
+            className="bg-red-400 border-red-500 text-red-900"
+            onClick={() => {}}
+            content={
+                <p className="space-x-2">
+                    <strong>{alert.title}:</strong>
+                    <span>{alert.description}</span>
+                </p>
+            }
+            icon={
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                    <path
+                        fillRule="evenodd"
+                        d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
+                        clipRule="evenodd"
+                    />
+                </svg>
+            }
+        />
+    );
+};
+
+type AlertBoxProps = {
+    icon: React.ReactNode;
+    content: React.ReactNode;
+    onClick: () => void;
+    className?: string;
+};
+
+const AlertBox = ({ icon, onClick, className, content }: AlertBoxProps) => {
+    return (
+        <div
+            onClick={() => onClick()}
+            className={classNames(
+                'p-3 bg-opacity-70 border rounded-md flex justify-start items-center space-x-3',
+                className
+            )}>
+            <div className="h-6 w-6">{icon}</div>
+            <p>{content}</p>
+        </div>
     );
 };

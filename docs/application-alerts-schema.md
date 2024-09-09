@@ -1,8 +1,13 @@
+# Application Alerts Schema
+
+The schema for the application alerts. Types of alerts are `info`, `warning`, and `error`.
+
+```json
 {
     "alerts": [
         {
-            "title": "Alpha Release",
-            "description": "You are using an alpha version of the application. Please report any issues on GitHub.",
+            "title": "Success Blue Alert",
+            "description": "Alert Description",
             "type": "info",
             "active": true
         },
@@ -10,13 +15,16 @@
             "title": "Error Yellow Alert",
             "description": "Alert Description",
             "type": "warning",
-            "active": false
+            "active": true
         },
         {
             "title": "Error Red Alert",
             "description": "Alert Description",
             "type": "error",
-            "active": false
+            "active": true
         }
     ]
 }
+```
+
+Edit this page on GitHub
