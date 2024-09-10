@@ -2,5 +2,6 @@
     "BASE_URL": "https://ilias.uni-mannheim.de",
     "STATIC_CONTENT_URL": "https://raw.githubusercontent.com/robert-kratz/ilias-uni-mannheim-wrapper/main/docs/alerts/app-alerts.json",
     "LOGIN_URL": "https://cas.uni-mannheim.de/cas/login?service=https%3A%2F%2Filias.uni-mannheim.de%2Filias.php%3FbaseClass%3DilDashboardGUI%26cmd%3DjumpToSelectedItems",
-    "INDEX_PAGE": "https://ilias.uni-mannheim.de/ilias.php?baseClass=ilDashboardGUI&cmd=jumpToSelectedItems"
+    "INDEX_PAGE": "https://ilias.uni-mannheim.de/ilias.php?baseClass=ilDashboardGUI&cmd=jumpToSelectedItems",
+    "PAGE_ID_URL": "https://ilias.uni-mannheim.de/ilias.php?baseClass=ilrepositorygui&cmd=view&ref_id="
 }

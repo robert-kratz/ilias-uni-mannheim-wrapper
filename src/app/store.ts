@@ -4,17 +4,16 @@ import storage from 'redux-persist/lib/storage'; // defaults to localStorage for
 import { combineReducers } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
 
-import userReducer from '../features/userSlice';
+import userReducer from '../features/stateSlice';
 
 const userPersistConfig = {
-    key: 'user',
+    key: 'state',
     storage: storage,
-    whitelist: ['isUserLoggedIn', 'sessionId', 'lastAuth'], // Specify which parts of the state to persist
+    whitelist: ['currentHomePageIndex'],
 };
 
 const rootReducer = combineReducers({
-    user: persistReducer(userPersistConfig, userReducer),
-    // other reducers can go here
+    app: persistReducer(userPersistConfig, userReducer),
 });
 
 const store = configureStore({

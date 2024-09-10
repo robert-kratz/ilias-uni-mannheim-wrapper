@@ -1,338 +1,268 @@
 import axios from 'axios';
-import cheerio from 'cheerio';
+// import cheerio from 'cheerio';
+// import platformSettings from '../../platformSettings.json';
+// import { JSDOM } from 'jsdom';
+// import { extractParameterFromUrl } from './wrapper';
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
-/**
- * Scrapes the year groups from the HTML content
- * @param htmlContent The HTML content as string
- * @returns {Promise<Array>}
- */
-const scrapeYearGroupsFromHtml = async (
-    htmlContent: string
-): Promise<
-    Array<{
-        year: string;
-        courses: Array<{ title: string; link: string; date: string }>;
-    }>
-> => {
-    return new Promise((resolve, reject) => {
-        try {
-            const $ = cheerio.load(htmlContent);
-            let data = [] as Array<{
-                year: string;
-                courses: Array<{ title: string; link: string; date: string }>;
-            }>;
+// type FetchUserDataType = {
+//     sessionCookie: string;
+// };
 
-            $('.il-item-group').each((_, element) => {
-                const yearHeader = $(element).find('h3').text();
-                const year = yearHeader || 'Year not found';
+// /**
+//  * Fetches the user data from the page
+//  * @returns {Promise<string | null>}
+//  */
+// const fetchUserDataFromHtml = async ({ sessionCookie }: FetchUserDataType): Promise<string | null> => {
+//     return new Promise(async (resolve, reject) => {
+//         try {
+//             const response = await axios.get(
+//                 'https://ilias.uni-mannheim.de/ilias.php?baseClass=ildashboardgui&cmdNode=9l:ws&cmdClass=ilpersonalprofilegui',
+//                 {
+//                     headers: {
+//                         Cookie: `PHPSESSID=${sessionCookie}`,
+//                     },
+//                 }
+//             );
 
-                if (year === 'Year not found') {
-                    return;
-                }
+//             const htmlContent = response.data;
+//             console.log(htmlContent);
 
-                const courses = $(element)
-                    .find('.il-item-group-items .il-std-item-container')
-                    .map((_, course) => {
-                        const titleElement = $(course).find('.il-item-title a');
-                        const dateElement = $(course).find('.il-item-property-value');
+//             // Use a regular expression to extract the email
+//             const emailRegex = /<input[^>]*id="usr_email"[^>]*value="([^"]*)"/;
+//             const match = emailRegex.exec(htmlContent);
 
-                        return {
-                            title: titleElement.text() || 'Title not available',
-                            link: titleElement.attr('href') || '#',
-                            date: dateElement.text() || 'No date available',
-                        };
-                    })
-                    .get();
+//             const email = match && match[1] ? match[1] : null;
 
-                data.push({
-                    year,
-                    courses,
-                });
-            });
+//             resolve(email);
+//         } catch (error) {
+//             console.error('Error fetching user data:', error);
+//             reject(error);
+//         }
+//     });
+// };
 
-            resolve(data);
-        } catch (error) {
-            console.error(error);
-            reject(error);
-        }
-    });
-};
-type FetchUserDataType = {
-    sessionCookie: string;
-};
+// /**
+//  * Scrapes the folder directories from the HTML content
+//  * @param htmlContent The HTML content as string
+//  * @returns {Promise<Array<{ title: string; link: string; description: string }>>}
+//  */
+// const scrapeFolderDirectoriesFromHtml = async (
+//     htmlContent: string
+// ): Promise<Array<{ title: string; link: string; description: string }>> => {
+//     return new Promise((resolve, reject) => {
+//         try {
+//             // Load the HTML into Cheerio
+//             const $ = cheerio.load(htmlContent);
 
-/**
- * Fetches the user data from the page
- * @returns {Promise<string | null>}
- */
-const fetchUserDataFromHtml = async ({ sessionCookie }: FetchUserDataType): Promise<string | null> => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const response = await axios.get(
-                'https://ilias.uni-mannheim.de/ilias.php?baseClass=ildashboardgui&cmdNode=9l:ws&cmdClass=ilpersonalprofilegui',
-                {
-                    headers: {
-                        Cookie: `PHPSESSID=${sessionCookie}`,
-                    },
-                }
-            );
+//             // Find all divs with the specific class
+//             const blocks = $('.ilContainerBlock.container-fluid.form-inline');
 
-            const htmlContent = response.data;
-            console.log(htmlContent);
+//             // Filter blocks to include only those with an h2 child that contains the text "Ordner"
+//             const folderBlocks = blocks.filter((_, block) => {
+//                 return $(block).find('h2').text().trim() === 'Ordner';
+//             });
 
-            // Use a regular expression to extract the email
-            const emailRegex = /<input[^>]*id="usr_email"[^>]*value="([^"]*)"/;
-            const match = emailRegex.exec(htmlContent);
+//             // Prepare an array to store the results
+//             const data: Array<{ title: string; link: string; description: string }> = [];
 
-            const email = match && match[1] ? match[1] : null;
+//             // Loop through each matching block
+//             folderBlocks.each((_, block) => {
+//                 const items = $(block).find('.ilCLI.ilObjListRow.row');
+//                 items.each((_, item) => {
+//                     const titleElement = $(item).find('.il_ContainerItemTitle a');
+//                     const descriptionElement = $(item).find('.ilListItemSection.il_Description');
 
-            resolve(email);
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-            reject(error);
-        }
-    });
-};
+//                     // Extract title
+//                     const title = titleElement.text().trim() || '';
 
-/**
- * Scrapes the folder directories from the HTML content
- * @param htmlContent The HTML content as string
- * @returns {Promise<Array<{ title: string; link: string; description: string }>>}
- */
-const scrapeFolderDirectoriesFromHtml = async (
-    htmlContent: string
-): Promise<Array<{ title: string; link: string; description: string }>> => {
-    return new Promise((resolve, reject) => {
-        try {
-            // Load the HTML into Cheerio
-            const $ = cheerio.load(htmlContent);
+//                     // Extract description
+//                     const description = descriptionElement.text().trim() || '';
 
-            // Find all divs with the specific class
-            const blocks = $('.ilContainerBlock.container-fluid.form-inline');
+//                     // Store the extracted title, link, and description
+//                     data.push({
+//                         title: title,
+//                         link: titleElement.attr('href') || '#',
+//                         description: description,
+//                     });
+//                 });
+//             });
 
-            // Filter blocks to include only those with an h2 child that contains the text "Ordner"
-            const folderBlocks = blocks.filter((_, block) => {
-                return $(block).find('h2').text().trim() === 'Ordner';
-            });
+//             resolve(data);
+//         } catch (error) {
+//             console.error('Error scraping folder directories:', error);
+//             reject(error);
+//         }
+//     });
+// };
 
-            // Prepare an array to store the results
-            const data: Array<{ title: string; link: string; description: string }> = [];
+// /**
+//  * Scrapes the course directories from the HTML content
+//  * @param htmlContent The HTML content as string
+//  * @returns {Promise<Array<{ title: string; link: string; description: string }>>}
+//  */
+// const scrapeCourseFilesFromHtml = async (
+//     htmlContent: string
+// ): Promise<Array<{ title: string; link: string; description: string }>> => {
+//     return new Promise((resolve, reject) => {
+//         try {
+//             // Load the HTML into Cheerio
+//             const $ = cheerio.load(htmlContent);
 
-            // Loop through each matching block
-            folderBlocks.each((_, block) => {
-                const items = $(block).find('.ilCLI.ilObjListRow.row');
-                items.each((_, item) => {
-                    const titleElement = $(item).find('.il_ContainerItemTitle a');
-                    const descriptionElement = $(item).find('.ilListItemSection.il_Description');
+//             // Find all divs with the specific class
+//             const blocks = $('.ilContainerBlock.container-fluid.form-inline');
 
-                    // Extract title
-                    const title = titleElement.text().trim() || '';
+//             // Filter blocks to include only those with an h2 child that contains the text "Dateien"
+//             const fileBlocks = blocks.filter((_, block) => {
+//                 return $(block).find('h2').text().trim() === 'Dateien';
+//             });
 
-                    // Extract description
-                    const description = descriptionElement.text().trim() || '';
+//             // Prepare an array to store the results
+//             const data: Array<{ title: string; link: string; description: string }> = [];
 
-                    // Store the extracted title, link, and description
-                    data.push({
-                        title: title,
-                        link: titleElement.attr('href') || '#',
-                        description: description,
-                    });
-                });
-            });
+//             // Loop through each matching block
+//             fileBlocks.each((_, block) => {
+//                 const items = $(block).find('.ilCLI.ilObjListRow.row');
+//                 items.each((_, item) => {
+//                     const titleElement = $(item).find('.il_ContainerItemTitle a');
+//                     const propertyElements = $(item).find('.il_ItemProperty');
 
-            resolve(data);
-        } catch (error) {
-            console.error('Error scraping folder directories:', error);
-            reject(error);
-        }
-    });
-};
+//                     // Extract title
+//                     const title = titleElement.text().trim() || '';
 
-/**
- * Fetches the user data from the page
- * @param {*} url The URL to extract the parameter from
- * @param {*} parameter The parameter to extract
- * @returns {string}
- */
-const extractParameterFromUrl = (url: string, parameter: string): string | null => {
-    const urlParams = new URLSearchParams(url);
-    return urlParams.get(parameter);
-};
+//                     // Extract descriptions (properties)
+//                     let description = '';
+//                     propertyElements.each((_, prop) => {
+//                         description += $(prop).text().trim() + ' ';
+//                     });
 
-/**
- * Scrapes the course directories from the HTML content
- * @param htmlContent The HTML content as string
- * @returns {Promise<Array<{ title: string; link: string; description: string }>>}
- */
-const scrapeCourseFilesFromHtml = async (
-    htmlContent: string
-): Promise<Array<{ title: string; link: string; description: string }>> => {
-    return new Promise((resolve, reject) => {
-        try {
-            // Load the HTML into Cheerio
-            const $ = cheerio.load(htmlContent);
+//                     // Store the extracted title and description
+//                     data.push({
+//                         title: title,
+//                         link: titleElement.attr('href') || '#',
+//                         description: description.trim(), // Trim any trailing whitespace
+//                     });
+//                 });
+//             });
 
-            // Find all divs with the specific class
-            const blocks = $('.ilContainerBlock.container-fluid.form-inline');
+//             resolve(data);
+//         } catch (error) {
+//             console.error('Error scraping course files:', error);
+//             reject(error);
+//         }
+//     });
+// };
 
-            // Filter blocks to include only those with an h2 child that contains the text "Dateien"
-            const fileBlocks = blocks.filter((_, block) => {
-                return $(block).find('h2').text().trim() === 'Dateien';
-            });
+// export default {
+//     fetchUserDataFromHtml,
+//     scrapeFolderDirectoriesFromHtml,
+//     scrapeCourseFilesFromHtml,
+// };
 
-            // Prepare an array to store the results
-            const data: Array<{ title: string; link: string; description: string }> = [];
+// const scrapePage = async (sessionCookie: string) => {
+//     const responseIndex = await axios.get(
+//         'https://ilias.uni-mannheim.de/ilias.php?baseClass=ilDashboardGUI&cmd=jumpToSelectedItems',
+//         {
+//             headers: {
+//                 Cookie: `PHPSESSID=${sessionCookie}`,
+//             },
+//         }
+//     );
 
-            // Loop through each matching block
-            fileBlocks.each((_, block) => {
-                const items = $(block).find('.ilCLI.ilObjListRow.row');
-                items.each((_, item) => {
-                    const titleElement = $(item).find('.il_ContainerItemTitle a');
-                    const propertyElements = $(item).find('.il_ItemProperty');
+//     console.log(responseIndex.status);
 
-                    // Extract title
-                    const title = titleElement.text().trim() || '';
+//     if (responseIndex.status !== 200) {
+//         console.error('Error fetching index page');
+//         return;
+//     }
 
-                    // Extract descriptions (properties)
-                    let description = '';
-                    propertyElements.each((_, prop) => {
-                        description += $(prop).text().trim() + ' ';
-                    });
+//     const htmlContentIndex = responseIndex.data;
 
-                    // Store the extracted title and description
-                    data.push({
-                        title: title,
-                        link: titleElement.attr('href') || '#',
-                        description: description.trim(), // Trim any trailing whitespace
-                    });
-                });
-            });
+//     const scrapedGroups = await scrapeYearGroupsFromHtml(htmlContentIndex);
 
-            resolve(data);
-        } catch (error) {
-            console.error('Error scraping course files:', error);
-            reject(error);
-        }
-    });
-};
+//     if (!scrapedGroups) {
+//         console.error('Error scraping year groups');
+//         return;
+//     }
 
-export default {
-    scrapeYearGroupsFromHtml,
-    fetchUserDataFromHtml,
-    scrapeFolderDirectoriesFromHtml,
-    extractParameterFromUrl,
-    scrapeCourseFilesFromHtml,
-};
+//     scrapedGroups.forEach((year) => {
+//         console.log(year.year);
+//         year.courses.forEach((course) => {
+//             console.log(`- ${course.title} (${course.date} - ${course.link})`);
+//         });
+//     });
 
-const scrapePage = async (sessionCookie: string) => {
-    const responseIndex = await axios.get(
-        'https://ilias.uni-mannheim.de/ilias.php?baseClass=ilDashboardGUI&cmd=jumpToSelectedItems',
-        {
-            headers: {
-                Cookie: `PHPSESSID=${sessionCookie}`,
-            },
-        }
-    );
+//     const toScrapeCourse = scrapedGroups.filter((year) => year.year === 'HWS 2024');
 
-    console.log(responseIndex.status);
+//     let scrapeJobs = [] as Array<Promise<void>>;
 
-    if (responseIndex.status !== 200) {
-        console.error('Error fetching index page');
-        return;
-    }
+//     toScrapeCourse.forEach((year) => {
+//         year.courses.forEach((course) => {
+//             //check if ref_id is part of the link
+//             const refId = extractParameterFromUrl(course.link, 'ref_id');
 
-    const htmlContentIndex = responseIndex.data;
+//             if (!refId) {
+//                 console.error('No ref_id found in link');
+//                 return;
+//             }
 
-    const scrapedGroups = await scrapeYearGroupsFromHtml(htmlContentIndex);
+//             const courseUrl = `https://ilias.uni-mannheim.de/ilias.php?ref_id=${refId}&baseClass=ilrepositorygui`;
 
-    if (!scrapedGroups) {
-        console.error('Error scraping year groups');
-        return;
-    }
+//             scrapeJobs.push(
+//                 new Promise(async (resolve, reject) => {
+//                     const responseCourse = await axios.get(courseUrl, {
+//                         headers: {
+//                             Cookie: `PHPSESSID=${sessionCookie}`,
+//                         },
+//                     });
 
-    scrapedGroups.forEach((year) => {
-        console.log(year.year);
-        year.courses.forEach((course) => {
-            console.log(`- ${course.title} (${course.date} - ${course.link})`);
-        });
-    });
+//                     if (responseCourse.status !== 200) {
+//                         console.error('Error fetching course page');
+//                         reject();
+//                         return;
+//                     }
 
-    const toScrapeCourse = scrapedGroups.filter((year) => year.year === 'HWS 2024');
+//                     const htmlContentCourse = responseCourse.data;
 
-    let scrapeJobs = [] as Array<Promise<void>>;
+//                     const scrapedFolders = await scrapeFolderDirectoriesFromHtml(htmlContentCourse);
 
-    toScrapeCourse.forEach((year) => {
-        year.courses.forEach((course) => {
-            //check if ref_id is part of the link
-            const refId = extractParameterFromUrl(course.link, 'ref_id');
+//                     if (!scrapedFolders) {
+//                         console.error('Error scraping folder directories');
+//                         reject();
+//                         return;
+//                     }
 
-            if (!refId) {
-                console.error('No ref_id found in link');
-                return;
-            }
+//                     console.log(`Course: ${course.title}`);
 
-            const courseUrl = `https://ilias.uni-mannheim.de/ilias.php?ref_id=${refId}&baseClass=ilrepositorygui`;
+//                     scrapedFolders.forEach((folder) => {
+//                         console.log(`(DIR) - ${folder.title} (${folder.description} - ${folder.link})`);
+//                     });
 
-            scrapeJobs.push(
-                new Promise(async (resolve, reject) => {
-                    const responseCourse = await axios.get(courseUrl, {
-                        headers: {
-                            Cookie: `PHPSESSID=${sessionCookie}`,
-                        },
-                    });
+//                     const scrapedFiles = await scrapeCourseFilesFromHtml(htmlContentCourse);
 
-                    if (responseCourse.status !== 200) {
-                        console.error('Error fetching course page');
-                        reject();
-                        return;
-                    }
+//                     if (!scrapedFiles) {
+//                         console.error('Error scraping course files');
+//                         reject();
+//                         return;
+//                     }
 
-                    const htmlContentCourse = responseCourse.data;
+//                     console.log(`Course: ${course.title}`);
 
-                    const scrapedFolders = await scrapeFolderDirectoriesFromHtml(htmlContentCourse);
+//                     scrapedFiles.forEach((file) => {
+//                         console.log(`(FILE) - ${file.title} (${file.description} - ${file.link})`);
+//                     });
 
-                    if (!scrapedFolders) {
-                        console.error('Error scraping folder directories');
-                        reject();
-                        return;
-                    }
+//                     resolve();
+//                 })
+//             );
+//         });
+//     });
 
-                    console.log(`Course: ${course.title}`);
+//     //run jobs in packs of 5. This is to avoid overloading the server. also wait for all jobs to finish before starting the next pack
+//     const chunkSize = 5;
 
-                    scrapedFolders.forEach((folder) => {
-                        console.log(`(DIR) - ${folder.title} (${folder.description} - ${folder.link})`);
-                    });
+//     for (let i = 0; i < scrapeJobs.length; i += chunkSize) {
+//         await Promise.all(scrapeJobs.slice(i, i + chunkSize));
+//     }
 
-                    const scrapedFiles = await scrapeCourseFilesFromHtml(htmlContentCourse);
-
-                    if (!scrapedFiles) {
-                        console.error('Error scraping course files');
-                        reject();
-                        return;
-                    }
-
-                    console.log(`Course: ${course.title}`);
-
-                    scrapedFiles.forEach((file) => {
-                        console.log(`(FILE) - ${file.title} (${file.description} - ${file.link})`);
-                    });
-
-                    resolve();
-                })
-            );
-        });
-    });
-
-    //run jobs in packs of 5. This is to avoid overloading the server. also wait for all jobs to finish before starting the next pack
-    const chunkSize = 5;
-
-    for (let i = 0; i < scrapeJobs.length; i += chunkSize) {
-        await Promise.all(scrapeJobs.slice(i, i + chunkSize));
-    }
-
-    console.log('All jobs finished');
-};
-
-export { fetchUserDataFromHtml };
+//     console.log('All jobs finished');
+// };

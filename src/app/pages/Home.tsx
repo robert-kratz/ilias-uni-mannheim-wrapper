@@ -1,29 +1,42 @@
 import React, { Suspense, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { AppDispatch, RootState } from '../store';
-import { logout } from '../../features/userSlice';
+import Logo from '../../../assets/ilias_logo_transparent.svg';
 
 import { SaveCredentialsWarning } from '../../components/Warnings';
+import IliasPage from '../../container/IliasPage';
+import SearchPage from '../../container/SearchPage';
+import { setCurrentHomePageIndex } from '../../features/stateSlice';
+import { app } from 'electron';
 
 const classNames = (...classes: string[]) => {
     return classes.filter(Boolean).join(' ');
 };
 
 export default function Home(): React.ReactElement {
-    const user = useSelector((state: RootState) => state.user);
+    const appState = useSelector((state: RootState) => state.app);
     const dispatch: AppDispatch = useDispatch();
 
-    const [currentPage, setCurrentPage] = React.useState(0);
+    //get the current page from the store
+    const currentPage = useSelector((appState: RootState) => appState.app.currentHomePageIndex);
+
     const [currentUsername, setCurrentUsername] = React.useState('');
 
     const [hasCredsSaved, setHasCredsSaved] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
 
-    const routes = [
+    const goToPage = (index: number) => {
+        dispatch(
+            setCurrentHomePageIndex({
+                currentHomePageIndex: index,
+            })
+        );
+    };
+
+    let routes = [
         {
             text: 'Search',
-            component: <p>Search</p>,
+            component: <SearchPage />,
             icon: (
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
                     <path
@@ -69,7 +82,7 @@ export default function Home(): React.ReactElement {
         },
         {
             text: 'Ilias',
-            component: <p>Ilias</p>,
+            component: <IliasPage />,
             icon: (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -169,7 +182,7 @@ export default function Home(): React.ReactElement {
                 />
             );
         });
-    }, [currentPage]);
+    }, [appState.currentHomePageIndex]);
 
     const pageComponents = React.useMemo(() => {
         return routes.map((route, index) => {
@@ -179,40 +192,14 @@ export default function Home(): React.ReactElement {
                 </div>
             );
         });
-    }, [currentPage]);
-
-    const goToPage = (index: number) => {
-        setCurrentPage(index);
-    };
+    }, [appState.currentHomePageIndex]);
 
     return (
         <div className="flex justify-between">
-            <div className="h-screen fixed w-[5.5rem] bg-[#1e1f22] flex flex-col justify-between overflow-y-scroll">
-                <div className="flex flex-col items-center divide-y-2 divide-[#313338] space-y-4">
+            <div className="h-screen fixed w-[5.5rem] bg-dark-gray flex flex-col justify-between overflow-y-scroll">
+                <div className="flex flex-col items-center divide-y-2 divide-dark-gray-3 space-y-4">
                     <div className="mt-6 w-14 h-14 transition cursor-pointer flex justify-center items-center p-2">
-                        <svg
-                            width="466"
-                            height="466"
-                            viewBox="0 0 466 466"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M279.152 44.4249C279.955 40.659 279.492 36.7334 277.834 33.2581C276.176 29.7829 273.417 26.9526 269.984 25.2073C266.552 23.462 262.639 22.8993 258.855 23.6068C255.07 24.3143 251.624 26.2523 249.054 29.1196L51.0409 250.429C48.7924 252.943 47.3196 256.054 46.8002 259.386C46.2808 262.719 46.7371 266.13 48.114 269.209C49.4909 272.288 51.7295 274.903 54.5597 276.737C57.3898 278.572 60.6904 279.548 64.0632 279.548H217.163L186.762 421.489C185.959 425.255 186.422 429.181 188.08 432.656C189.738 436.131 192.498 438.961 195.93 440.707C199.362 442.452 203.275 443.015 207.06 442.307C210.844 441.6 214.29 439.662 216.86 436.794L414.873 215.485C417.122 212.971 418.594 209.86 419.114 206.528C419.633 203.195 419.177 199.784 417.8 196.705C416.423 193.626 414.184 191.011 411.354 189.177C408.524 187.342 405.224 186.366 401.851 186.366H248.752L279.152 44.4249Z"
-                                fill="url(#paint0_linear_213_174)"
-                            />
-                            <defs>
-                                <linearGradient
-                                    id="paint0_linear_213_174"
-                                    x1="232.957"
-                                    y1="23.3093"
-                                    x2="419"
-                                    y2="704"
-                                    gradientUnits="userSpaceOnUse">
-                                    <stop stop-color="#73A1FB" />
-                                    <stop offset="1" stop-color="#033392" />
-                                </linearGradient>
-                            </defs>
-                        </svg>
+                        <img src={Logo} alt="Ilias Logo" className="w-14 h-14" />
                     </div>
                     <div className="py-4 text-white">{pageIcons}</div>
                 </div>
@@ -232,10 +219,20 @@ export default function Home(): React.ReactElement {
                     })}
                 </div>
             </div>
-            <div className="w-full min-h-screen bg-[#313338] ml-[5.5rem] p-8">
+            <div className="w-full min-h-screen bg-dark-gray-3 ml-[5.5rem] p-8">
                 <SaveCredentialsWarning show={!hasCredsSaved} />
-                {currentUsername && <h1 className="text-white text-2xl font-bold py-4">Welcome, {currentUsername}</h1>}
+                {currentUsername && (
+                    <div className="w-full border-dark-gray border-b-2 my-2">
+                        <h1 className="text-white text-2xl font-bold py-3 ">Welcome, {currentUsername}</h1>
+                    </div>
+                )}
                 <Suspense fallback={<div>Loading...</div>}>{pageComponents}</Suspense>
+                <div className="flex justify-center font-light items-center pt-8 text-gray-300 space-x-1">
+                    <span>{new Date().getFullYear()} &copy; Ilias Ultimate by</span>
+                    <a href="https://rjks.us/" target="_blank" className="text-white hover:underline">
+                        Robert Julian Kratz
+                    </a>
+                </div>
             </div>
         </div>
     );
@@ -262,8 +259,8 @@ const NavigationListItem = ({
             className={classNames(
                 'w-14 h-14 flex justify-center items-center p-4 m-4 transition cursor-pointer hover:rounded-[1.5rem] shadow-sm hover:shadow-md',
                 selcted
-                    ? 'bg-[#313338] hover:bg-[#2b2d31] rounded-[1.2rem]'
-                    : 'bg-[#2b2d31] hover:bg-[#313338] rounded-[2rem]'
+                    ? 'bg-dark-gray-3 hover:bg-dark-gray-2 rounded-[1.2rem]'
+                    : 'bg-dark-gray-2 hover:bg-dark-gray-3 rounded-[2rem]'
             )}>
             {selectedIcon && selcted ? selectedIcon : icon}
             <span className="sr-only">{text}</span>

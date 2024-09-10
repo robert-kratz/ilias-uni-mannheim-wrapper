@@ -28,7 +28,7 @@ const createIliasAuthenticationWindow = ({
     presavedCredentials,
 }: IliasAuthenticationWindowProps): BrowserWindow => {
     const showWindowOnFirstStart =
-        behavior === 'FORCE_USER_LOGIN' || (presavedCredentials.password === '' && presavedCredentials.username === '');
+        behavior === 'FORCE_USER_LOGIN' || presavedCredentials.password === '' || presavedCredentials.username === '';
 
     let loginWindow = new BrowserWindow({
         width: 600,
@@ -36,7 +36,7 @@ const createIliasAuthenticationWindow = ({
         show: showWindowOnFirstStart,
         frame: false,
         hasShadow: true,
-        alwaysOnTop: true,
+        alwaysOnTop: false,
         icon: 'assets/ilias_logo.png',
         resizable: false,
         webPreferences: {
@@ -61,27 +61,27 @@ const createIliasAuthenticationWindow = ({
         //inject the javascript to the login page
         if (currentURL !== platformSettings.INDEX_PAGE) {
             if (behavior === 'FORCE_USER_LOGIN') {
-                loginWindow.webContents.executeJavaScript(
-                    inserteddLoginPageJavaScript({
-                        presavedCredentials: {
-                            password: '',
-                            username: '',
-                        },
-                        clickSubmit: false,
-                    })
-                );
+                console.log('Forcing user to login');
+
+                let jsInjection = inserteddLoginPageJavaScript({
+                    clickSubmit: false,
+                });
+
+                console.log('Injecting JavaScript: ', jsInjection);
+
+                loginWindow.webContents.executeJavaScript(jsInjection);
             } else if (behavior === 'ATTEMP_AUTO_LOGIN') {
                 loginWindow.webContents.executeJavaScript(
                     inserteddLoginPageJavaScript({
                         presavedCredentials,
-                        clickSubmit: true,
+                        clickSubmit: (loginAttempts === 1 && presavedCredentials.username !== '') || false,
                     })
                 );
             } else if (behavior === 'LOGIN_SERVER_VALIDATION') {
                 loginWindow.webContents.executeJavaScript(
                     inserteddLoginPageJavaScript({
                         presavedCredentials,
-                        clickSubmit: false,
+                        clickSubmit: true,
                     })
                 );
             }
@@ -215,7 +215,7 @@ const inserteddLoginPageJavaScript = (
             // Append the overlay to the body
             document.body.appendChild(overlay);
         });
-        ${clickSubmit ? '' : "document.querySelector('.button').click();"}
+        ${clickSubmit ? "document.querySelector('.button').click();" : ''}
       `;
 };
 

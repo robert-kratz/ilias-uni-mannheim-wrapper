@@ -12,7 +12,7 @@ interface Course {
     title: string;
     description: string;
     year: string;
-    userid: string; // Reference to User.id
+    userId: string; // Reference to User.id
     createdAt: Date;
     updatedAt: Date | null;
 }
@@ -24,7 +24,7 @@ interface Group {
     description: string;
     year: string;
     parentId: string | null; // Reference to Course.id (When this is null, it is a top-level group)
-    userid: string; // Reference to User.id
+    userId: string; // Reference to User.id
     createdAt: Date;
     updatedAt: Date | null;
 }
@@ -35,7 +35,8 @@ interface Directory {
     name: string;
     description: string;
     parentId: string; // Reference to Course.id
-    userid: string; // Reference to User.id
+    userId: string; // Reference to User.id
+    courseId: string; // Reference to Course.id
     createdAt: Date;
     updatedAt: Date | null;
 }
@@ -45,9 +46,28 @@ interface File {
     id: string; // UUID
     name: string;
     parentId: string; // Reference to Course.id or Directory.id
-    userid: string; // Reference to User.id
+    userId: string; // Reference to User.id
     createdAt: Date;
     updatedAt: Date | null;
 }
 
-export { User, Course, Group, Directory, File };
+interface StaticContentAlert {
+    title: string;
+    description: string;
+    type: 'info' | 'warning' | 'error';
+    active: boolean;
+}
+
+type SearchDataResponseItem = {
+    dirId: string;
+    fileId: string;
+    fileName: string;
+    dirName: string;
+    courseId: string;
+    courseTitle: string;
+    courseYear: number;
+    type: string | null;
+    matchingEntityType: 'directory' | 'file' | 'course' | 'none';
+};
+
+export { User, Course, Group, Directory, File, StaticContentAlert, SearchDataResponseItem };

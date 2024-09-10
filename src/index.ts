@@ -1,13 +1,16 @@
 import { app, BrowserWindow, shell, ipcMain, globalShortcut } from 'electron';
-import path from 'path';
+import JSDOM from 'jsdom';
 
-import { createTablesIfNotExists } from './database';
+import db, { createTablesIfNotExists, createUserIfNotExists, dropAllTables } from './database';
 import { createMainApplicationWindow } from './windows/MainApplicationWindow';
 import { createIliasAuthenticationWindow } from './windows/IliasAuthenticationWindow';
 
 import { resetStore, store } from './utils/appStorage';
 import { getPassword, savePassword } from './utils/pwstore';
-import { fetchUserDataFromHtml } from './utils/datafetching/scrape';
+import { fetchUserIndexPage } from './utils/datafetching/wrapper';
+import { Course, SearchDataResponseItem } from './types/objects';
+import getStaticContent from './utils/staticAlerts';
+import fetchUserDataFromHtml from './utils/datafetching/scraper/ScrapeUserData';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -34,15 +37,56 @@ async function main() {
     createTablesIfNotExists();
 
     const isFirstStartUp = store.get('isFirstStartUp');
-
-    if (isFirstStartUp) {
-        store.set('isFirstStartUp', false);
-    }
+    const hasCredentialsSaved = store.get('credentialsSaved');
 
     mainWindow = createMainApplicationWindow({
         mainWindow: MAIN_WINDOW_WEBPACK_ENTRY,
         preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     });
+
+    //start fetching the user index page
+    if (!isFirstStartUp) {
+        let loginWindow: BrowserWindow | null = null;
+
+        try {
+            const username = store.get('username') || '';
+            const password = hasCredentialsSaved ? await getPassword(username) : '';
+
+            const userId = (store.get('userId') as string) || '';
+
+            loginWindow = createIliasAuthenticationWindow({
+                preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+                behavior: 'ATTEMP_AUTO_LOGIN',
+                async onAuthenticated(success, token) {
+                    console.log('Authenticated with token: ', token);
+
+                    if (success) {
+                        console.log('Authenticated with token: ', token);
+
+                        //fetch index page
+                        //await fetchUserIndexPage({ sessionId: token, userId, includeYears: ['HWS 2024'] });
+                    }
+
+                    console.log('Credentials validated: ', success);
+
+                    mainWindow.webContents.send('page-reload', {
+                        message: 'Course data fetched',
+                        type: 'success',
+                    });
+                },
+                presavedCredentials: {
+                    username,
+                    password,
+                },
+            });
+            loginWindow.on('closed', () => {
+                loginWindow = null;
+                console.log('Login window has been closed and dereferenced');
+            });
+        } catch (error) {
+            console.error('Error opening login window: ', error);
+        }
+    }
 }
 
 app.on('ready', async () => {
@@ -52,6 +96,8 @@ app.on('ready', async () => {
     const ret = globalShortcut.register(shortcut, () => {
         console.log('Shortcut pressed, resetting store');
         resetStore();
+
+        dropAllTables();
     });
 
     if (!ret) {
@@ -80,6 +126,27 @@ app.on('activate', () => {
             mainWindow: MAIN_WINDOW_WEBPACK_ENTRY,
             preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
         });
+    }
+});
+
+ipcMain.handle('search', async (event, query) => {
+    console.log('search', query);
+
+    try {
+        const result = db
+            .prepare(
+                "SELECT d.id AS dirId, f.id AS fileId, f.type, f.name AS fileName, d.name AS dirName, d.courseId, c.title AS courseTitle, c.year AS courseYear, CASE WHEN d.name LIKE ? THEN 'directory' WHEN f.name LIKE ? THEN 'file' WHEN c.title LIKE ? THEN 'course' ELSE 'none' END AS matchingEntityType FROM directories d JOIN files f ON d.id = f.parentId JOIN courses c ON d.courseId = c.id WHERE d.name LIKE ? OR f.name LIKE ? OR c.title LIKE ?;"
+            )
+            .all(`%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`, `%${query}%`) as
+            | SearchDataResponseItem[]
+            | [];
+
+        console.log('Search result: ', result);
+
+        return result || [];
+    } catch (error) {
+        console.error('Error searching: ', error);
+        return [];
     }
 });
 
@@ -137,6 +204,72 @@ ipcMain.handle('setStoreValue', async (event, key, value) => {
     store.set(key, value);
 });
 
+ipcMain.handle('get-all-courses', async () => {
+    try {
+        const courses: any = db.prepare('SELECT * FROM courses').all();
+
+        let updatedCourses: Array<{
+            year: number;
+            courses: { title: string; link: string; description: string; type: 'Course' | 'Group' }[];
+        }> = [];
+
+        courses.forEach((course: any) => {
+            const year = course.year;
+
+            let yearIndex = updatedCourses.findIndex((y) => y.year === year);
+
+            if (yearIndex === -1) {
+                yearIndex = updatedCourses.push({ year: year, courses: [] }) - 1;
+            }
+
+            updatedCourses[yearIndex].courses.push({
+                title: course.title,
+                link: course.id,
+                description: course.description,
+                type: 'Course',
+            });
+        });
+
+        return updatedCourses;
+    } catch (error) {
+        console.error('Error fetching courses: ', error);
+        return [];
+    }
+});
+
+ipcMain.handle('get-all-groups', async () => {
+    try {
+        const groups: any = db.prepare('SELECT * FROM groups').all();
+
+        let updatedGroups: Array<{
+            year: number;
+            groups: { title: string; link: string; description: string; type: 'Course' | 'Group' }[];
+        }> = [];
+
+        groups.forEach((group: any) => {
+            const year = group.year;
+
+            let yearIndex = updatedGroups.findIndex((y) => y.year === year);
+
+            if (yearIndex === -1) {
+                yearIndex = updatedGroups.push({ year: year, groups: [] }) - 1;
+            }
+
+            updatedGroups[yearIndex].groups.push({
+                title: group.title,
+                link: group.id,
+                description: group.description,
+                type: 'Group',
+            });
+        });
+
+        return updatedGroups;
+    } catch (error) {
+        console.error('Error fetching groups: ', error);
+        return [];
+    }
+});
+
 ipcMain.handle('open-login-window', async () => {
     let loginWindow: BrowserWindow | null = null;
 
@@ -148,9 +281,11 @@ ipcMain.handle('open-login-window', async () => {
     try {
         loginWindow = createIliasAuthenticationWindow({
             preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
-            behavior: 'ATTEMP_AUTO_LOGIN',
+            behavior: 'FORCE_USER_LOGIN',
             async onAuthenticated(success, token) {
                 console.log('Authenticated with token: ', token);
+
+                let userId = '';
 
                 try {
                     const email = await fetchUserDataFromHtml({
@@ -159,6 +294,9 @@ ipcMain.handle('open-login-window', async () => {
 
                     let username = email.split('@')[0];
 
+                    userId = createUserIfNotExists(email);
+
+                    store.set('userId', userId);
                     store.set('username', username);
                 } catch (error) {
                     console.error('Error fetching username: ', error);
@@ -171,6 +309,16 @@ ipcMain.handle('open-login-window', async () => {
                     message: 'Successfully authenticated',
                     type: 'success',
                 });
+
+                const fetchResponse = await fetchUserIndexPage({ sessionId: token, userId: userId });
+
+                if (fetchResponse.success) {
+                    console.log('Successfully fetched user index page');
+                    mainWindow.webContents.send('page-reload', {
+                        message: 'Successfully fetched user index page',
+                        type: 'success',
+                    });
+                }
             },
             presavedCredentials: {
                 username: username,
@@ -185,6 +333,14 @@ ipcMain.handle('open-login-window', async () => {
     } catch (error) {
         console.error('Error opening login window: ', error);
     }
+});
+
+ipcMain.handle('get-static-content', async (event) => {
+    const staticContent = await getStaticContent();
+
+    if (!staticContent) return null;
+
+    return staticContent;
 });
 
 export { isDev, showDevTools, MAIN_WINDOW_WEBPACK_ENTRY, MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY };

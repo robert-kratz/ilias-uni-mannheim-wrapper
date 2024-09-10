@@ -26,6 +26,10 @@ contextBridge.exposeInMainWorld('api', {
     removeReloadListener: (callback: (event: Electron.IpcRendererEvent, data: ReloadMessage) => void) => {
         ipcRenderer.removeListener('page-reload', callback);
     },
+    getAllCourses: () => ipcRenderer.invoke('get-all-courses'),
+    getAllGroups: () => ipcRenderer.invoke('get-all-groups'),
+    getStaticContent: () => ipcRenderer.invoke('get-static-content'),
+    onSearch: (query: string) => ipcRenderer.invoke('search', query),
 });
 
 console.log('Preload script loaded');

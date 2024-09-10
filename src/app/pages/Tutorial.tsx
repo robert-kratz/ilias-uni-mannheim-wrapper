@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppDispatch, RootState } from '../store';
 import { useDispatch, useSelector } from 'react-redux';
-import { signIn } from '../../features/userSlice';
 import { createToast } from 'vercel-toast';
 
 const classNames = (...classes: string[]) => {
@@ -10,7 +9,7 @@ const classNames = (...classes: string[]) => {
 };
 
 export default function Tutorial(): React.ReactElement {
-    const user = useSelector((state: RootState) => state.user);
+    const appState = useSelector((state: RootState) => state.app);
     const dispatch: AppDispatch = useDispatch();
 
     const openLoginModal = () => {
@@ -373,15 +372,6 @@ export default function Tutorial(): React.ReactElement {
             setCurrentPage(currentPage + 1);
         }
     };
-
-    function continueToApp() {
-        createToast('Welcome to the App!', {
-            type: 'success',
-            timeout: 5000,
-        });
-
-        dispatch(signIn());
-    }
 
     return (
         <div className="flex items-center justify-center">

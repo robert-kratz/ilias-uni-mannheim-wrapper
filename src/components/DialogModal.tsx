@@ -41,7 +41,7 @@ export default function DialogModal({ open, onClose, children, height = 'auto', 
                             leaveTo="opacity-0 scale-95">
                             <Dialog.Panel
                                 className={classNames(
-                                    'w-full transform overflow-hidden rounded-lg bg-[#2b2d31] text-left align-middle shadow-xl transition-all sm:p-8 p-6 space-y-4 md:space-y-6 text-white',
+                                    'w-full transform overflow-hidden rounded-lg bg-dark-gray-2 text-left align-middle shadow-xl transition-all sm:p-8 p-6 space-y-4 md:space-y-6 text-white',
                                     height,
                                     width
                                 )}>
