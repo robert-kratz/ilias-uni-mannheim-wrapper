@@ -29,6 +29,16 @@ export default function SaveCredentialsDialog({ open, onClose }: Props) {
         setLoading(true);
         console.log('Submitting credentials: ', currentFormData);
 
+        if (!currentFormData.username || !currentFormData.password) {
+            createToast('Please fill in all fields', {
+                type: 'error',
+                timeout: 3000,
+            });
+
+            setLoading(false);
+            return;
+        }
+
         window.api.sendCredentials(currentFormData.username, currentFormData.password);
     };
 

@@ -1,4 +1,4 @@
-import { SearchDataResponseItem, StaticContentAlert } from './objects';
+import { ScrapeMessage, SearchDataResponseItem, StaticContentAlert } from './objects';
 
 // in einer Datei wie global.d.ts
 export {};
@@ -32,6 +32,11 @@ declare global {
                     courses: { title: string; link: string; description: string; type: 'Course' | 'Group' }[];
                 }>
             >;
+            onApplicationScrape: (callback: (event: Electron.IpcRendererEvent, data: ScrapeMessage) => void) => void;
+            removeApplicationScrapeListener: (
+                callback: (event: Electron.IpcRendererEvent, data: ScrapeMessage) => void
+            ) => void;
+            startScrape: (years: string[]) => Promise<boolean>;
         };
     }
 }

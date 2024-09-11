@@ -70,4 +70,12 @@ type SearchDataResponseItem = {
     matchingEntityType: 'directory' | 'file' | 'course' | 'none';
 };
 
-export { User, Course, Group, Directory, File, StaticContentAlert, SearchDataResponseItem };
+type ScrapeEvent = {
+    type: 'start' | 'indexing' | 'finish' | 'error';
+    name: string | null;
+    ref_id: string | null;
+    courseId: string | null;
+    error?: string;
+};
+
+export { User, Course, Group, Directory, File, StaticContentAlert, SearchDataResponseItem, ScrapeEvent };

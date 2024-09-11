@@ -4,6 +4,7 @@ import AppRoutes from '../routes';
 import Tutorial from './pages/Tutorial';
 import { Suspense, useEffect, useReducer, useState } from 'react';
 import TutorialDialog from '../components/dialogs/TutorialDialog';
+import FirstSetupDialog from '../components/dialogs/FirstSetupDialog';
 
 const App: React.FC = () => {
     const [firstStartUp, setFirstStartUp] = useState<boolean>(true);
@@ -14,31 +15,37 @@ const App: React.FC = () => {
         (state: any, newState: any) => ({ ...state, ...newState }),
         {
             tutorialDialog: false,
+            firstSetupDialog: false,
         }
     );
 
     const fetchApplicationState = async () => {
         if (window.api) {
-            window.api.getStoreValue('isFirstStartUp').then((value) => {
-                setFirstStartUp(value);
+            window.api.getStoreValue('isFirstStartUp').then((isFirstStart) => {
+                setFirstStartUp(isFirstStart);
 
-                if (value) {
-                    updateDialogState({ tutorialDialog: true });
-                }
+                window.api.getStoreValue('hasSetUpWizard').then((hasDoneWizard) => {
+                    console.log('hasSetUpWizard', hasDoneWizard);
+                    console.log('isFirstStart', isFirstStart);
+
+                    if (isFirstStart && !hasDoneWizard) {
+                        updateDialogState({ tutorialDialog: true });
+                        updateDialogState({ firstSetupDialog: false });
+                    }
+
+                    if (!isFirstStart && !hasDoneWizard) {
+                        updateDialogState({ firstSetupDialog: true });
+                        updateDialogState({ tutorialDialog: false });
+                    }
+                });
             });
             window.api.getStoreValue('credentialsSaved').then((value) => {
                 setCredentialsSaved(value);
             });
             window.api.getStoreValue('sessionToken').then((value) => {
                 setSessionToken(value);
-
-                if (!value) {
-                    updateDialogState({ tutorialDialog: true });
-                }
             });
         }
-
-        updateDialogState({ tutorialDialog: false });
     };
 
     useEffect(() => {
@@ -76,6 +83,10 @@ const App: React.FC = () => {
             <TutorialDialog
                 open={currentDialogState.tutorialDialog}
                 onClose={() => updateDialogState({ tutorialDialog: false })}
+            />
+            <FirstSetupDialog
+                open={currentDialogState.firstSetupDialog}
+                onClose={() => updateDialogState({ firstSetupDialog: false })}
             />
             <Suspense fallback={<div>Loading...</div>}>
                 <AppRoutes />

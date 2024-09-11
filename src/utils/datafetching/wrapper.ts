@@ -1,6 +1,6 @@
 //this is the wrapper for the client side data fetching. central is a sessionId. the session id is attached to the request header.
 
-import { Course, Directory } from '../../types/objects';
+import { Course, Directory, ScrapeEvent } from '../../types/objects';
 import db from '../../database';
 import { scrapeContentPage } from './scraper/ScrapeCoursePage';
 import scrapeYearGroupsFromHtml from './scraper/ScrapeIndex';
@@ -11,6 +11,7 @@ type FetchUserIndexPageProps = {
     sessionId: string;
     includeYears?: string[];
     userId: string;
+    onEvent: (message: ScrapeEvent) => void;
 };
 
 type WrapperResponse = {
@@ -27,11 +28,21 @@ type WrapperResponse = {
 const fetchUserIndexPage = async ({
     sessionId,
     userId,
+    onEvent,
     includeYears,
 }: FetchUserIndexPageProps): Promise<WrapperResponse> => {
     try {
         const indexPageFetch = await scrapeYearGroupsFromHtml({
             sessionCookie: sessionId,
+        });
+
+        console.log('Index page fetch: ', indexPageFetch, sessionId);
+
+        onEvent({
+            type: 'start',
+            name: null,
+            ref_id: null,
+            courseId: null,
         });
 
         let processedPages: string[] = [];
@@ -40,6 +51,8 @@ const fetchUserIndexPage = async ({
 
         try {
             for (const year of indexPageFetch) {
+                console.log('Year: ', year.year);
+
                 if (includeYears && !includeYears.includes(year.year)) continue;
 
                 for (const course of year.courses) {
@@ -77,6 +90,13 @@ const fetchUserIndexPage = async ({
             }
         } catch (error: any) {
             console.error('Error processing courses: ', error);
+            onEvent({
+                type: 'error',
+                courseId: null,
+                name: null,
+                ref_id: null,
+                error: error,
+            });
         }
 
         //SETP 2. fetch all courses
@@ -94,6 +114,7 @@ const fetchUserIndexPage = async ({
                     courseId: course.id,
                     target: course.id,
                     userId,
+                    onEvent,
                 });
 
                 if (!coursePageFetch.success) {
@@ -108,10 +129,24 @@ const fetchUserIndexPage = async ({
 
                 hasChangedData = hasChangedData || coursePageFetch.hasChangedData;
 
+                onEvent({
+                    type: 'indexing',
+                    name: course.title,
+                    ref_id: course.id,
+                    courseId: course.id,
+                });
+
                 new Promise((resolve) => setTimeout(resolve, DELAY_BETWEEN_REQUESTS));
             }
         } catch (error) {
             console.error('Error fetching course pages: ', error);
+            onEvent({
+                type: 'error',
+                courseId: null,
+                name: null,
+                ref_id: null,
+                error: error,
+            });
         }
 
         //SETP 3. Now fetch all folders which have no parentId
@@ -128,6 +163,7 @@ const fetchUserIndexPage = async ({
                     target: folder.id,
                     parentFolderId: folder.id,
                     userId,
+                    onEvent,
                 });
 
                 if (!groupPageFetch.success) {
@@ -142,10 +178,24 @@ const fetchUserIndexPage = async ({
 
                 processedPages.push(folder.id);
 
+                onEvent({
+                    type: 'indexing',
+                    name: folder.name,
+                    ref_id: folder.id,
+                    courseId: folder.courseId,
+                });
+
                 new Promise((resolve) => setTimeout(resolve, DELAY_BETWEEN_REQUESTS));
             }
         } catch (error) {
             console.error('Error fetching root folders: ', error);
+            onEvent({
+                type: 'error',
+                courseId: null,
+                name: null,
+                ref_id: null,
+                error: error,
+            });
         }
 
         //Step 4. Now fetch all subfolders, that means all folders which have a parentId which is one of the root folders from step 3
@@ -167,6 +217,7 @@ const fetchUserIndexPage = async ({
                     target: folder.id,
                     parentFolderId: folder.id,
                     userId,
+                    onEvent,
                 });
 
                 if (!subFolderPageFetch.success) {
@@ -179,10 +230,24 @@ const fetchUserIndexPage = async ({
 
                 hasChangedData = hasChangedData || subFolderPageFetch.hasChangedData;
 
+                onEvent({
+                    type: 'indexing',
+                    name: folder.name,
+                    ref_id: folder.id,
+                    courseId: folder.courseId,
+                });
+
                 new Promise((resolve) => setTimeout(resolve, DELAY_BETWEEN_REQUESTS));
             }
         } catch (error) {
             console.error('Error fetching subfolders: ', error);
+            onEvent({
+                type: 'error',
+                courseId: null,
+                name: null,
+                ref_id: null,
+                error: error,
+            });
         }
 
         let totalProcessedFolders = 0;
@@ -208,6 +273,7 @@ const fetchUserIndexPage = async ({
                         target: folder.id,
                         parentFolderId: folder.id,
                         userId,
+                        onEvent,
                     });
 
                     if (!subSubFolderPageFetch.success) {
@@ -224,6 +290,13 @@ const fetchUserIndexPage = async ({
 
                     totalProcessedFolders++;
 
+                    onEvent({
+                        type: 'indexing',
+                        name: folder.name,
+                        ref_id: folder.id,
+                        courseId: folder.courseId,
+                    });
+
                     new Promise((resolve) => setTimeout(resolve, DELAY_BETWEEN_REQUESTS));
                 }
 
@@ -231,6 +304,13 @@ const fetchUserIndexPage = async ({
                 if (totalProcessedFolders === 0) break;
             } catch (error) {
                 console.error('Error fetching subfolders: ', error);
+                onEvent({
+                    type: 'error',
+                    courseId: null,
+                    name: null,
+                    ref_id: null,
+                    error: error,
+                });
             }
         } while (endNodeFolders.length > 0);
 
@@ -255,12 +335,7 @@ type FetchCoursePageProps = {
     userId: string;
     target: string;
     parentFolderId?: string;
-};
-
-type FetchGroupPageProps = {
-    success: boolean;
-    error?: string;
-    hasChangedData?: boolean;
+    onEvent: (message: ScrapeEvent) => void;
 };
 
 /**
@@ -273,6 +348,7 @@ const fetchConentPage = async ({
     courseId,
     userId,
     target,
+    onEvent,
     parentFolderId,
 }: FetchCoursePageProps): Promise<WrapperResponse> => {
     try {
@@ -329,6 +405,13 @@ const fetchConentPage = async ({
                 hasChangedData = true;
             }
 
+            onEvent({
+                type: 'indexing',
+                name: folder.title,
+                ref_id: `d-${refId}`,
+                courseId: courseId,
+            });
+
             new Promise((resolve) => setTimeout(resolve, DELAY_BETWEEN_REQUESTS));
         }
 
@@ -365,6 +448,13 @@ const fetchConentPage = async ({
 
                 hasChangedData = true;
             }
+
+            onEvent({
+                type: 'indexing',
+                name: file.title,
+                ref_id: fileId,
+                courseId: courseId,
+            });
 
             new Promise((resolve) => setTimeout(resolve, DELAY_BETWEEN_REQUESTS));
         }

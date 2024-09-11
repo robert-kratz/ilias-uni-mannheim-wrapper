@@ -4,11 +4,13 @@ import { SearchDataResponseItem } from '../types/objects';
 interface ApplicationState {
     currentHomePageIndex: number;
     currentSearchQuery: string;
+    currentFirstSetupWizardPage: number;
     searchResults: SearchDataResponseItem[];
 }
 
 const initialState: ApplicationState = {
     currentHomePageIndex: 0,
+    currentFirstSetupWizardPage: 0,
     currentSearchQuery: '',
     searchResults: [],
 };
@@ -26,8 +28,12 @@ const userSlice = createSlice({
         setSearchResults(state, action: PayloadAction<{ searchResults: SearchDataResponseItem[] }>) {
             state.searchResults = action.payload.searchResults;
         },
+        setCurrentFirstSetupWizardPage(state, action: PayloadAction<{ currentFirstSetupWizardPage: number }>) {
+            state.currentFirstSetupWizardPage = action.payload.currentFirstSetupWizardPage;
+        },
     },
 });
 
-export const { setCurrentHomePageIndex, setCurrentSearchQuery, setSearchResults } = userSlice.actions;
+export const { setCurrentHomePageIndex, setCurrentSearchQuery, setSearchResults, setCurrentFirstSetupWizardPage } =
+    userSlice.actions;
 export default userSlice.reducer;

@@ -5,12 +5,15 @@ import db, { createTablesIfNotExists, createUserIfNotExists, dropAllTables } fro
 import { createMainApplicationWindow } from './windows/MainApplicationWindow';
 import { createIliasAuthenticationWindow } from './windows/IliasAuthenticationWindow';
 
+import platofrmSettings from './platformSettings.json';
+
 import { resetStore, store } from './utils/appStorage';
 import { getPassword, savePassword } from './utils/pwstore';
 import { fetchUserIndexPage } from './utils/datafetching/wrapper';
-import { Course, SearchDataResponseItem } from './types/objects';
+import { Course, ScrapeEvent, SearchDataResponseItem } from './types/objects';
 import getStaticContent from './utils/staticAlerts';
 import fetchUserDataFromHtml from './utils/datafetching/scraper/ScrapeUserData';
+import scrapeYearGroupsFromHtml from './utils/datafetching/scraper/ScrapeIndex';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -30,14 +33,25 @@ if (require('electron-squirrel-startup')) {
     app.quit();
 }
 
+let sessionToken: string | null = null;
 let mainWindow: BrowserWindow | null = null;
+
+let isCurrentlyFetching = false;
+let loginCurrentlyOpen = false;
 
 async function main() {
     // Create the database tables if they do not exist
     createTablesIfNotExists();
 
     const isFirstStartUp = store.get('isFirstStartUp');
+    const hasSetUpWizard = store.get('hasSetUpWizard');
     const hasCredentialsSaved = store.get('credentialsSaved');
+
+    if (!isFirstStartUp && !hasSetUpWizard) {
+        resetStore();
+        dropAllTables();
+        console.log('Resetting store because of invalid state');
+    }
 
     mainWindow = createMainApplicationWindow({
         mainWindow: MAIN_WINDOW_WEBPACK_ENTRY,
@@ -59,6 +73,7 @@ async function main() {
                 behavior: 'ATTEMP_AUTO_LOGIN',
                 async onAuthenticated(success, token) {
                     console.log('Authenticated with token: ', token);
+                    sessionToken = token;
 
                     if (success) {
                         console.log('Authenticated with token: ', token);
@@ -161,6 +176,8 @@ ipcMain.handle('submit-credentials', async (event, { username, password }) => {
             behavior: 'LOGIN_SERVER_VALIDATION',
             async onAuthenticated(success, token) {
                 if (success) {
+                    sessionToken = token;
+
                     store.set('sessionToken', token);
                     store.set('username', username);
                     store.set('credentialsSaved', true);
@@ -192,6 +209,60 @@ ipcMain.handle('submit-credentials', async (event, { username, password }) => {
     }
 
     return true;
+});
+
+//ONLY USE FOR FIRST TIME SETUP
+ipcMain.handle('start-scrape', async (event, years) => {
+    console.log('start-scrape', years);
+
+    if (isCurrentlyFetching) {
+        console.log('Already fetching data');
+        return false;
+    }
+
+    isCurrentlyFetching = true;
+
+    try {
+        //get session token from main window cookie
+
+        const userId = store.get('userId');
+
+        console.log('Session ID: ', sessionToken);
+        console.log('User ID: ', userId);
+        console.log('Years: ', years);
+
+        const scrape = await fetchUserIndexPage({
+            sessionId: sessionToken,
+            userId,
+            includeYears: years,
+            onEvent: (event: ScrapeEvent) => {
+                console.log('Scrape event: ', event);
+
+                mainWindow.webContents.send('application-scrape', event);
+            },
+        });
+
+        mainWindow.webContents.send('application-scrape', {
+            type: 'finish',
+            name: null,
+            ref_id: null,
+            courseId: null,
+        });
+
+        if (scrape.success) {
+            console.log('Successfully fetched user index page');
+        }
+
+        isCurrentlyFetching = false;
+
+        return scrape.success;
+    } catch (error) {
+        console.error('Error fetching user index page: ', error);
+
+        isCurrentlyFetching = false;
+
+        return false;
+    }
 });
 
 ipcMain.handle('getStoreValue', async (event, key) => {
@@ -271,6 +342,13 @@ ipcMain.handle('get-all-groups', async () => {
 });
 
 ipcMain.handle('open-login-window', async () => {
+    if (loginCurrentlyOpen) {
+        console.log('Login window already open');
+        return;
+    }
+
+    loginCurrentlyOpen = true;
+
     let loginWindow: BrowserWindow | null = null;
 
     const username = store.get('username') || '';
@@ -284,6 +362,8 @@ ipcMain.handle('open-login-window', async () => {
             behavior: 'FORCE_USER_LOGIN',
             async onAuthenticated(success, token) {
                 console.log('Authenticated with token: ', token);
+
+                sessionToken = token;
 
                 let userId = '';
 
@@ -302,23 +382,34 @@ ipcMain.handle('open-login-window', async () => {
                     console.error('Error fetching username: ', error);
                 }
 
+                let aviablableYears: string[] = [];
+
+                try {
+                    const aviablableYearsResponse = await scrapeYearGroupsFromHtml({ sessionCookie: token });
+
+                    aviablableYears = aviablableYearsResponse.map((year) => year.year);
+                } catch (error) {
+                    console.error('Error fetching available years: ', error);
+                }
+
                 store.set('sessionToken', token);
                 store.set('isFirstStartUp', false);
+                store.set('aviablableYears', aviablableYears);
 
                 mainWindow.webContents.send('page-reload', {
                     message: 'Successfully authenticated',
                     type: 'success',
                 });
 
-                const fetchResponse = await fetchUserIndexPage({ sessionId: token, userId: userId });
+                // const fetchResponse = await fetchUserIndexPage({ sessionId: token, userId: userId });
 
-                if (fetchResponse.success) {
-                    console.log('Successfully fetched user index page');
-                    mainWindow.webContents.send('page-reload', {
-                        message: 'Successfully fetched user index page',
-                        type: 'success',
-                    });
-                }
+                // if (fetchResponse.success) {
+                //     console.log('Successfully fetched user index page');
+                //     mainWindow.webContents.send('page-reload', {
+                //         message: 'Successfully fetched user index page',
+                //         type: 'success',
+                //     });
+                // }
             },
             presavedCredentials: {
                 username: username,
@@ -328,6 +419,7 @@ ipcMain.handle('open-login-window', async () => {
 
         loginWindow.on('closed', () => {
             loginWindow = null;
+            loginCurrentlyOpen = false;
             console.log('Login window has been closed and dereferenced');
         });
     } catch (error) {

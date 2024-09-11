@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
+import { ScrapeEvent } from './types/objects';
 
 interface ReloadMessage {
     message: string;
@@ -30,6 +31,13 @@ contextBridge.exposeInMainWorld('api', {
     getAllGroups: () => ipcRenderer.invoke('get-all-groups'),
     getStaticContent: () => ipcRenderer.invoke('get-static-content'),
     onSearch: (query: string) => ipcRenderer.invoke('search', query),
+    onApplicationScrape: (callback: (event: Electron.IpcRendererEvent, data: ScrapeEvent) => void) => {
+        ipcRenderer.on('application-scrape', callback);
+    },
+    removeApplicationScrapeListener: (callback: (event: Electron.IpcRendererEvent, data: any) => void) => {
+        ipcRenderer.removeListener('application-scrape', callback);
+    },
+    startScrape: (years: string[]) => ipcRenderer.invoke('start-scrape', years),
 });
 
 console.log('Preload script loaded');

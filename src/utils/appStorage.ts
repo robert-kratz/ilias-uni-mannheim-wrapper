@@ -5,7 +5,10 @@ type StoreType = {
     username: string;
     userId: string;
     credentialsSaved: boolean;
+    hasSetUpWizard: boolean;
     sessionToken: string | null;
+    aviablableYears: string[];
+    selectedYears: string[];
 };
 
 const store = new Store<StoreType>({
@@ -14,7 +17,10 @@ const store = new Store<StoreType>({
         username: '',
         userId: '',
         credentialsSaved: false,
+        hasSetUpWizard: false,
         sessionToken: null,
+        aviablableYears: [],
+        selectedYears: [],
     },
 });
 
@@ -23,6 +29,8 @@ const credentialsSaved = store.get('credentialsSaved');
 const getSessionToken = store.get('sessionToken');
 const getUsername = store.get('username');
 const getUserId = store.get('userId');
+const getAvailabeYears = store.get('aviablableYears');
+const getSelectedYears = store.get('selectedYears');
 
 //reset to default values
 const resetStore = () => {
@@ -31,6 +39,9 @@ const resetStore = () => {
     store.set('sessionToken', null);
     store.set('username', '');
     store.set('userId', '');
+    store.set('aviablableYears', []);
+    store.set('selectedYears', []);
+    store.set('hasSetUpWizard', false);
 };
 
 export { store, isFirstStartUp, credentialsSaved, getSessionToken, resetStore };
