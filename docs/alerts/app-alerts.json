@@ -10,7 +10,7 @@
             "title": "Error Yellow Alert",
             "description": "Alert Description",
             "type": "warning",
-            "active": false
+            "active": true
         },
         {
             "title": "Error Red Alert",
