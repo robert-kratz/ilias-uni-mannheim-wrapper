@@ -23,6 +23,7 @@ export default function Home(): React.ReactElement {
     const [currentUsername, setCurrentUsername] = React.useState('');
 
     const [hasCredsSaved, setHasCredsSaved] = React.useState(false);
+    const [hasSetUpWizard, setHasSetUpWizard] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
 
     const goToPage = (index: number) => {
@@ -142,6 +143,9 @@ export default function Home(): React.ReactElement {
                     setCurrentUsername(value);
                     console.log('Fetching application state', value);
                 });
+                window.api.getStoreValue('hasSetUpWizard').then((value) => {
+                    setHasSetUpWizard(value);
+                });
 
                 window.api.getStoreValue('credentialsSaved').then((value) => {
                     setHasCredsSaved(value);
@@ -220,7 +224,7 @@ export default function Home(): React.ReactElement {
                 </div>
             </div>
             <div className="w-full min-h-screen bg-dark-gray-3 ml-[5.5rem] p-8">
-                <SaveCredentialsWarning show={!hasCredsSaved} />
+                <SaveCredentialsWarning show={!hasCredsSaved && hasSetUpWizard} />
                 {currentUsername && (
                     <div className="w-full border-dark-gray border-b-2 my-2">
                         <h1 className="text-white text-2xl font-bold py-3 ">Welcome, {currentUsername}</h1>

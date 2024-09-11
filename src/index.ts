@@ -59,7 +59,7 @@ async function main() {
     });
 
     //start fetching the user index page
-    if (!isFirstStartUp) {
+    if (!isFirstStartUp && hasSetUpWizard) {
         let loginWindow: BrowserWindow | null = null;
 
         try {
@@ -251,6 +251,16 @@ ipcMain.handle('start-scrape', async (event, years) => {
 
         if (scrape.success) {
             console.log('Successfully fetched user index page');
+            mainWindow.webContents.send('page-reload', {
+                message: 'Successfully fetched user index page',
+                type: 'success',
+            });
+        } else {
+            console.error('Error fetching user index page');
+            mainWindow.webContents.send('page-reload', {
+                message: 'Error fetching user index page',
+                type: 'error',
+            });
         }
 
         isCurrentlyFetching = false;
@@ -382,6 +392,14 @@ ipcMain.handle('open-login-window', async () => {
                     console.error('Error fetching username: ', error);
                 }
 
+                store.set('sessionToken', token);
+                store.set('isFirstStartUp', false);
+
+                mainWindow.webContents.send('page-reload', {
+                    message: 'Successfully authenticated',
+                    type: 'success',
+                });
+
                 let aviablableYears: string[] = [];
 
                 try {
@@ -392,12 +410,10 @@ ipcMain.handle('open-login-window', async () => {
                     console.error('Error fetching available years: ', error);
                 }
 
-                store.set('sessionToken', token);
-                store.set('isFirstStartUp', false);
                 store.set('aviablableYears', aviablableYears);
 
                 mainWindow.webContents.send('page-reload', {
-                    message: 'Successfully authenticated',
+                    message: 'Successfully fetched available semesters',
                     type: 'success',
                 });
 
