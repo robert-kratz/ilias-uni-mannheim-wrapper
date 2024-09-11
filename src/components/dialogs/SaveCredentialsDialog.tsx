@@ -42,6 +42,12 @@ export default function SaveCredentialsDialog({ open, onClose }: Props) {
         window.api.sendCredentials(currentFormData.username, currentFormData.password);
     };
 
+    const closeModal = ({ success }: { success: boolean }) => {
+        if (loading) return;
+
+        onClose({ success });
+    };
+
     useEffect(() => {
         const handleCredentialsCallback = (event: Electron.IpcRendererEvent, { isValid }: { isValid: boolean }) => {
             console.log('Credentials validation result: ', isValid);
@@ -66,11 +72,21 @@ export default function SaveCredentialsDialog({ open, onClose }: Props) {
         };
     }, []);
 
-    const closeModal = ({ success }: { success: boolean }) => {
-        if (loading) return;
+    useEffect(() => {
+        if (!open) return;
 
-        onClose({ success });
-    };
+        const handleKeyPress = (event: KeyboardEvent) => {
+            if (event.key === 'Enter') {
+                handleSubmit();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyPress);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [open, handleSubmit]);
 
     return (
         <DialogModal open={open} onClose={() => closeModal({ success: false })}>
