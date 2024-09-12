@@ -196,18 +196,18 @@ const WelcomeWindow = ({ onClose, usename }: WelcomeWindowProps): React.ReactNod
                 </div>
             </div>
             <div>
-                <p className="text-md text-gray-300">
-                    <strong>Thank You for using Ilias Ultimate!</strong>
+                <p className="text-md text-gray-300 font-light">
+                    <strong className="font-bold text-white">Thank You for using Ilias Ultimate!</strong>
                     <br />
                     <br />
-                    In the following steps we will setup the application for you.
+                    In the following steps you will
                 </p>
-                <ul className="list-disc list-inside text-md text-gray-300 p-2 py-6">
+                <ul className="list-disc list-inside text-md text-gray-300 font-light p-2 py-6">
                     <li>Select Semesters</li>
                     <li>Index your courses</li>
                     <li>Configure your settings</li>
                 </ul>
-                <p className="text-md text-gray-300">
+                <p className="text-md text-gray-300 font-light">
                     The process of indexing, depending on the amount of semesters, may take a while.
                 </p>
             </div>
@@ -259,7 +259,7 @@ const SelectYearWindow = ({ onClose, aviablableYears }: SelectYearWindowProps): 
             <div className="flex justify-between items-center space-x-4">
                 <div>
                     <h1 className="text-2xl font-bold">Select Semesters to index:</h1>
-                    <p className="text-sm text-gray-300">
+                    <p className="text-sm text-gray-300 font-light">
                         Please select the semesters you want to index in this application.
                     </p>
                 </div>
@@ -406,7 +406,7 @@ const FetchingDataWindow = ({ onClose, selectedYears }: FetchingDataWindowProps)
                             />
                         </svg>
                     </div>
-                    <p>Do not close the application!</p>
+                    <p className="font-medium">Do not close the application!</p>
                 </div>
             </div>
             <div className="flex justify-between items-center bg-dark-gray-3 border-2 border-dark-gray rounded-md p-4 space-x-4 min-h-[5rem]">

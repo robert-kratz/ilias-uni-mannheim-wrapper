@@ -160,7 +160,7 @@ const DialogInputField = ({
                 autoCorrect={autoCorrect}
                 value={value}
                 onChange={(e) => onChange(e)}
-                className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="w-full text-white p-4 border-2 border-dark-gray bg-dark-gray-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
         </div>
     </>
@@ -198,7 +198,7 @@ const DialogInputPasswordField = ({
             </label>
             <a
                 onClick={onVisibilityChange}
-                className="block text-sm font-semibold leading-6 text-indigo-600 hover:text-indigo-500 cursor-pointer">
+                className="block text-sm font-semibold leading-6 text-violet-500 hover:text-violet-600 cursor-pointer">
                 {showPassword ? 'Hide' : 'Show'}
             </a>
         </div>
@@ -212,7 +212,7 @@ const DialogInputPasswordField = ({
                 value={value}
                 disabled={disabled}
                 onChange={(e) => onChange(e)}
-                className="block w-full rounded-md border-0 px-3.5 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="w-full text-white p-4 border-2 border-dark-gray bg-dark-gray-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
         </div>
     </div>

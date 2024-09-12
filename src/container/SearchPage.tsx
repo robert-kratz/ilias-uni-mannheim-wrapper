@@ -76,7 +76,6 @@ export default function SearchPage() {
                     />
                 </div>
             </div>
-
             <div className="w-full p-2 space-y-4">
                 <Suspense fallback={<div>Loading...</div>}>
                     {appState.searchResults.map((result, index) => (

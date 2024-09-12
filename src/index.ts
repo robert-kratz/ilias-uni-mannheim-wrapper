@@ -395,11 +395,6 @@ ipcMain.handle('open-login-window', async () => {
                 store.set('sessionToken', token);
                 store.set('isFirstStartUp', false);
 
-                mainWindow.webContents.send('page-reload', {
-                    message: 'Successfully authenticated',
-                    type: 'success',
-                });
-
                 let aviablableYears: string[] = [];
 
                 try {
@@ -413,19 +408,9 @@ ipcMain.handle('open-login-window', async () => {
                 store.set('aviablableYears', aviablableYears);
 
                 mainWindow.webContents.send('page-reload', {
-                    message: 'Successfully fetched available semesters',
+                    message: 'Successfully authenticated',
                     type: 'success',
                 });
-
-                // const fetchResponse = await fetchUserIndexPage({ sessionId: token, userId: userId });
-
-                // if (fetchResponse.success) {
-                //     console.log('Successfully fetched user index page');
-                //     mainWindow.webContents.send('page-reload', {
-                //         message: 'Successfully fetched user index page',
-                //         type: 'success',
-                //     });
-                // }
             },
             presavedCredentials: {
                 username: username,
