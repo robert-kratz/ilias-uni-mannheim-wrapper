@@ -1,7 +1,7 @@
 import path from 'path';
 import { app } from 'electron';
 import Database from 'better-sqlite3';
-import { isDev } from './index';
+import { isDev } from '../../index';
 import { v4 } from 'uuid';
 
 // Set the path for the database file

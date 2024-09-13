@@ -6,6 +6,7 @@ interface ApplicationState {
     currentSearchQuery: string;
     currentTutorialDialogPage: number;
     currentFirstSetupWizardPage: number;
+    loadingIndicatorTextShown: boolean;
     searchResults: SearchDataResponseItem[];
 }
 
@@ -13,6 +14,7 @@ const initialState: ApplicationState = {
     currentHomePageIndex: 0,
     currentFirstSetupWizardPage: 0,
     currentTutorialDialogPage: 0,
+    loadingIndicatorTextShown: true,
     currentSearchQuery: '',
     searchResults: [],
 };
@@ -36,6 +38,9 @@ const userSlice = createSlice({
         setCurrentTutorialDialogPage(state, action: PayloadAction<{ currentTutorialDialogPage: number }>) {
             state.currentTutorialDialogPage = action.payload.currentTutorialDialogPage;
         },
+        setLoadingIndicatorTextShown(state, action: PayloadAction<{ loadingIndicatorTextShown: boolean }>) {
+            state.loadingIndicatorTextShown = action.payload.loadingIndicatorTextShown;
+        },
     },
 });
 
@@ -45,5 +50,6 @@ export const {
     setSearchResults,
     setCurrentFirstSetupWizardPage,
     setCurrentTutorialDialogPage,
+    setLoadingIndicatorTextShown,
 } = userSlice.actions;
 export default userSlice.reducer;

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import DialogModal from '../DialogModal';
+import DialogModal from '../DialogModalTemplate';
 import React from 'react';
 import { createToast } from 'vercel-toast';
 import { ScrapeEvent } from '../../types/objects';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../app/store';
-import { AppDispatch } from '../../app/store';
-import { setCurrentFirstSetupWizardPage } from '../../features/stateSlice';
+import { RootState } from '../../state/store';
+import { AppDispatch } from '../../state/store';
+import { setCurrentFirstSetupWizardPage } from '../../state/stateSlice';
 import SaveCredentialsDialog from './SaveCredentialsDialog';
 
 const classNames = (...classes: string[]) => {
@@ -352,10 +352,6 @@ const FetchingDataWindow = ({ onClose, selectedYears }: FetchingDataWindowProps)
                 if (data.type === 'finish') {
                     setIsFetching(false);
                     onClose && onClose({ success: true });
-                    createToast('Successfully fetched data.', {
-                        type: 'success',
-                        timeout: 5000,
-                    });
                 }
             });
         }
@@ -432,7 +428,7 @@ const FetchingDataWindow = ({ onClose, selectedYears }: FetchingDataWindowProps)
             <div>
                 <p className="text-sm text-gray-300">
                     Indexing may take a while, depending on the amount of semesters. (Approx.{' '}
-                    {Math.round(selectedYears.length * 3)} minutes)
+                    {Math.round(selectedYears.length * 1.5)} minutes)
                 </p>
             </div>
         </div>

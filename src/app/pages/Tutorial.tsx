@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AppDispatch, RootState } from '../store';
+import { AppDispatch, RootState } from '../../state/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { createToast } from 'vercel-toast';
 

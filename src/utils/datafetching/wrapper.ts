@@ -1,7 +1,7 @@
 //this is the wrapper for the client side data fetching. central is a sessionId. the session id is attached to the request header.
 
 import { Course, Directory, ScrapeEvent } from '../../types/objects';
-import db from '../../database';
+import db from '../database/database';
 import { scrapeContentPage } from './scraper/ScrapeCoursePage';
 import scrapeYearGroupsFromHtml from './scraper/ScrapeIndex';
 

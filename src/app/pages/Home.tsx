@@ -1,13 +1,14 @@
 import React, { Suspense, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store';
+import { AppDispatch, RootState } from '../../state/store';
 import Logo from '../../../assets/ilias_logo_transparent.svg';
 
-import { SaveCredentialsWarning } from '../../components/Warnings';
+import { SaveCredentialsWarning } from '../../components/Alerts';
 import IliasPage from '../../container/IliasPage';
 import SearchPage from '../../container/SearchPage';
-import { setCurrentHomePageIndex } from '../../features/stateSlice';
+import { setCurrentHomePageIndex } from '../../state/stateSlice';
 import { app } from 'electron';
+import FetchingIndicator from '../../container/FetchingIndicator';
 
 const classNames = (...classes: string[]) => {
     return classes.filter(Boolean).join(' ');
@@ -230,7 +231,10 @@ export default function Home(): React.ReactElement {
                         <h1 className="text-white text-2xl font-bold py-3 ">Welcome, {currentUsername}</h1>
                     </div>
                 )}
-                <Suspense fallback={<div>Loading...</div>}>{pageComponents}</Suspense>
+                <div className="min-h-[60vh] relative">
+                    <FetchingIndicator />
+                    <Suspense fallback={<div>Loading...</div>}>{pageComponents}</Suspense>
+                </div>
                 <div className="flex justify-center font-light items-center pt-8 text-gray-300 space-x-1">
                     <span>{new Date().getFullYear()} &copy; Ilias Ultimate by</span>
                     <a href="https://rjks.us/" target="_blank" className="text-white hover:underline">

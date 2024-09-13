@@ -1,11 +1,11 @@
 import debounce from 'debounce';
 import { Suspense, useEffect, useState } from 'react';
 import { SearchDataResponseItem, StaticContentAlert } from '../types/objects';
-import { StaticContentAlertSection } from '../components/Warnings';
+import { StaticContentAlertSection } from '../components/Alerts';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../app/store';
-import { AppDispatch } from '../app/store';
-import { setCurrentSearchQuery, setSearchResults } from '../features/stateSlice';
+import { RootState } from '../state/store';
+import { AppDispatch } from '../state/store';
+import { setCurrentSearchQuery, setSearchResults } from '../state/stateSlice';
 
 export default function SearchPage() {
     const appState = useSelector((state: RootState) => state.app);
@@ -18,15 +18,18 @@ export default function SearchPage() {
         if (window.api) {
             window.api.onSearch(query).then((value) => {
                 dispatch(setSearchResults({ searchResults: value }));
+                setLoading(false);
                 console.log('search results', value);
             });
         }
     }, 500);
 
     const enterQuery = (query: string) => {
+        setLoading(true);
         dispatch(setCurrentSearchQuery({ currentSearchQuery: query }));
         if (query.length === 0) {
             dispatch(setSearchResults({ searchResults: [] }));
+            setLoading(false);
         } else {
             search(query);
         }
@@ -66,7 +69,7 @@ export default function SearchPage() {
                 <StaticContentAlertSection alerts={staticContentAlert} />
             ) : null}
             <div className="flex justify-center items-center p-4">
-                <div className="w-full max-w-lg">
+                <div className="w-full max-w-lg relative">
                     <input
                         type="text"
                         onChange={(e) => enterQuery(e.target.value)}
@@ -74,6 +77,9 @@ export default function SearchPage() {
                         placeholder="Search for a Directory, Course or File Names of Files"
                         className="w-full text-white p-4 border border-dark-gray bg-dark-gray-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     />
+                    {loading && (
+                        <div className="absolute w-6 h-6 min-w-[1.5rem] border-4 border-t-4 border-gray-300 border-t-indigo-500 rounded-full animate-spin right-4 top-4"></div>
+                    )}
                 </div>
             </div>
             <div className="w-full p-2 space-y-4">

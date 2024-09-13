@@ -7,7 +7,7 @@ import DialogModal, {
     DialogInputField,
     DialogInputPasswordField,
     DialogTitle,
-} from '../DialogModal';
+} from '../DialogModalTemplate';
 import { createToast } from 'vercel-toast';
 
 type Props = {

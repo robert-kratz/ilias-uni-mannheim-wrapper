@@ -9,7 +9,6 @@ import FirstSetupDialog from '../components/dialogs/FirstSetupDialog';
 const App: React.FC = () => {
     const [firstStartUp, setFirstStartUp] = useState<boolean>(true);
     const [credentialsSaved, setCredentialsSaved] = useState<boolean>(false);
-    const [sessionToken, setSessionToken] = useState<string | null>(null);
 
     const [currentDialogState, updateDialogState] = useReducer(
         (state: any, newState: any) => ({ ...state, ...newState }),
@@ -41,9 +40,6 @@ const App: React.FC = () => {
             });
             window.api.getStoreValue('credentialsSaved').then((value) => {
                 setCredentialsSaved(value);
-            });
-            window.api.getStoreValue('sessionToken').then((value) => {
-                setSessionToken(value);
             });
         }
     };

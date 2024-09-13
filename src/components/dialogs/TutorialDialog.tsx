@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import DialogModal from '../DialogModal';
+import DialogModal from '../DialogModalTemplate';
 import Tutorial from '../../app/pages/Tutorial';
-import { AppDispatch, RootState } from '../../app/store';
+import { AppDispatch, RootState } from '../../state/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCurrentFirstSetupWizardPage, setCurrentTutorialDialogPage } from '../../features/stateSlice';
+import { setCurrentFirstSetupWizardPage, setCurrentTutorialDialogPage } from '../../state/stateSlice';
 import { createToast } from 'vercel-toast';
 import Logo from '../../../assets/rjks_logo_dark-256.svg';
 
@@ -49,14 +49,6 @@ export default function TutorialDialog({ open, onClose }: Props) {
     };
 
     const onFirstSetupDialogClose = async () => {
-        dispatch(
-            setCurrentTutorialDialogPage({
-                currentTutorialDialogPage: appState.currentTutorialDialogPage + 1,
-            })
-        );
-    };
-
-    const onFirstSetupDialogBack = async () => {
         dispatch(
             setCurrentTutorialDialogPage({
                 currentTutorialDialogPage: appState.currentTutorialDialogPage + 1,
