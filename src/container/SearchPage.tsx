@@ -8,6 +8,7 @@ import { AppDispatch } from '../state/store';
 import { setCurrentSearchQuery, setSearchResults } from '../state/stateSlice';
 import FavouriteBadge from '../components/FavouriteBadge';
 import { StoreType } from '../utils/appStorage';
+import { createToast } from 'vercel-toast';
 
 const classNames = (...classes: string[]) => {
     return classes.filter(Boolean).join(' ');
@@ -146,9 +147,11 @@ export default function SearchPage() {
             </div>
             <div className="w-full p-2 space-y-4">
                 <Suspense fallback={<div>Loading...</div>}>
-                    {filteredSearchResults.map((result, index) => (
-                        <SearchResultItem key={index} item={result} />
-                    ))}
+                    {filteredSearchResults.map((result, index) => {
+                        if (index > 150) return null;
+
+                        return <SearchResultItem key={index} item={result} />;
+                    })}
                 </Suspense>
             </div>
         </div>
@@ -156,6 +159,18 @@ export default function SearchPage() {
 }
 
 export function SearchResultItem({ item }: { item: SearchDataResponseItem }) {
+    const downloadFile = async (fileId: string, name: string) => {
+        if (window.api) {
+            window.api.downloadFile(fileId, name).then(({ success, error }) => {
+                if (error === 'No directory selected') return;
+                createToast(success ? 'File downloaded successfully' : error || 'An error occurred', {
+                    type: success ? 'success' : 'error',
+                    timeout: 5000,
+                });
+            });
+        }
+    };
+
     return (
         <div className="p-4 bg-dark-gray-2 hover:scale-[100.75%] transition rounded-md w-full flex justify-between items-center cursor-pointer">
             <div className="flex justify-start items-center space-x-2 ">
@@ -220,9 +235,7 @@ export function SearchResultItem({ item }: { item: SearchDataResponseItem }) {
                 {item.matchingEntityType == 'directory' && <FavouriteBadge item={item} key={item.id} />}
                 <div className="text-gray-300 w-10 h-10 p-2 cursor-pointer">
                     {item.matchingEntityType === 'file' ? (
-                        <a
-                            target="_blank"
-                            href={`https://ilias.uni-mannheim.de/goto.php?target=${item.id}&client_id=ILIAS`}>
+                        <div onClick={() => downloadFile(item.id, item.name)}>
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24"
@@ -230,7 +243,7 @@ export function SearchResultItem({ item }: { item: SearchDataResponseItem }) {
                                 className="size-6">
                                 <path d="M12 1.5a.75.75 0 0 1 .75.75V7.5h-1.5V2.25A.75.75 0 0 1 12 1.5ZM11.25 7.5v5.69l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V7.5h3.75a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3h3.75Z" />
                             </svg>
-                        </a>
+                        </div>
                     ) : item.matchingEntityType === 'directory' ? (
                         <a
                             target="_blank"

@@ -41,6 +41,7 @@ declare global {
             getUserList: () => Promise<User[]>;
             resetApplication: () => Promise<void>;
             setFavourite: (directoryId: string, state: boolean) => Promise<boolean>;
+            downloadFile: (fileId: string, name: string) => Promise<{ success: boolean; error?: string }>;
         };
     }
 }

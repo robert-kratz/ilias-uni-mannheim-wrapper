@@ -42,6 +42,7 @@ contextBridge.exposeInMainWorld('api', {
     getUserList: () => ipcRenderer.invoke('get-user-list'),
     resetApplication: () => ipcRenderer.invoke('reset-application'),
     setFavourite: (directoryId: string, state: boolean) => ipcRenderer.invoke('set-favourite', directoryId, state),
+    downloadFile: (fileId: string) => ipcRenderer.invoke('download-file', fileId),
 });
 
 console.log('Preload script loaded');

@@ -141,6 +141,7 @@ import './bridge/StaticContentBridge';
 import './bridge/SubmitCredentialsBridge';
 import './bridge/UserBridge';
 import './bridge/FavouriteBridge';
+import './bridge/DownloadFile';
 
 export const setSessionToken = (token: string) => {
     sessionToken = token;
