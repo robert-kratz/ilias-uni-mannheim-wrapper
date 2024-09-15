@@ -86,6 +86,7 @@ export function createTablesIfNotExists(): void {
           description TEXT,
           parentId TEXT,
           userId TEXT,
+          favorite BOOLEAN DEFAULT FALSE,
           createdAt DATE DEFAULT (datetime('now')),
           updatedAt DATE DEFAULT NULL,
           courseId TEXT DEFAULT NULL,

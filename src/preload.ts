@@ -30,7 +30,7 @@ contextBridge.exposeInMainWorld('api', {
     getAllCourses: () => ipcRenderer.invoke('get-all-courses'),
     getAllGroups: () => ipcRenderer.invoke('get-all-groups'),
     getStaticContent: () => ipcRenderer.invoke('get-static-content'),
-    onSearch: (query: string) => ipcRenderer.invoke('search', query),
+    onSearch: (query: string, year?: string) => ipcRenderer.invoke('search', query, year),
     onApplicationScrape: (callback: (event: Electron.IpcRendererEvent, data: ScrapeEvent) => void) => {
         ipcRenderer.on('application-scrape', callback);
     },
@@ -38,6 +38,10 @@ contextBridge.exposeInMainWorld('api', {
         ipcRenderer.removeListener('application-scrape', callback);
     },
     startScrape: (years: string[]) => ipcRenderer.invoke('start-scrape', years),
+    getApplicationState: () => ipcRenderer.invoke('get-application-state'),
+    getUserList: () => ipcRenderer.invoke('get-user-list'),
+    resetApplication: () => ipcRenderer.invoke('reset-application'),
+    setFavourite: (directoryId: string, state: boolean) => ipcRenderer.invoke('set-favourite', directoryId, state),
 });
 
 console.log('Preload script loaded');

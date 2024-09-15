@@ -20,26 +20,23 @@ const App: React.FC = () => {
 
     const fetchApplicationState = async () => {
         if (window.api) {
-            window.api.getStoreValue('isFirstStartUp').then((isFirstStart) => {
-                setFirstStartUp(isFirstStart);
+            window.api.getApplicationState().then((state) => {
+                console.log('Application state: ', state);
 
-                window.api.getStoreValue('hasSetUpWizard').then((hasDoneWizard) => {
-                    console.log('hasSetUpWizard', hasDoneWizard);
-                    console.log('isFirstStart', isFirstStart);
+                setCredentialsSaved(state.credentialsSaved);
 
-                    if (isFirstStart && !hasDoneWizard) {
-                        updateDialogState({ tutorialDialog: true });
-                        updateDialogState({ firstSetupDialog: false });
-                    }
+                let isFirstStart = state.isFirstStartUp;
+                let hasDoneWizard = state.hasSetUpWizard;
 
-                    if (!isFirstStart && !hasDoneWizard) {
-                        updateDialogState({ firstSetupDialog: true });
-                        updateDialogState({ tutorialDialog: false });
-                    }
-                });
-            });
-            window.api.getStoreValue('credentialsSaved').then((value) => {
-                setCredentialsSaved(value);
+                if (isFirstStart && !hasDoneWizard) {
+                    updateDialogState({ tutorialDialog: true });
+                    updateDialogState({ firstSetupDialog: false });
+                }
+
+                if (!isFirstStart && !hasDoneWizard) {
+                    updateDialogState({ firstSetupDialog: true });
+                    updateDialogState({ tutorialDialog: false });
+                }
             });
         }
     };

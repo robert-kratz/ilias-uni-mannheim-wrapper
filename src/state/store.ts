@@ -9,7 +9,7 @@ import userReducer from './stateSlice';
 const userPersistConfig = {
     key: 'state',
     storage: storage,
-    whitelist: ['currentHomePageIndex'],
+    whitelist: ['currentHomePageIndex', 'currentTutorialDialogPage', 'currentFirstSetupWizardPage'],
 };
 
 const rootReducer = combineReducers({

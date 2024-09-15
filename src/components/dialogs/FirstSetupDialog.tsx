@@ -38,14 +38,10 @@ export default function FirstSetupDialog({ open, onClose }: Props) {
     useEffect(() => {
         const fetchApplicationState = async () => {
             if (window.api) {
-                window.api.getStoreValue('aviablableYears').then((years) => {
-                    setAviablableYears(years);
-                });
-                window.api.getStoreValue('selectedYears').then((years) => {
-                    setSelectedYears(years);
-                });
-                window.api.getStoreValue('username').then((name) => {
-                    setUsername(name);
+                window.api.getApplicationState().then((state) => {
+                    setUsername(state.username);
+                    setAviablableYears(state.aviablableYears);
+                    setSelectedYears(state.selectedYears);
                 });
             }
         };
@@ -88,6 +84,7 @@ export default function FirstSetupDialog({ open, onClose }: Props) {
 
         if (window.api) {
             window.api.setStoreValue('selectedYears', selectedYears);
+            window.api.setStoreValue('yearsToKeepUpToDate', selectedYears);
         }
 
         setSelectedYears(selectedYears);
@@ -477,7 +474,8 @@ const SettingsSetupWindow = ({ onClose }: SettingsSetupWindowProps): React.React
             </div>
             <div>
                 <p className="text-md text-gray-300">
-                    You can now save your credentials to login automatically in the future.
+                    You can now save your credentials to login automatically in the future. These credentials are{' '}
+                    <strong className="font-bold">saved on your local machine</strong> and are not shared with anyone.
                 </p>
             </div>
             <button

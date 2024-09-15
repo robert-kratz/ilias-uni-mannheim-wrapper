@@ -7,8 +7,8 @@ import { SaveCredentialsWarning } from '../../components/Alerts';
 import IliasPage from '../../container/IliasPage';
 import SearchPage from '../../container/SearchPage';
 import { setCurrentHomePageIndex } from '../../state/stateSlice';
-import { app } from 'electron';
 import FetchingIndicator from '../../container/FetchingIndicator';
+import SettingsPage from '../../container/SettingsPage';
 
 const classNames = (...classes: string[]) => {
     return classes.filter(Boolean).join(' ');
@@ -108,7 +108,7 @@ export default function Home(): React.ReactElement {
         },
         {
             text: 'Settings',
-            component: <p>Settings</p>,
+            component: <SettingsPage />,
             icon: (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -140,16 +140,11 @@ export default function Home(): React.ReactElement {
     useEffect(() => {
         const fetchApplicationState = async () => {
             if (window.api) {
-                window.api.getStoreValue('username').then((value) => {
-                    setCurrentUsername(value);
-                    console.log('Fetching application state', value);
-                });
-                window.api.getStoreValue('hasSetUpWizard').then((value) => {
-                    setHasSetUpWizard(value);
-                });
-
-                window.api.getStoreValue('credentialsSaved').then((value) => {
-                    setHasCredsSaved(value);
+                window.api.getApplicationState().then((value) => {
+                    console.log('Application state', value);
+                    setCurrentUsername(value.username);
+                    setHasSetUpWizard(value.hasSetUpWizard);
+                    setHasCredsSaved(value.credentialsSaved);
                 });
             }
         };

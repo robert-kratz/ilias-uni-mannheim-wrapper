@@ -1,15 +1,10 @@
-import { app, BrowserWindow, shell, ipcMain, globalShortcut } from 'electron';
-import db, { createTablesIfNotExists, createUserIfNotExists, dropAllTables } from './utils/database/database';
+import { app, BrowserWindow, globalShortcut } from 'electron';
+import { createTablesIfNotExists, dropAllTables } from './utils/database/database';
 import { createMainApplicationWindow } from './windows/MainApplicationWindow';
 import { createIliasAuthenticationWindow } from './windows/IliasAuthenticationWindow';
 
 import { resetStore, store } from './utils/appStorage';
-import { getPassword, savePassword } from './utils/pwstore';
-import { fetchUserIndexPage } from './utils/datafetching/wrapper';
-import { Course, ScrapeEvent, SearchDataResponseItem } from './types/objects';
-import getStaticContent from './utils/staticAlerts';
-import fetchUserDataFromHtml from './utils/datafetching/scraper/ScrapeUserData';
-import scrapeYearGroupsFromHtml from './utils/datafetching/scraper/ScrapeIndex';
+import { getPassword } from './utils/pwstore';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -68,7 +63,6 @@ async function main() {
                 preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
                 behavior: 'ATTEMP_AUTO_LOGIN',
                 async onAuthenticated(success, token) {
-                    console.log('Authenticated with token: ', token);
                     sessionToken = token;
 
                     if (success) {
@@ -104,7 +98,6 @@ app.on('ready', async () => {
     const ret = globalShortcut.register(shortcut, () => {
         console.log('Shortcut pressed, resetting store');
         resetStore();
-
         dropAllTables();
     });
 
@@ -146,6 +139,8 @@ import './bridge/ScrapeBridge';
 import './bridge/SearchBridge';
 import './bridge/StaticContentBridge';
 import './bridge/SubmitCredentialsBridge';
+import './bridge/UserBridge';
+import './bridge/FavouriteBridge';
 
 export const setSessionToken = (token: string) => {
     sessionToken = token;

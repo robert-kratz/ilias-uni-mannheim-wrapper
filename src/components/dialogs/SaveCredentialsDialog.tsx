@@ -46,6 +46,11 @@ export default function SaveCredentialsDialog({ open, onClose }: Props) {
         if (loading) return;
 
         onClose({ success });
+
+        setTimeout(() => {
+            updateFormData({ username: '', password: '' });
+            setShowPassword(false);
+        }, 300);
     };
 
     useEffect(() => {

@@ -58,17 +58,17 @@ interface StaticContentAlert {
     active: boolean;
 }
 
-type SearchDataResponseItem = {
-    dirId: string;
-    fileId: string;
-    fileName: string;
-    dirName: string;
-    courseId: string;
-    courseTitle: string;
-    courseYear: number;
-    type: string | null;
-    matchingEntityType: 'directory' | 'file' | 'course' | 'none';
-};
+interface SearchDataResponseItem {
+    name: string; // Name of the entity
+    courseId: string; // Course ID of the entity
+    id: string; // ID of the entity
+    parentId: string | null; // Parent ID of the entity
+    courseYear: string | null; // Year of the course
+    courseTitle: string | null; // Title of the course
+    parentName: string | null; // Name of the parent entity
+    favorite: boolean; // Is the entity favorite
+    matchingEntityType: 'directory' | 'file' | 'course' | 'none'; // Type of entity matched
+}
 
 type ScrapeEvent = {
     type: 'start' | 'indexing' | 'finish' | 'error';

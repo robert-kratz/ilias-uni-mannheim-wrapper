@@ -1,6 +1,6 @@
 import Store from 'electron-store';
 
-type StoreType = {
+export type StoreType = {
     isFirstStartUp: boolean;
     username: string;
     userId: string;
@@ -8,6 +8,7 @@ type StoreType = {
     hasSetUpWizard: boolean;
     aviablableYears: string[];
     selectedYears: string[];
+    yearsToKeepUpToDate: string[];
 };
 
 const store = new Store<StoreType>({
@@ -19,8 +20,13 @@ const store = new Store<StoreType>({
         hasSetUpWizard: false,
         aviablableYears: [],
         selectedYears: [],
+        yearsToKeepUpToDate: [],
     },
 });
+
+const getApplicationState = async () => {
+    return store.store;
+};
 
 //reset to default values
 const resetStore = () => {
@@ -33,4 +39,4 @@ const resetStore = () => {
     store.set('hasSetUpWizard', false);
 };
 
-export { store, resetStore };
+export { store, resetStore, getApplicationState };

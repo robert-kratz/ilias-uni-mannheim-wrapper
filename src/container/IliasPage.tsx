@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Course } from '../types/objects';
-import { createToast } from 'vercel-toast';
 
 export default function IliasPage() {
     const [userCourses, setUserCourses] = useState<
@@ -114,6 +112,9 @@ export default function IliasPage() {
                             {year.courses.map((elements) => {
                                 console.log(elements);
 
+                                let description =
+                                    elements.description === 'Keine Anmeldung möglich' ? '' : elements.description;
+
                                 return (
                                     <li
                                         key={elements.link}
@@ -133,7 +134,7 @@ export default function IliasPage() {
                                         </div>
                                         <div>
                                             <h3>{elements.title}</h3>
-                                            <p className="text-gray-400 text-xs">{elements.description}</p>
+                                            {/* <p className="text-gray-400 text-xs">{description}</p> */}
                                         </div>
                                     </li>
                                 );

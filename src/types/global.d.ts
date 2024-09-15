@@ -1,4 +1,4 @@
-import { ScrapeMessage, SearchDataResponseItem, StaticContentAlert } from './objects';
+import { ScrapeMessage, SearchDataResponseItem, StaticContentAlert, User } from './objects';
 
 // in einer Datei wie global.d.ts
 export {};
@@ -18,7 +18,7 @@ declare global {
             ) => void;
             onReload: (callback: (event: Electron.IpcRendererEvent, data: ReloadMessage) => void) => void;
             removeReloadListener: (callback: (event: Electron.IpcRendererEvent, data: ReloadMessage) => void) => void;
-            onSearch: (query: string) => Promise<SearchDataResponseItem[]>;
+            onSearch: (query: string, year: string) => Promise<SearchDataResponseItem[]>;
             getStaticContent: () => Promise<StaticContentAlert[] | null>;
             getAllCourses: () => Promise<
                 Array<{
@@ -37,6 +37,10 @@ declare global {
                 callback: (event: Electron.IpcRendererEvent, data: ScrapeMessage) => void
             ) => void;
             startScrape: (years: string[]) => Promise<boolean>;
+            getApplicationState: () => Promise<StoreType>;
+            getUserList: () => Promise<User[]>;
+            resetApplication: () => Promise<void>;
+            setFavourite: (directoryId: string, state: boolean) => Promise<boolean>;
         };
     }
 }

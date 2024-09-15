@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import DialogModal from '../DialogModalTemplate';
-import Tutorial from '../../app/pages/Tutorial';
 import { AppDispatch, RootState } from '../../state/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCurrentFirstSetupWizardPage, setCurrentTutorialDialogPage } from '../../state/stateSlice';
-import { createToast } from 'vercel-toast';
+import { setCurrentTutorialDialogPage } from '../../state/stateSlice';
 import Logo from '../../../assets/rjks_logo_dark-256.svg';
 
 type Props = {
