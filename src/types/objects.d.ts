@@ -37,6 +37,7 @@ interface Directory {
     parentId: string; // Reference to Course.id
     userId: string; // Reference to User.id
     courseId: string; // Reference to Course.id
+    favorite: boolean; // Is the entity favorite
     createdAt: Date;
     updatedAt: Date | null;
 }
@@ -47,6 +48,7 @@ interface File {
     name: string;
     parentId: string; // Reference to Course.id or Directory.id
     userId: string; // Reference to User.id
+    type: string;
     createdAt: Date;
     updatedAt: Date | null;
 }
@@ -58,7 +60,7 @@ interface StaticContentAlert {
     active: boolean;
 }
 
-interface SearchDataResponseItem {
+interface EntityDataResponseItem {
     name: string; // Name of the entity
     courseId: string; // Course ID of the entity
     id: string; // ID of the entity
@@ -67,6 +69,7 @@ interface SearchDataResponseItem {
     courseTitle: string | null; // Title of the course
     parentName: string | null; // Name of the parent entity
     favorite: boolean; // Is the entity favorite
+    type: string | null; // Type of the entity
     matchingEntityType: 'directory' | 'file' | 'course' | 'none'; // Type of entity matched
 }
 
@@ -78,4 +81,25 @@ type ScrapeEvent = {
     error?: string;
 };
 
-export { User, Course, Group, Directory, File, StaticContentAlert, SearchDataResponseItem, ScrapeEvent };
+type OpenDirectoryResponse = {
+    year: string;
+    courseId: string;
+    directoryId: string;
+    directoryName: string;
+    parentId: string | null;
+    parentName: string | null;
+    courseName: string;
+    children: EntityDataResponseItem[] | null;
+};
+
+export {
+    User,
+    Course,
+    Group,
+    Directory,
+    File,
+    StaticContentAlert,
+    ScrapeEvent,
+    OpenDirectoryResponse,
+    EntityDataResponseItem,
+};

@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 
-export default function IliasPage() {
+type IliasPageProps = {
+    open: boolean;
+    openDirectory: (id: string) => void;
+};
+
+export default function IliasPage({ openDirectory, open }: IliasPageProps) {
     const [userCourses, setUserCourses] = useState<
         Array<{
             year: number;
@@ -83,7 +88,7 @@ export default function IliasPage() {
             // Assuming you expose a remove method as well
             window.api.removeReloadListener(handleReload);
         };
-    }, []);
+    }, [open]);
 
     return (
         <div className="space-y-4 pt-2">

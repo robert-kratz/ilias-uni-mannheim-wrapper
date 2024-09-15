@@ -1,4 +1,4 @@
-import { dialog, ipcMain } from 'electron';
+import { dialog, ipcMain, shell } from 'electron';
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
@@ -51,6 +51,7 @@ ipcMain.handle('download-file', async (event, fileId: string, name: string) => {
 
             return {
                 success: true,
+                directory: directoryPath,
             };
         } catch (error) {
             console.error('Download error:', error);
@@ -65,4 +66,14 @@ ipcMain.handle('download-file', async (event, fileId: string, name: string) => {
             error: 'No directory selected',
         };
     }
+});
+
+ipcMain.handle('open-file-explorer', async (event, path: string) => {
+    shell.openPath(path).then((errorMessage) => {
+        if (errorMessage) {
+            console.error('Error opening path:', errorMessage);
+            // Optionally, send an error back to the renderer process
+            event.sender.send('open-file-explorer-error', errorMessage);
+        }
+    });
 });

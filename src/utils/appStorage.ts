@@ -1,4 +1,5 @@
 import Store from 'electron-store';
+import { EntityDataResponseItem } from '../types/objects';
 
 export type StoreType = {
     isFirstStartUp: boolean;
@@ -8,6 +9,7 @@ export type StoreType = {
     hasSetUpWizard: boolean;
     aviablableYears: string[];
     selectedYears: string[];
+    searchResults: EntityDataResponseItem[];
     yearsToKeepUpToDate: string[];
 };
 
@@ -20,6 +22,7 @@ const store = new Store<StoreType>({
         hasSetUpWizard: false,
         aviablableYears: [],
         selectedYears: [],
+        searchResults: [],
         yearsToKeepUpToDate: [],
     },
 });
@@ -37,6 +40,8 @@ const resetStore = () => {
     store.set('aviablableYears', []);
     store.set('selectedYears', []);
     store.set('hasSetUpWizard', false);
+    store.set('searchResults', []);
+    store.set('yearsToKeepUpToDate', []);
 };
 
 export { store, resetStore, getApplicationState };

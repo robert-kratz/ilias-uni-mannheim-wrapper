@@ -142,6 +142,7 @@ import './bridge/SubmitCredentialsBridge';
 import './bridge/UserBridge';
 import './bridge/FavouriteBridge';
 import './bridge/DownloadFile';
+import './bridge/OpenDirectoryBridge';
 
 export const setSessionToken = (token: string) => {
     sessionToken = token;

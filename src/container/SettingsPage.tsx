@@ -2,7 +2,11 @@ import { useEffect, useReducer, useState } from 'react';
 import { User } from '../types/objects';
 import ConfirmationDialog from '../components/dialogs/ConfirmationDialog';
 
-export default function SettingsPage() {
+type SettingsPageProps = {
+    open: boolean;
+};
+
+export default function SettingsPage({ open }: SettingsPageProps) {
     const [userList, setUserList] = useState<User[]>([]);
 
     const [currentDialogState, updateDialogState] = useReducer(
@@ -32,7 +36,7 @@ export default function SettingsPage() {
         return () => {
             window.api.removeReloadListener(onReload);
         };
-    }, []);
+    }, [open]);
 
     const closeConfirmationDialog = ({ success }: { success: boolean }) => {
         updateDialogState({ confirmationDialog: false });

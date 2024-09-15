@@ -6,9 +6,12 @@ import Logo from '../../../assets/ilias_logo_transparent.svg';
 import { SaveCredentialsWarning } from '../../components/Alerts';
 import IliasPage from '../../container/IliasPage';
 import SearchPage from '../../container/SearchPage';
-import { setCurrentHomePageIndex } from '../../state/stateSlice';
+import { setCurrentHomePageIndex, setShowCurrentDirectory } from '../../state/stateSlice';
 import FetchingIndicator from '../../container/FetchingIndicator';
 import SettingsPage from '../../container/SettingsPage';
+import { OpenDirectoryResponse } from '../../types/objects';
+import DirectoryPage from '../../container/DirectoryPage';
+import FileBrowser from '../../container/FileBrowser';
 
 const classNames = (...classes: string[]) => {
     return classes.filter(Boolean).join(' ');
@@ -27,18 +30,36 @@ export default function Home(): React.ReactElement {
     const [hasSetUpWizard, setHasSetUpWizard] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
 
+    const openDirectory = async (directoryId: string) => {
+        if (window.api) {
+            try {
+                window.api
+                    .openDirectory(directoryId)
+                    .then((value: OpenDirectoryResponse) => {
+                        dispatch(setShowCurrentDirectory({ showCurrentDirectory: value }));
+                    })
+                    .catch((error: string) => {
+                        console.error('Error opening directory: ', error);
+                    });
+            } catch (error) {
+                console.error('Error opening directory: ', error);
+            }
+        }
+    };
+
     const goToPage = (index: number) => {
         dispatch(
             setCurrentHomePageIndex({
                 currentHomePageIndex: index,
             })
         );
+        dispatch(setShowCurrentDirectory({ showCurrentDirectory: null }));
     };
 
     let routes = [
         {
             text: 'Search',
-            component: <SearchPage />,
+            component: <SearchPage openDirectory={openDirectory} open={currentPage === 0} />,
             icon: (
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
                     <path
@@ -59,8 +80,8 @@ export default function Home(): React.ReactElement {
             ),
         },
         {
-            text: 'Home',
-            component: <p>Home</p>,
+            text: 'File Browser',
+            component: <FileBrowser openDirectory={openDirectory} open={currentPage === 1} />,
             icon: (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -84,7 +105,7 @@ export default function Home(): React.ReactElement {
         },
         {
             text: 'Ilias',
-            component: <IliasPage />,
+            component: <IliasPage openDirectory={openDirectory} open={currentPage === 2} />,
             icon: (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -108,7 +129,7 @@ export default function Home(): React.ReactElement {
         },
         {
             text: 'Settings',
-            component: <SettingsPage />,
+            component: <SettingsPage open={currentPage === 3} />,
             icon: (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -221,14 +242,28 @@ export default function Home(): React.ReactElement {
             </div>
             <div className="w-full min-h-screen bg-dark-gray-3 ml-[5.5rem] p-8">
                 <SaveCredentialsWarning show={!hasCredsSaved && hasSetUpWizard} />
-                {currentUsername && (
-                    <div className="w-full border-dark-gray border-b-2 my-2">
-                        <h1 className="text-white text-2xl font-bold py-3 ">Welcome, {currentUsername}</h1>
-                    </div>
-                )}
                 <div className="min-h-[60vh] relative">
                     <FetchingIndicator />
-                    <Suspense fallback={<div>Loading...</div>}>{pageComponents}</Suspense>
+                    <Suspense fallback={<div>Loading...</div>}>
+                        {appState.showCurrentDirectory ? (
+                            <DirectoryPage
+                                directory={appState.showCurrentDirectory}
+                                closeDirectory={() => dispatch(setShowCurrentDirectory({ showCurrentDirectory: null }))}
+                                goToDirectory={openDirectory}
+                            />
+                        ) : (
+                            <>
+                                {currentUsername && (
+                                    <div className="w-full border-dark-gray border-b-2 my-2">
+                                        <h1 className="text-white text-2xl font-bold py-3 ">
+                                            Welcome, {currentUsername}
+                                        </h1>
+                                    </div>
+                                )}
+                                {pageComponents}
+                            </>
+                        )}
+                    </Suspense>
                 </div>
                 <div className="flex justify-center font-light items-center pt-8 text-gray-300 space-x-1">
                     <span>{new Date().getFullYear()} &copy; Ilias Ultimate by</span>

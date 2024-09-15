@@ -43,6 +43,10 @@ contextBridge.exposeInMainWorld('api', {
     resetApplication: () => ipcRenderer.invoke('reset-application'),
     setFavourite: (directoryId: string, state: boolean) => ipcRenderer.invoke('set-favourite', directoryId, state),
     downloadFile: (fileId: string) => ipcRenderer.invoke('download-file', fileId),
+    openDirectory: (directoryId: string) => ipcRenderer.invoke('open-directory', directoryId),
+    isDirectoryFavourite: (directoryId: string) => ipcRenderer.invoke('is-directory-favourite', directoryId),
+    openFileExplorer: (path: string) => ipcRenderer.invoke('open-file-explorer', path),
+    getFavorites: () => ipcRenderer.invoke('get-favorites'),
 });
 
 console.log('Preload script loaded');

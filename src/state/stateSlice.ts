@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { SearchDataResponseItem } from '../types/objects';
+import { OpenDirectoryResponse, EntityDataResponseItem } from '../types/objects';
 
 interface ApplicationState {
     currentHomePageIndex: number;
@@ -7,7 +7,8 @@ interface ApplicationState {
     currentTutorialDialogPage: number;
     currentFirstSetupWizardPage: number;
     loadingIndicatorTextShown: boolean;
-    searchResults: SearchDataResponseItem[];
+    searchResults: EntityDataResponseItem[];
+    showCurrentDirectory: OpenDirectoryResponse | null;
 }
 
 const initialState: ApplicationState = {
@@ -17,6 +18,7 @@ const initialState: ApplicationState = {
     loadingIndicatorTextShown: true,
     currentSearchQuery: '',
     searchResults: [],
+    showCurrentDirectory: null,
 };
 
 const userSlice = createSlice({
@@ -29,7 +31,7 @@ const userSlice = createSlice({
         setCurrentSearchQuery(state, action: PayloadAction<{ currentSearchQuery: string }>) {
             state.currentSearchQuery = action.payload.currentSearchQuery;
         },
-        setSearchResults(state, action: PayloadAction<{ searchResults: SearchDataResponseItem[] }>) {
+        setSearchResults(state, action: PayloadAction<{ searchResults: EntityDataResponseItem[] }>) {
             state.searchResults = action.payload.searchResults;
         },
         setCurrentFirstSetupWizardPage(state, action: PayloadAction<{ currentFirstSetupWizardPage: number }>) {
@@ -41,6 +43,9 @@ const userSlice = createSlice({
         setLoadingIndicatorTextShown(state, action: PayloadAction<{ loadingIndicatorTextShown: boolean }>) {
             state.loadingIndicatorTextShown = action.payload.loadingIndicatorTextShown;
         },
+        setShowCurrentDirectory(state, action: PayloadAction<{ showCurrentDirectory: OpenDirectoryResponse | null }>) {
+            state.showCurrentDirectory = action.payload.showCurrentDirectory;
+        },
     },
 });
 
@@ -51,5 +56,6 @@ export const {
     setCurrentFirstSetupWizardPage,
     setCurrentTutorialDialogPage,
     setLoadingIndicatorTextShown,
+    setShowCurrentDirectory,
 } = userSlice.actions;
 export default userSlice.reducer;

@@ -1,4 +1,4 @@
-import { ScrapeMessage, SearchDataResponseItem, StaticContentAlert, User } from './objects';
+import { ScrapeMessage, SearchDataResponseItem, StaticContentAlert, User, EntityDataResponseItem } from './objects';
 
 // in einer Datei wie global.d.ts
 export {};
@@ -41,7 +41,14 @@ declare global {
             getUserList: () => Promise<User[]>;
             resetApplication: () => Promise<void>;
             setFavourite: (directoryId: string, state: boolean) => Promise<boolean>;
-            downloadFile: (fileId: string, name: string) => Promise<{ success: boolean; error?: string }>;
+            downloadFile: (
+                fileId: string,
+                name: string
+            ) => Promise<{ success: boolean; error?: string; directory?: string }>;
+            openDirectory: (directoryId: string) => Promise<OpenDirectoryResponse>;
+            isDirectoryFavourite: (directoryId: string) => Promise<boolean>;
+            openFileExplorer: (path: string) => Promise<void>;
+            getFavorites: () => Promise<EntityDataResponseItem[] | null>;
         };
     }
 }
