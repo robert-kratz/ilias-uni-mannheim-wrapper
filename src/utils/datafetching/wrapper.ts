@@ -364,6 +364,8 @@ const fetchConentPage = async ({
         const folders = scrapedData.filter((item) => item.assetsType === 'Ordner');
         const groups = scrapedData.filter((item) => item.assetsType === 'Gruppe');
 
+        console.log('Scraped data: ', files, folders, groups);
+
         let hasChangedData = false;
 
         //print course id + files + folders
@@ -372,6 +374,8 @@ const fetchConentPage = async ({
         folders.forEach((f) => console.log('- Folder: ', f.title));
 
         for (const folder of folders) {
+            let folderHasChangedData = false;
+
             const refId = extractParameterFromUrl(folder.link, 'ref_id');
 
             if (!refId) continue;
@@ -387,6 +391,7 @@ const fetchConentPage = async ({
                 console.log('Inserted folder: ', folder.title);
 
                 hasChangedData = true;
+                folderHasChangedData = true;
             }
 
             //check if the title, description and year has changed
@@ -402,6 +407,7 @@ const fetchConentPage = async ({
                 );
                 console.log('Updated folder: ', folder.title);
 
+                folderHasChangedData = true;
                 hasChangedData = true;
             }
 
@@ -412,11 +418,22 @@ const fetchConentPage = async ({
                 courseId: courseId,
             });
 
+            if (folderHasChangedData) {
+                onEvent({
+                    type: 'new-item',
+                    name: folder.title,
+                    ref_id: `d-${refId}`,
+                    courseId: courseId,
+                });
+            }
+
             new Promise((resolve) => setTimeout(resolve, DELAY_BETWEEN_REQUESTS));
         }
 
         // Add files to the database
         for (const file of files) {
+            let fileHasChangedData = false;
+
             let fileId;
 
             try {
@@ -439,6 +456,7 @@ const fetchConentPage = async ({
                 console.log('Inserted file: ', file.title);
 
                 hasChangedData = true;
+                fileHasChangedData = true;
             }
 
             //check if the title, description and year has changed
@@ -447,6 +465,7 @@ const fetchConentPage = async ({
                 console.log('Updated file: ', file.title);
 
                 hasChangedData = true;
+                fileHasChangedData = true;
             }
 
             onEvent({
@@ -455,6 +474,15 @@ const fetchConentPage = async ({
                 ref_id: fileId,
                 courseId: courseId,
             });
+
+            if (fileHasChangedData) {
+                onEvent({
+                    type: 'new-item',
+                    name: file.title,
+                    ref_id: fileId,
+                    courseId: courseId,
+                });
+            }
 
             new Promise((resolve) => setTimeout(resolve, DELAY_BETWEEN_REQUESTS));
         }

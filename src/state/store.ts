@@ -15,6 +15,7 @@ const userPersistConfig = {
         'showCurrentDirectory',
         'currentFirstSetupWizardPage',
         'searchResults',
+        'selectedSearchFilter',
     ],
 };
 

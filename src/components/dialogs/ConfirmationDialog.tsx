@@ -18,28 +18,6 @@ export default function ConfirmationDialog({ open, onClose }: Props) {
         onClose({ success });
     };
 
-    useEffect(() => {
-        const handleCredentialsCallback = (event: Electron.IpcRendererEvent, { isValid }: { isValid: boolean }) => {
-            console.log('Credentials validation result: ', isValid);
-
-            if (isValid) {
-                onClose({ success: true });
-            } else {
-                createToast('Invalid credentials, please try again', {
-                    type: 'error',
-                    timeout: 3000,
-                });
-            }
-        };
-
-        window.api.onCredentialsValidated(handleCredentialsCallback);
-
-        return () => {
-            // Assuming you expose a remove method as well
-            window.api.removeCredentialsValidatedListener(handleCredentialsCallback);
-        };
-    }, []);
-
     return (
         <DialogModal open={open} onClose={() => closeModal({ success: false })}>
             <DialogTitle
@@ -51,8 +29,7 @@ export default function ConfirmationDialog({ open, onClose }: Props) {
                     <CancelButton onClick={() => closeModal({ success: false })} text="Cancel" />
                     <Button
                         onClick={() => closeModal({ success: true })}
-                        text="Attempt Save
-                    "
+                        text="Attempt Save"
                         loading={false}
                         disabled={false}
                     />

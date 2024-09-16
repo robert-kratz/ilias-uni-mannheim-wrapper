@@ -1,11 +1,11 @@
 import debounce from 'debounce';
 import { Suspense, useEffect, useState } from 'react';
-import { EntityDataResponseItem, StaticContentAlert } from '../types/objects';
+import { EntityDataResponseItem, EntitySearchCurrentState, StaticContentAlert } from '../types/objects';
 import { StaticContentAlertSection } from '../components/Alerts';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 import { AppDispatch } from '../state/store';
-import { setCurrentSearchQuery, setSearchResults } from '../state/stateSlice';
+import { setCurrentSearchQuery, setSearchResults, setSelectedSearchFilter } from '../state/stateSlice';
 import FavouriteBadge from '../components/FavouriteBadge';
 import { StoreType } from '../utils/appStorage';
 import { createToast } from 'vercel-toast';
@@ -28,26 +28,29 @@ export default function SearchPage({ openDirectory, open }: Props) {
     const [loading, setLoading] = useState<boolean>(false);
     const [currentApplicationState, setCurrentApplicationState] = useState<StoreType | null>(null);
     const [selectedYear, setSelectedYear] = useState<string | null>(null);
-    const [currentSearchState, setCurrentSearchState] = useState<EntitySearchCurrentState>('none');
 
-    const filteredSearchResults = appState?.searchResults?.filter((result) => {
-        if (currentSearchState === 'files') {
-            return result.matchingEntityType === 'file';
-        } else if (currentSearchState === 'directories') {
-            return result.matchingEntityType === 'directory';
-        } else if (currentSearchState === 'courses') {
-            return result.matchingEntityType === 'course';
-        } else {
-            return true;
-        }
-    });
+    const search = debounce((query: string, year: string | null, filter?: EntitySearchCurrentState) => {
+        let currentSearchFilter = filter || appState.selectedSearchFilter;
 
-    const search = debounce((query: string, year: string | null) => {
         if (window.api) {
             window.api.onSearch(query, year).then((value) => {
-                dispatch(setSearchResults({ searchResults: value }));
+                const filteredSearchResults = value?.filter((result) => {
+                    console.log('currentSearchFilter', currentSearchFilter);
+
+                    if (currentSearchFilter === 'files') {
+                        return result.matchingEntityType === 'file';
+                    } else if (currentSearchFilter === 'directories') {
+                        return result.matchingEntityType === 'directory';
+                    } else if (currentSearchFilter === 'courses') {
+                        return result.matchingEntityType === 'course';
+                    } else {
+                        return true;
+                    }
+                });
+
+                dispatch(setSearchResults({ searchResults: filteredSearchResults }));
                 setLoading(false);
-                console.log('search results', value);
+                console.log('search results', filteredSearchResults);
             });
         }
     }, 800);
@@ -90,11 +93,18 @@ export default function SearchPage({ openDirectory, open }: Props) {
         };
     }, [open]);
 
+    const onFilterChange = (state: EntitySearchCurrentState) => {
+        setLoading(true);
+        dispatch(setSelectedSearchFilter({ selectedSearchFilter: state }));
+        search(appState.currentSearchQuery, selectedYear, state);
+    };
+
     return (
-        <div className="space-y-4">
+        <div className="space-y-2">
             {/* {staticContentAlert && staticContentAlert.length > 0 ? (
                 <StaticContentAlertSection alerts={staticContentAlert} />
             ) : null} */}
+            <h1 className="text-2xl font-bold text-white">Settings</h1>
             <div className="flex justify-between items-center py-4">
                 <div className="w-full relative">
                     <input
@@ -108,7 +118,7 @@ export default function SearchPage({ openDirectory, open }: Props) {
                         <div className="absolute w-6 h-6 min-w-[1.5rem] border-4 border-t-4 border-gray-300 border-t-indigo-500 rounded-full animate-spin right-4 top-4"></div>
                     )}
                 </div>
-                <EntitySearchOptions currentlySelected={currentSearchState} onChanges={setCurrentSearchState} />
+                <EntitySearchOptions currentlySelected={appState.selectedSearchFilter} onChanges={onFilterChange} />
             </div>
             <div className="space-y-2">
                 <span className="text-gray-300 text-sm">Search for a specific year:</span>
@@ -147,11 +157,11 @@ export default function SearchPage({ openDirectory, open }: Props) {
                 <h2 className="text-gray-100 text-lg font-semibold p-4">
                     Search Results {selectedYear && ` found in ${selectedYear}`}
                 </h2>
-                <p className="text-gray-300 text-sm p-4">{filteredSearchResults.length} results found</p>
+                <p className="text-gray-300 text-sm p-4">{appState?.searchResults?.length} results found</p>
             </div>
             <div className="w-full p-2 space-y-4">
                 <Suspense fallback={<div>Loading...</div>}>
-                    {filteredSearchResults.map((result, index) => {
+                    {appState?.searchResults?.map((result, index) => {
                         if (index > 150) return null;
 
                         return (
@@ -168,8 +178,6 @@ export default function SearchPage({ openDirectory, open }: Props) {
         </div>
     );
 }
-
-type EntitySearchCurrentState = 'files' | 'directories' | 'courses' | 'none';
 
 type EntitySearchOptionsProps = {
     onChanges?: (state: EntitySearchCurrentState) => void;

@@ -11,8 +11,6 @@ type DirectoryPageProps = {
 export default function DirectoryPage({ directory, closeDirectory, goToDirectory }: DirectoryPageProps) {
     if (!directory) return null;
 
-    console.log(directory);
-
     useEffect(() => {
         //set view to top, smooth scroll
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -20,7 +18,20 @@ export default function DirectoryPage({ directory, closeDirectory, goToDirectory
 
     return (
         <div className="text-white space-y-5 pt-4">
-            <div className="flex justify-between items-center text-sm space-x-4">
+            <div className="flex justify-start items-center text-sm space-x-4">
+                <span onClick={closeDirectory} className="p-3 bg-dark-gray-2 rounded-md cursor-pointer">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="size-6 w-6 h-6">
+                        <path
+                            fillRule="evenodd"
+                            d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z"
+                            clipRule="evenodd"
+                        />
+                    </svg>
+                </span>
                 <div className="flex items-center space-x-2 w-full overflow-x-scroll">
                     <div
                         onClick={() => goToDirectory(directory.courseId)}
@@ -82,19 +93,6 @@ export default function DirectoryPage({ directory, closeDirectory, goToDirectory
                             </div>
                         )}
                 </div>
-                <span onClick={closeDirectory} className="p-3 bg-dark-gray-2 rounded-md cursor-pointer">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="size-6 w-6 h-6">
-                        <path
-                            fillRule="evenodd"
-                            d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z"
-                            clipRule="evenodd"
-                        />
-                    </svg>
-                </span>
             </div>
             <h1 className="text-2xl font-semibold border-b-2 py-2 border-dark-gray">{directory.directoryName}</h1>
             <div className="space-y-4 text-gray-300">

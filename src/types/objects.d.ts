@@ -74,12 +74,14 @@ interface EntityDataResponseItem {
 }
 
 type ScrapeEvent = {
-    type: 'start' | 'indexing' | 'finish' | 'error';
+    type: 'start' | 'indexing' | 'finish' | 'error' | 'new-item';
     name: string | null;
     ref_id: string | null;
     courseId: string | null;
     error?: string;
 };
+
+type EntitySearchCurrentState = 'files' | 'directories' | 'courses' | 'none';
 
 type OpenDirectoryResponse = {
     year: string;
@@ -102,4 +104,5 @@ export {
     ScrapeEvent,
     OpenDirectoryResponse,
     EntityDataResponseItem,
+    EntitySearchCurrentState,
 };

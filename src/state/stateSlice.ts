@@ -7,6 +7,7 @@ interface ApplicationState {
     currentTutorialDialogPage: number;
     currentFirstSetupWizardPage: number;
     loadingIndicatorTextShown: boolean;
+    selectedSearchFilter: 'files' | 'directories' | 'courses' | 'none';
     searchResults: EntityDataResponseItem[];
     showCurrentDirectory: OpenDirectoryResponse | null;
 }
@@ -16,6 +17,7 @@ const initialState: ApplicationState = {
     currentFirstSetupWizardPage: 0,
     currentTutorialDialogPage: 0,
     loadingIndicatorTextShown: true,
+    selectedSearchFilter: 'none',
     currentSearchQuery: '',
     searchResults: [],
     showCurrentDirectory: null,
@@ -46,6 +48,12 @@ const userSlice = createSlice({
         setShowCurrentDirectory(state, action: PayloadAction<{ showCurrentDirectory: OpenDirectoryResponse | null }>) {
             state.showCurrentDirectory = action.payload.showCurrentDirectory;
         },
+        setSelectedSearchFilter(
+            state,
+            action: PayloadAction<{ selectedSearchFilter: 'files' | 'directories' | 'courses' | 'none' }>
+        ) {
+            state.selectedSearchFilter = action.payload.selectedSearchFilter;
+        },
     },
 });
 
@@ -53,6 +61,7 @@ export const {
     setCurrentHomePageIndex,
     setCurrentSearchQuery,
     setSearchResults,
+    setSelectedSearchFilter,
     setCurrentFirstSetupWizardPage,
     setCurrentTutorialDialogPage,
     setLoadingIndicatorTextShown,

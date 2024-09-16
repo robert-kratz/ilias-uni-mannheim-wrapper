@@ -45,7 +45,7 @@ declare global {
                 fileId: string,
                 name: string
             ) => Promise<{ success: boolean; error?: string; directory?: string }>;
-            openDirectory: (directoryId: string) => Promise<OpenDirectoryResponse>;
+            openDirectory: (directoryId: string, doCache?: boolean) => Promise<OpenDirectoryResponse>;
             isDirectoryFavourite: (directoryId: string) => Promise<boolean>;
             openFileExplorer: (path: string) => Promise<void>;
             getFavorites: () => Promise<EntityDataResponseItem[] | null>;

@@ -9,7 +9,7 @@ import SearchPage from '../../container/SearchPage';
 import { setCurrentHomePageIndex, setShowCurrentDirectory } from '../../state/stateSlice';
 import FetchingIndicator from '../../container/FetchingIndicator';
 import SettingsPage from '../../container/SettingsPage';
-import { OpenDirectoryResponse } from '../../types/objects';
+import { OpenDirectoryResponse, ScrapeEvent } from '../../types/objects';
 import DirectoryPage from '../../container/DirectoryPage';
 import FileBrowser from '../../container/FileBrowser';
 
@@ -34,7 +34,7 @@ export default function Home(): React.ReactElement {
         if (window.api) {
             try {
                 window.api
-                    .openDirectory(directoryId)
+                    .openDirectory(directoryId, true)
                     .then((value: OpenDirectoryResponse) => {
                         dispatch(setShowCurrentDirectory({ showCurrentDirectory: value }));
                     })
@@ -170,6 +170,16 @@ export default function Home(): React.ReactElement {
             }
         };
 
+        const onApplicationScrape = (event: Electron.IpcRendererEvent, data: ScrapeEvent) => {
+            if (data.type === 'new-item') {
+                console.log('New item: ', data);
+
+                if (appState.showCurrentDirectory && appState.showCurrentDirectory?.directoryId === data.ref_id) {
+                    fetchApplicationState();
+                }
+            }
+        };
+
         setLoading(true);
         fetchApplicationState();
 
@@ -177,11 +187,13 @@ export default function Home(): React.ReactElement {
             fetchApplicationState();
         };
 
+        window.api.onApplicationScrape(onApplicationScrape);
         window.api.onReload(onReload);
 
         setLoading(false);
 
         return () => {
+            window.api.removeApplicationScrapeListener(onApplicationScrape);
             window.api.removeReloadListener(onReload);
         };
     }, []);
@@ -253,13 +265,13 @@ export default function Home(): React.ReactElement {
                             />
                         ) : (
                             <>
-                                {currentUsername && (
+                                {/* {currentUsername && (
                                     <div className="w-full border-dark-gray border-b-2 my-2">
                                         <h1 className="text-white text-2xl font-bold py-3 ">
                                             Welcome, {currentUsername}
                                         </h1>
                                     </div>
-                                )}
+                                )} */}
                                 {pageComponents}
                             </>
                         )}

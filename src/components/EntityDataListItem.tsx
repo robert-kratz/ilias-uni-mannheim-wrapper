@@ -7,9 +7,16 @@ type EntityDataResponseType = {
     onItemFavourite?: (directoryId: string, state: boolean) => void;
     item: EntityDataResponseItem;
     showRoute?: boolean;
+    showFavourite?: boolean;
 };
 
-export function EntityDataListItem({ item, openDirectory, showRoute, onItemFavourite }: EntityDataResponseType) {
+export function EntityDataListItem({
+    item,
+    openDirectory,
+    showRoute,
+    onItemFavourite,
+    showFavourite = true,
+}: EntityDataResponseType) {
     const downloadFile = async (fileId: string, name: string) => {
         if (window.api) {
             window.api.downloadFile(fileId, name).then(({ success, error, directory }) => {
@@ -32,6 +39,8 @@ export function EntityDataListItem({ item, openDirectory, showRoute, onItemFavou
             });
         }
     };
+
+    console.log('Item:', item);
 
     return (
         <div className="p-4 bg-dark-gray-2 hover:scale-[100.75%] transition rounded-md w-full flex justify-between items-center cursor-pointer">
@@ -88,7 +97,7 @@ export function EntityDataListItem({ item, openDirectory, showRoute, onItemFavou
                         )}
                         <span className="text-lg font-semibold cursor-pointer">
                             {item.name.length + (item.parentName?.length || 0) > 80
-                                ? item.name.slice(0, 80) + '.' + item.type + '...'
+                                ? item.name.slice(0, 80) + (item.type && '.' + item.type) + '...'
                                 : item.name}
                         </span>
                     </h3>
@@ -100,7 +109,7 @@ export function EntityDataListItem({ item, openDirectory, showRoute, onItemFavou
                 </div>
             </div>
             <div className="flex justify-end items-center space-x-3">
-                {item.matchingEntityType == 'directory' && (
+                {item.matchingEntityType == 'directory' && showFavourite && (
                     <FavouriteBadge item={item} key={item.id} onItemFavourite={onItemFavourite} />
                 )}
                 <div className="text-gray-300 w-10 h-10 p-2 cursor-pointer">

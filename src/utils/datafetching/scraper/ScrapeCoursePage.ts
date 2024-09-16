@@ -45,6 +45,8 @@ export const scrapeContentPage = async ({
 
             const htmlContent = response.data;
 
+            console.log(htmlContent);
+
             // Parse the HTML content with JSDOM
             const dom = new JSDOM(htmlContent);
             const document = dom.window.document;
@@ -63,8 +65,6 @@ export const scrapeContentPage = async ({
 
                 // Check if the icon is a group or a course
                 if (!typeFilter.includes(assetsType)) return;
-
-                console.log('Icon:', assetsType);
 
                 const title = titleElement ? titleElement.textContent.trim() : '';
                 const link = titleElement ? titleElement.getAttribute('href') || '#' : '#';
