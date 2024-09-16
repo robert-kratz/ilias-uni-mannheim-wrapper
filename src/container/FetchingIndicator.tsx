@@ -71,22 +71,22 @@ export default function FetchingIndicator() {
     return (
         <div
             onClick={toggleLoadingIndicator}
-            className="bg-dark-gray-2 border-2 border-dark-gray hover:bg-dark-gray-3 left-28 bottom-6 fixed rounded-md flex justify-center items-center cursor-pointer shadow-md z-10">
+            className="fixed bottom-6 left-28 z-10 flex cursor-pointer items-center justify-center rounded-md border-2 border-dark-gray bg-dark-gray-2 shadow-md hover:bg-dark-gray-3">
             <div
                 className={classNames(
-                    'p-4 bg-emerald-500 group',
+                    'group bg-emerald-500 p-4',
                     !appState.loadingIndicatorTextShown ? 'rounded-md' : 'rounded-l-md'
                 )}>
-                <div className="w-6 h-6 min-w-[1.5rem] border-4 border-t-4 border-emerald-300 border-t-emerald-900 rounded-full animate-spin right-4 top-4"></div>
+                <div className="right-4 top-4 h-6 w-6 min-w-[1.5rem] animate-spin rounded-full border-4 border-t-4 border-emerald-300 border-t-emerald-900"></div>
             </div>
             <div className={classNames('p-4', !appState.loadingIndicatorTextShown && 'hidden')}>
-                <p className="text-gray-300 text-sm">
+                <p className="text-sm text-gray-300">
                     {lastScrapeEvent?.name && lastScrapeEvent?.ref_id ? (
                         <a
                             href={isFile ? fileUrl : dirUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="hover:underline truncate text-clip break-words max-w-[17rem]">
+                            className="max-w-[17rem] truncate text-clip break-words hover:underline">
                             {lastScrapeEvent.name.length > 40
                                 ? lastScrapeEvent.name.substring(0, 40) + '...'
                                 : lastScrapeEvent.name}

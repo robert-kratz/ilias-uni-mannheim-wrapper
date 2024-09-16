@@ -1,7 +1,6 @@
 // Assuming store.ts is in the src folder and not inside the app folder
 import { createToast } from 'vercel-toast';
 import AppRoutes from '../routes';
-import Tutorial from './pages/Tutorial';
 import { Suspense, useEffect, useReducer, useState } from 'react';
 import TutorialDialog from '../components/dialogs/TutorialDialog';
 import FirstSetupDialog from '../components/dialogs/FirstSetupDialog';

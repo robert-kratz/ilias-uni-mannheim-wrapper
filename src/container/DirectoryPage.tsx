@@ -17,14 +17,14 @@ export default function DirectoryPage({ directory, closeDirectory, goToDirectory
     }, [directory]);
 
     return (
-        <div className="text-white space-y-5 pt-4">
-            <div className="flex justify-start items-center text-sm space-x-4">
-                <span onClick={closeDirectory} className="p-3 bg-dark-gray-2 rounded-md cursor-pointer">
+        <div className="space-y-5 pt-4 text-white">
+            <div className="flex items-center justify-start space-x-4 text-sm">
+                <span onClick={closeDirectory} className="cursor-pointer rounded-md bg-dark-gray-2 p-3">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         fill="currentColor"
-                        className="size-6 w-6 h-6">
+                        className="size-6 h-6 w-6">
                         <path
                             fillRule="evenodd"
                             d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z"
@@ -32,11 +32,11 @@ export default function DirectoryPage({ directory, closeDirectory, goToDirectory
                         />
                     </svg>
                 </span>
-                <div className="flex items-center space-x-2 w-full overflow-x-scroll">
+                <div className="flex w-full items-center space-x-2 overflow-x-scroll">
                     <div
                         onClick={() => goToDirectory(directory.courseId)}
-                        className="p-3 bg-dark-gray-2 hover:bg-dark-gray border-2 border-dark-gray transition rounded-md flex justify-start items-center space-x-2 cursor-pointer">
-                        <div className="w-6 h-6">
+                        className="flex cursor-pointer items-center justify-start space-x-2 rounded-md border-2 border-dark-gray bg-dark-gray-2 p-3 transition hover:bg-dark-gray">
+                        <div className="h-6 w-6">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 24 24"
@@ -58,8 +58,8 @@ export default function DirectoryPage({ directory, closeDirectory, goToDirectory
                     {directory.parentName && directory.parentName !== directory.courseName && (
                         <div
                             onClick={() => goToDirectory(directory.parentId)}
-                            className="p-3 bg-dark-gray-2 hover:bg-dark-gray border-2 border-dark-gray transition rounded-md flex justify-start items-center space-x-2 cursor-pointer">
-                            <div className="w-6 h-6">
+                            className="flex cursor-pointer items-center justify-start space-x-2 rounded-md border-2 border-dark-gray bg-dark-gray-2 p-3 transition hover:bg-dark-gray">
+                            <div className="h-6 w-6">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 24 24"
@@ -79,8 +79,8 @@ export default function DirectoryPage({ directory, closeDirectory, goToDirectory
                         directory.directoryName !== directory.courseName && (
                             <div
                                 onClick={() => goToDirectory(directory.directoryId)}
-                                className="p-3 bg-dark-gray-2 hover:bg-dark-gray border-2 border-dark-gray transition rounded-md flex justify-start items-center space-x-2 cursor-pointer">
-                                <div className="w-6 h-6">
+                                className="flex cursor-pointer items-center justify-start space-x-2 rounded-md border-2 border-dark-gray bg-dark-gray-2 p-3 transition hover:bg-dark-gray">
+                                <div className="h-6 w-6">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
@@ -94,7 +94,7 @@ export default function DirectoryPage({ directory, closeDirectory, goToDirectory
                         )}
                 </div>
             </div>
-            <h1 className="text-2xl font-semibold border-b-2 py-2 border-dark-gray">{directory.directoryName}</h1>
+            <h1 className="border-b-2 border-dark-gray py-2 text-2xl font-semibold">{directory.directoryName}</h1>
             <div className="space-y-4 text-gray-300">
                 {directory?.children?.map((dir, index) => (
                     <EntityDataListItem key={index} item={dir} openDirectory={goToDirectory} />

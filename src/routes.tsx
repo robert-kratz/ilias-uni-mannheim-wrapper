@@ -1,7 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate, HashRouter } from 'react-router-dom';
 import Home from './app/pages/Home';
-import Tutorial from './app/pages/Tutorial';
 
 const AppRoutes: React.FC = () => {
     if (process.env.NODE_ENV === 'development') {

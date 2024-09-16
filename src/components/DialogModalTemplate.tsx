@@ -26,10 +26,10 @@ export default function DialogModal({ open, onClose, children, height = 'auto', 
                     leave="ease-in duration-200"
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0">
-                    <div className="fixed inset-0 bg-black bg-opacity-30 z-20" />
+                    <div className="fixed inset-0 z-20 bg-black bg-opacity-30" />
                 </Transition.Child>
 
-                <div className="fixed inset-0 overflow-y-auto z-20">
+                <div className="fixed inset-0 z-20 overflow-y-auto">
                     <div className="flex min-h-full min-w-full items-center justify-center p-4 text-center">
                         <Transition.Child
                             as={Fragment}
@@ -41,7 +41,7 @@ export default function DialogModal({ open, onClose, children, height = 'auto', 
                             leaveTo="opacity-0 scale-95">
                             <Dialog.Panel
                                 className={classNames(
-                                    'w-full transform overflow-hidden rounded-lg bg-dark-gray-2 text-left align-middle shadow-xl transition-all sm:p-8 p-6 space-y-4 md:space-y-6 text-white',
+                                    'w-full transform space-y-4 overflow-hidden rounded-lg bg-dark-gray-2 p-6 text-left align-middle text-white shadow-xl transition-all sm:p-8 md:space-y-6',
                                     height,
                                     width
                                 )}>
@@ -82,8 +82,8 @@ const Button = ({ onClick, disabled, text, loading }: ButtonProps) => (
             onClick();
         }}
         disabled={disabled}
-        className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center">
-        <div className="flex justify-center items-center space-x-2">
+        className="flex justify-center rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:cursor-not-allowed disabled:opacity-50">
+        <div className="flex items-center justify-center space-x-2">
             {disabled && loading && (
                 <div
                     className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
@@ -110,7 +110,7 @@ const CancelButton = ({ onClick, text }: CancelButtonProps) => (
             e.preventDefault();
             onClick();
         }}
-        className="block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold text-gray-200 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed">
+        className="block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold text-gray-200 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:cursor-not-allowed disabled:opacity-50">
         {text}
     </button>
 );
@@ -120,7 +120,7 @@ type ButtonActionWrapperProps = {
 };
 
 const ButtonActionWrapper = ({ children }: ButtonActionWrapperProps) => (
-    <div className="pt-4 flex justify-end items-center space-x-4">{children}</div>
+    <div className="flex items-center justify-end space-x-4 pt-4">{children}</div>
 );
 
 type InputFieldProps = {
@@ -160,7 +160,7 @@ const DialogInputField = ({
                 autoCorrect={autoCorrect}
                 value={value}
                 onChange={(e) => onChange(e)}
-                className="w-full text-white p-4 border-2 border-dark-gray bg-dark-gray-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full rounded-md border-2 border-dark-gray bg-dark-gray-3 p-4 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
         </div>
     </>
@@ -192,13 +192,13 @@ const DialogInputPasswordField = ({
     autoCorrect = 'off',
 }: DialogInputPasswordFieldProps) => (
     <div className="col-span-2">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
             <label htmlFor={id} className="block text-sm font-semibold leading-6 text-gray-200">
                 {label}
             </label>
             <a
                 onClick={onVisibilityChange}
-                className="block text-sm font-semibold leading-6 text-violet-500 hover:text-violet-600 cursor-pointer">
+                className="block cursor-pointer text-sm font-semibold leading-6 text-violet-500 hover:text-violet-600">
                 {showPassword ? 'Hide' : 'Show'}
             </a>
         </div>
@@ -212,7 +212,7 @@ const DialogInputPasswordField = ({
                 value={value}
                 disabled={disabled}
                 onChange={(e) => onChange(e)}
-                className="w-full text-white p-4 border-2 border-dark-gray bg-dark-gray-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full rounded-md border-2 border-dark-gray bg-dark-gray-3 p-4 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
         </div>
     </div>

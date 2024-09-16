@@ -170,9 +170,9 @@ const WelcomeWindow = ({ onClose, usename }: WelcomeWindowProps): React.ReactNod
 
     return (
         <div className="space-y-4">
-            <div className="flex justify-between items-center space-x-4">
+            <div className="flex items-center justify-between space-x-4">
                 <h1 className="text-2xl font-bold">Welcome {usename}!</h1>
-                <div className="w-12 h-12 rounded-full bg-violet-500 text-white">
+                <div className="h-12 w-12 rounded-full bg-violet-500 text-white">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -193,24 +193,24 @@ const WelcomeWindow = ({ onClose, usename }: WelcomeWindowProps): React.ReactNod
                 </div>
             </div>
             <div>
-                <p className="text-md text-gray-300 font-light">
+                <p className="text-md font-light text-gray-300">
                     <strong className="font-bold text-white">Thank You for using Ilias Ultimate!</strong>
                     <br />
                     <br />
                     In the following steps you will
                 </p>
-                <ul className="list-disc list-inside text-md text-gray-300 font-light p-2 py-6">
+                <ul className="text-md list-inside list-disc p-2 py-6 font-light text-gray-300">
                     <li>Select Semesters</li>
                     <li>Index your courses</li>
                     <li>Configure your settings</li>
                 </ul>
-                <p className="text-md text-gray-300 font-light">
+                <p className="text-md font-light text-gray-300">
                     The process of indexing, depending on the amount of semesters, may take a while.
                 </p>
             </div>
             <button
                 onClick={handleNext}
-                className="bg-indigo-500 hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-indigo-600 transition text-white rounded-md px-4 py-3 w-full">
+                className="w-full rounded-md bg-indigo-500 px-4 py-3 text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-indigo-600">
                 Start Setup
             </button>
         </div>
@@ -253,14 +253,14 @@ const SelectYearWindow = ({ onClose, aviablableYears }: SelectYearWindowProps): 
 
     return (
         <div className="space-y-4">
-            <div className="flex justify-between items-center space-x-4">
+            <div className="flex items-center justify-between space-x-4">
                 <div>
                     <h1 className="text-2xl font-bold">Select Semesters to index:</h1>
-                    <p className="text-sm text-gray-300 font-light">
+                    <p className="text-sm font-light text-gray-300">
                         Please select the semesters you want to index in this application.
                     </p>
                 </div>
-                <div className="w-12 h-12 rounded-full bg-emerald-500 text-white min-w-[3rem]">
+                <div className="h-12 w-12 min-w-[3rem] rounded-full bg-emerald-500 text-white">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -270,7 +270,7 @@ const SelectYearWindow = ({ onClose, aviablableYears }: SelectYearWindowProps): 
                     </svg>
                 </div>
             </div>
-            <div className="space-y-2 max-h-96 overflow-y-scroll">
+            <div className="max-h-96 space-y-2 overflow-y-scroll">
                 <span className="text-sm text-gray-300">
                     Found <strong>{aviablableYears.length}</strong> semesters:
                 </span>
@@ -284,12 +284,12 @@ const SelectYearWindow = ({ onClose, aviablableYears }: SelectYearWindowProps): 
                             key={year}
                             onClick={() => handleYearSelect(year)}
                             className={classNames(
-                                'flex justify-between items-center p-4 bg-dark-gray-3 hover:bg-dark-gray-2 transition rounded-md border-2 cursor-pointer',
+                                'flex cursor-pointer items-center justify-between rounded-md border-2 bg-dark-gray-3 p-4 transition hover:bg-dark-gray-2',
                                 isSelected ? 'border-emerald-600' : 'border-dark-gray'
                             )}>
                             <p className="text-gray-300">{year}</p>
                             {isSelected && (
-                                <div className="w-6 h-6 text-emerald-500 flex justify-center items-center">
+                                <div className="flex h-6 w-6 items-center justify-center text-emerald-500">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
@@ -310,7 +310,7 @@ const SelectYearWindow = ({ onClose, aviablableYears }: SelectYearWindowProps): 
             <button
                 onClick={handleNext}
                 disabled={selectedYears.length === 0}
-                className="bg-indigo-500 hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-indigo-600 transition text-white rounded-md px-4 py-3 w-full">
+                className="w-full rounded-md bg-indigo-500 px-4 py-3 text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-indigo-600">
                 {selectedYears.length === 0 ? 'Select at least one semester' : 'Next'}
             </button>
         </div>
@@ -379,13 +379,13 @@ const FetchingDataWindow = ({ onClose, selectedYears }: FetchingDataWindowProps)
 
     return (
         <div className="space-y-4">
-            <div className="flex justify-between items-center space-x-4">
+            <div className="flex items-center justify-between space-x-4">
                 <div>
                     <h1 className="text-2xl font-bold">Indexing Ilias</h1>
                 </div>
             </div>
             <div className="boder-b-2 border-dark-gray-3">
-                <div className="p-3 bg-opacity-70 border-2 rounded-md flex justify-start items-center space-x-3 bg-red-400 border-red-500 text-red-800">
+                <div className="flex items-center justify-start space-x-3 rounded-md border-2 border-red-500 bg-red-400 bg-opacity-70 p-3 text-red-800">
                     <div className="h-6 w-6">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -402,7 +402,7 @@ const FetchingDataWindow = ({ onClose, selectedYears }: FetchingDataWindowProps)
                     <p className="font-medium">Do not close the application!</p>
                 </div>
             </div>
-            <div className="flex justify-between items-center bg-dark-gray-3 border-2 border-dark-gray rounded-md p-4 space-x-4 min-h-[5rem]">
+            <div className="flex min-h-[5rem] items-center justify-between space-x-4 rounded-md border-2 border-dark-gray bg-dark-gray-3 p-4">
                 <div className="max-w-[17rem]">
                     <p className="text-sm text-gray-300">
                         {lastScrapeEvent?.name && lastScrapeEvent?.ref_id ? (
@@ -410,7 +410,7 @@ const FetchingDataWindow = ({ onClose, selectedYears }: FetchingDataWindowProps)
                                 href={isFile ? fileUrl : dirUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="hover:underline truncate text-clip break-words max-w-[17rem]">
+                                className="max-w-[17rem] truncate text-clip break-words hover:underline">
                                 {lastScrapeEvent.name.length > 40
                                     ? lastScrapeEvent.name.substring(0, 40) + '...'
                                     : lastScrapeEvent.name}
@@ -420,7 +420,7 @@ const FetchingDataWindow = ({ onClose, selectedYears }: FetchingDataWindowProps)
                         )}
                     </p>
                 </div>
-                <div className="w-6 h-6 min-w-[1.5rem] border-4 border-t-4 border-gray-300 border-t-indigo-500 rounded-full animate-spin"></div>
+                <div className="h-6 w-6 min-w-[1.5rem] animate-spin rounded-full border-4 border-t-4 border-gray-300 border-t-indigo-500"></div>
             </div>
             <div>
                 <p className="text-sm text-gray-300">
@@ -454,11 +454,11 @@ const SettingsSetupWindow = ({ onClose }: SettingsSetupWindowProps): React.React
     return (
         <div className="space-y-4">
             <SaveCredentialsDialog open={saveCredentialsOpen} onClose={onSaveCredentialsClose} />
-            <div className="flex justify-between items-center space-x-4">
+            <div className="flex items-center justify-between space-x-4">
                 <div>
                     <h1 className="text-2xl font-bold">Finish Setup</h1>
                 </div>
-                <div className="w-12 h-12 rounded-full bg-violet-500 text-white min-w-[3rem]">
+                <div className="h-12 w-12 min-w-[3rem] rounded-full bg-violet-500 text-white">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -480,11 +480,11 @@ const SettingsSetupWindow = ({ onClose }: SettingsSetupWindowProps): React.React
             </div>
             <button
                 onClick={() => setSaveCredentialsOpen(true)}
-                className="bg-indigo-500 hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-indigo-600 transition text-white rounded-md px-4 py-3 w-full">
+                className="w-full rounded-md bg-indigo-500 px-4 py-3 text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-indigo-600">
                 Save Credentials
             </button>
-            <div className="flex justify-center items-center">
-                <p onClick={handleNext} className="text-xs text-gray-400 cursor-pointer">
+            <div className="flex items-center justify-center">
+                <p onClick={handleNext} className="cursor-pointer text-xs text-gray-400">
                     Skip for now
                 </p>
             </div>
@@ -499,11 +499,11 @@ type FinishSetupWindowProps = {
 const FinishSetupWindow = ({ onClose }: FinishSetupWindowProps): React.ReactNode => {
     return (
         <div className="space-y-4">
-            <div className="flex justify-between items-center space-x-4">
+            <div className="flex items-center justify-between space-x-4">
                 <div>
                     <h1 className="text-2xl font-bold">You are all set!</h1>
                 </div>
-                <div className="w-12 h-12 rounded-full bg-emerald-500 text-white min-w-[3rem]">
+                <div className="h-12 w-12 min-w-[3rem] rounded-full bg-emerald-500 text-white">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -539,7 +539,7 @@ const FinishSetupWindow = ({ onClose }: FinishSetupWindowProps): React.ReactNode
             </div>
             <button
                 onClick={() => onClose()}
-                className="bg-indigo-500 hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-indigo-600 transition text-white rounded-md px-4 py-3 w-full">
+                className="w-full rounded-md bg-indigo-500 px-4 py-3 text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-indigo-600">
                 Try out Now!
             </button>
         </div>

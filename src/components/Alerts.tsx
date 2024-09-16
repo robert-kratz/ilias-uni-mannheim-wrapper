@@ -26,7 +26,7 @@ export const SaveCredentialsWarning = ({ show }: WarningProps) => {
         <div className="mb-6">
             <SaveCredentialsDialog open={open} onClose={({ success }) => onDialogClose({ success })} />
             <AlertBox
-                className="bg-yellow-500 border-yellow-500 text-yellow-900 cursor-pointer"
+                className="cursor-pointer border-yellow-500 bg-yellow-500 text-yellow-900"
                 onClick={() => setOpen(true)}
                 content={
                     <p>
@@ -69,7 +69,7 @@ export const StaticContentAlertSection = ({ alerts }: { alerts: StaticContentAle
 export const InformationAlert = ({ alert }: { alert: StaticContentAlert }) => {
     return (
         <AlertBox
-            className="bg-indigo-400 border-indigo-500 text-indigo-900"
+            className="border-indigo-500 bg-indigo-400 text-indigo-900"
             onClick={() => {}}
             content={
                 <p className="space-x-2">
@@ -93,7 +93,7 @@ export const InformationAlert = ({ alert }: { alert: StaticContentAlert }) => {
 export const WarningAlert = ({ alert }: { alert: StaticContentAlert }) => {
     return (
         <AlertBox
-            className="bg-orange-400 border-orange-500 text-orange-900"
+            className="border-orange-500 bg-orange-400 text-orange-900"
             onClick={() => {}}
             content={
                 <p className="space-x-2">
@@ -117,7 +117,7 @@ export const WarningAlert = ({ alert }: { alert: StaticContentAlert }) => {
 export const ErrorAlert = ({ alert }: { alert: StaticContentAlert }) => {
     return (
         <AlertBox
-            className="bg-red-400 border-red-500 text-red-900"
+            className="border-red-500 bg-red-400 text-red-900"
             onClick={() => {}}
             content={
                 <p className="space-x-2">
@@ -150,7 +150,7 @@ const AlertBox = ({ icon, onClick, className, content }: AlertBoxProps) => {
         <div
             onClick={() => onClick()}
             className={classNames(
-                'p-3 bg-opacity-70 border rounded-md flex justify-start items-center space-x-3',
+                'flex items-center justify-start space-x-3 rounded-md border bg-opacity-70 p-3',
                 className
             )}>
             <div className="h-6 w-6">{icon}</div>

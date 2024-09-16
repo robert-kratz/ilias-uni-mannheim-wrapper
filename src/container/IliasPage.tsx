@@ -98,15 +98,15 @@ export default function IliasPage({ openDirectory, open }: IliasPageProps) {
                     return (
                         <div
                             key={year.year}
-                            className="w-full bg-dark-gray-2 transition cursor-pointer shadow-md text-white font-light rounded-md">
-                            <div className="sticky top-0 bg-dark-gray-2 p-4 rounded-md z-10 flex justify-between items-center">
-                                <h2 className="font-semibold text-xl">{year.year}</h2>
-                                <div className="w-10 h-10">
+                            className="w-full cursor-pointer rounded-md bg-dark-gray-2 font-light text-white shadow-md transition">
+                            <div className="sticky top-0 z-10 flex items-center justify-between rounded-md bg-dark-gray-2 p-4">
+                                <h2 className="text-xl font-semibold">{year.year}</h2>
+                                <div className="h-10 w-10">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
                                         fill="currentColor"
-                                        className="size-6 p-2 text-gray-400 hover:text-gray-300 transition">
+                                        className="size-6 p-2 text-gray-400 transition hover:text-gray-300">
                                         <path
                                             fillRule="evenodd"
                                             d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z"
@@ -125,8 +125,8 @@ export default function IliasPage({ openDirectory, open }: IliasPageProps) {
                                     return (
                                         <li
                                             key={elements.link}
-                                            className="p-4 bg-dark-gray-3 hover:scale-[100.75%] transition rounded-md flex justify-start items-center space-x-2">
-                                            <div className="text-violet-500 w-10 h-10 p-1">
+                                            className="flex items-center justify-start space-x-2 rounded-md bg-dark-gray-3 p-4 transition hover:scale-[100.75%]">
+                                            <div className="h-10 w-10 p-1 text-violet-500">
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 24 24"
@@ -150,8 +150,8 @@ export default function IliasPage({ openDirectory, open }: IliasPageProps) {
                                     return (
                                         <li
                                             key={elements.link}
-                                            className="p-4 bg-dark-gray-3 hover:scale-[100.75%] transition rounded-md flex justify-start items-center space-x-2">
-                                            <div className="text-emerald-500 w-10 h-10 p-1">
+                                            className="flex items-center justify-start space-x-2 rounded-md bg-dark-gray-3 p-4 transition hover:scale-[100.75%]">
+                                            <div className="h-10 w-10 p-1 text-emerald-500">
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 24 24"
@@ -167,7 +167,7 @@ export default function IliasPage({ openDirectory, open }: IliasPageProps) {
                                             </div>
                                             <div>
                                                 <h3>{elements.title}</h3>
-                                                <p className="text-gray-400 text-xs">{elements.description}</p>
+                                                <p className="text-xs text-gray-400">{elements.description}</p>
                                             </div>
                                         </li>
                                     );

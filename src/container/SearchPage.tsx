@@ -105,24 +105,24 @@ export default function SearchPage({ openDirectory, open }: Props) {
                 <StaticContentAlertSection alerts={staticContentAlert} />
             ) : null} */}
             <h1 className="text-2xl font-bold text-white">Settings</h1>
-            <div className="flex justify-between items-center py-4">
-                <div className="w-full relative">
+            <div className="flex items-center justify-between py-4">
+                <div className="relative w-full">
                     <input
                         type="text"
                         onChange={(e) => enterQuery(e.target.value)}
                         value={appState.currentSearchQuery}
                         placeholder="Search for a Directory, File or Courses"
-                        className="w-full text-white p-4 border border-dark-gray bg-dark-gray-2 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        className="w-full rounded-l-md border border-dark-gray bg-dark-gray-2 p-4 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                     {loading && (
-                        <div className="absolute w-6 h-6 min-w-[1.5rem] border-4 border-t-4 border-gray-300 border-t-indigo-500 rounded-full animate-spin right-4 top-4"></div>
+                        <div className="absolute right-4 top-4 h-6 w-6 min-w-[1.5rem] animate-spin rounded-full border-4 border-t-4 border-gray-300 border-t-indigo-500"></div>
                     )}
                 </div>
                 <EntitySearchOptions currentlySelected={appState.selectedSearchFilter} onChanges={onFilterChange} />
             </div>
             <div className="space-y-2">
-                <span className="text-gray-300 text-sm">Search for a specific year:</span>
-                <div className="flex justify-start w-full space-x-2 overflow-x-scroll">
+                <span className="text-sm text-gray-300">Search for a specific year:</span>
+                <div className="flex w-full justify-start space-x-2 overflow-x-scroll">
                     {currentApplicationState?.selectedYears?.map((year, index) => {
                         if (year === 'MSDNAA') return null;
 
@@ -144,22 +144,22 @@ export default function SearchPage({ openDirectory, open }: Props) {
                                 key={index}
                                 onClick={toggleYear}
                                 className={classNames(
-                                    'flex justify-center items-center p-3 px-4 bg-dark-gray-2 hover:bg-dark-gray-3 cursor-pointer rounded-md transition border-2 shadow-md',
+                                    'flex cursor-pointer items-center justify-center rounded-md border-2 bg-dark-gray-2 p-3 px-4 shadow-md transition hover:bg-dark-gray-3',
                                     selected ? 'border-emerald-600' : 'border-dark-gray'
                                 )}>
-                                <span className="text-gray-300 text-sm">{year}</span>
+                                <span className="text-sm text-gray-300">{year}</span>
                             </div>
                         );
                     })}
                 </div>
             </div>
-            <div className="flex justify-between items-center sticky top-0 bg-dark-gray rounded-b-md z-10">
-                <h2 className="text-gray-100 text-lg font-semibold p-4">
+            <div className="sticky top-0 z-10 flex items-center justify-between rounded-b-md bg-dark-gray">
+                <h2 className="p-4 text-lg font-semibold text-gray-100">
                     Search Results {selectedYear && ` found in ${selectedYear}`}
                 </h2>
-                <p className="text-gray-300 text-sm p-4">{appState?.searchResults?.length} results found</p>
+                <p className="p-4 text-sm text-gray-300">{appState?.searchResults?.length} results found</p>
             </div>
-            <div className="w-full p-2 space-y-4">
+            <div className="w-full space-y-4 p-2">
                 <Suspense fallback={<div>Loading...</div>}>
                     {appState?.searchResults?.map((result, index) => {
                         if (index > 150) return null;
@@ -199,7 +199,7 @@ function EntitySearchOptions({ currentlySelected, onChanges }: EntitySearchOptio
     };
 
     return (
-        <div className="bg-dark-gray-2 border-dark-gray border flex justify-end items-center divide-x-2 divide-dark-gray rounded-r-md font-light text-gray-300 cursor-pointer">
+        <div className="flex cursor-pointer items-center justify-end divide-x-2 divide-dark-gray rounded-r-md border border-dark-gray bg-dark-gray-2 font-light text-gray-300">
             <button
                 onClick={() => changeState('files')}
                 className={classNames(
@@ -210,7 +210,7 @@ function EntitySearchOptions({ currentlySelected, onChanges }: EntitySearchOptio
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="currentColor"
-                    className="size-6 w-6 h-6">
+                    className="size-6 h-6 w-6">
                     <path
                         fillRule="evenodd"
                         d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625ZM7.5 15a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 7.5 15Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H8.25Z"
@@ -229,7 +229,7 @@ function EntitySearchOptions({ currentlySelected, onChanges }: EntitySearchOptio
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="currentColor"
-                    className="size-6 w-6 h-6">
+                    className="size-6 h-6 w-6">
                     <path
                         fillRule="evenodd"
                         d="M2.25 5.25a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3V15a3 3 0 0 1-3 3h-3v.257c0 .597.237 1.17.659 1.591l.621.622a.75.75 0 0 1-.53 1.28h-9a.75.75 0 0 1-.53-1.28l.621-.622a2.25 2.25 0 0 0 .659-1.59V18h-3a3 3 0 0 1-3-3V5.25Zm1.5 0v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5Z"

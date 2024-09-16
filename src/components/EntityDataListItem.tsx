@@ -43,15 +43,15 @@ export function EntityDataListItem({
     console.log('Item:', item);
 
     return (
-        <div className="p-4 bg-dark-gray-2 hover:scale-[100.75%] transition rounded-md w-full flex justify-between items-center cursor-pointer">
+        <div className="flex w-full cursor-pointer items-center justify-between rounded-md bg-dark-gray-2 p-4 transition hover:scale-[100.75%]">
             <div
                 onClick={() =>
                     item.matchingEntityType === 'directory' || item.matchingEntityType === 'course'
                         ? openDirectory(item.id)
                         : {}
                 }
-                className="flex justify-start items-center space-x-2 ">
-                <div className="w-10 h-10 p-1">
+                className="flex items-center justify-start space-x-2">
+                <div className="h-10 w-10 p-1">
                     {item.matchingEntityType === 'file' ? (
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -88,31 +88,31 @@ export function EntityDataListItem({
                     ) : null}
                 </div>
                 <div>
-                    <h3 className="text-white space-x-2 flex justify-start items-center">
+                    <h3 className="flex items-center justify-start space-x-2 text-white">
                         {item.parentId !== item.courseId && item.parentId != null && showRoute && (
                             <>
-                                <span className="text-gray-300 text-sm">{item.parentName}</span>
+                                <span className="text-sm text-gray-300">{item.parentName}</span>
                                 <span>/</span>
                             </>
                         )}
-                        <span className="text-lg font-semibold cursor-pointer">
+                        <span className="cursor-pointer text-lg font-semibold">
                             {item.name.length + (item.parentName?.length || 0) > 80
                                 ? item.name.slice(0, 80) + (item.type && '.' + item.type) + '...'
                                 : item.name}
                         </span>
                     </h3>
                     {item.matchingEntityType !== 'course' && (
-                        <p className="text-gray-400 text-xs space-x-2">
+                        <p className="space-x-2 text-xs text-gray-400">
                             <span>In: {item.courseTitle}</span>
                         </p>
                     )}
                 </div>
             </div>
-            <div className="flex justify-end items-center space-x-3">
+            <div className="flex items-center justify-end space-x-3">
                 {item.matchingEntityType == 'directory' && showFavourite && (
                     <FavouriteBadge item={item} key={item.id} onItemFavourite={onItemFavourite} />
                 )}
-                <div className="text-gray-300 w-10 h-10 p-2 cursor-pointer">
+                <div className="h-10 w-10 cursor-pointer p-2 text-gray-300">
                     {item.matchingEntityType === 'file' ? (
                         <div onClick={() => downloadFile(item.id, item.name)}>
                             <svg

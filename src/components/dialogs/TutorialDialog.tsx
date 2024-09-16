@@ -81,8 +81,8 @@ type WelcomeWindowProps = {
 const WelcomePage = ({ onClose }: WelcomeWindowProps): React.ReactElement => {
     return (
         <div className="space-y-2">
-            <div className="flex justify-center items-center h-28">
-                <div className="w-16 h-16 rounded-full bg-indigo-500 text-white">
+            <div className="flex h-28 items-center justify-center">
+                <div className="h-16 w-16 rounded-full bg-indigo-500 text-white">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -95,7 +95,7 @@ const WelcomePage = ({ onClose }: WelcomeWindowProps): React.ReactElement => {
                 </div>
             </div>
             <h1 className="text-2xl font-semibold">Ilias Ultimate</h1>
-            <p className="text-gray-200 font-light text-md">
+            <p className="text-md font-light text-gray-200">
                 This application allows you to manage your courses and files at the{' '}
                 <a href="https://ilias.uni-stuttgart.de" className="text-blue-500 hover:underline">
                     University of Mannheim's Ilias
@@ -103,8 +103,8 @@ const WelcomePage = ({ onClose }: WelcomeWindowProps): React.ReactElement => {
                 platform.
             </p>
             <div className="flex flex-col space-y-2">
-                <div className="p-2 flex justify-start items-center space-x-3">
-                    <div className="text-blue-500 w-6 h-6">
+                <div className="flex items-center justify-start space-x-3 p-2">
+                    <div className="h-6 w-6 text-blue-500">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
@@ -117,10 +117,10 @@ const WelcomePage = ({ onClose }: WelcomeWindowProps): React.ReactElement => {
                             />
                         </svg>
                     </div>
-                    <p className="text-gray-200 font-light">Access your data fast and easy</p>
+                    <p className="font-light text-gray-200">Access your data fast and easy</p>
                 </div>
-                <div className="p-2 flex justify-start items-center space-x-3">
-                    <div className="text-violet-500 w-6 h-6">
+                <div className="flex items-center justify-start space-x-3 p-2">
+                    <div className="h-6 w-6 text-violet-500">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
@@ -134,10 +134,10 @@ const WelcomePage = ({ onClose }: WelcomeWindowProps): React.ReactElement => {
                             />
                         </svg>
                     </div>
-                    <p className="text-gray-200 font-light">Search for your courses and files</p>
+                    <p className="font-light text-gray-200">Search for your courses and files</p>
                 </div>
-                <div className="p-2 flex justify-start items-center space-x-3">
-                    <div className="text-emerald-500 w-6 h-6">
+                <div className="flex items-center justify-start space-x-3 p-2">
+                    <div className="h-6 w-6 text-emerald-500">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
@@ -148,11 +148,11 @@ const WelcomePage = ({ onClose }: WelcomeWindowProps): React.ReactElement => {
                             <path d="M4.462 19.462c.42-.419.753-.89 1-1.395.453.214.902.435 1.347.662a6.742 6.742 0 0 1-1.286 1.794.75.75 0 0 1-1.06-1.06Z" />
                         </svg>
                     </div>
-                    <p className="text-gray-200 font-light">Keep track of work and deadlines</p>
+                    <p className="font-light text-gray-200">Keep track of work and deadlines</p>
                 </div>
             </div>
-            <div className="flex justify-center items-center space-x-8 scale-90 py-4">
-                <div className="hover:-translate-y-2 transition">
+            <div className="flex scale-90 items-center justify-center space-x-8 py-4">
+                <div className="transition hover:-translate-y-2">
                     <a href="https://github.com/robert-kratz/ilias-uni-mannheim-wrapper" target="_blank">
                         <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -162,16 +162,16 @@ const WelcomePage = ({ onClose }: WelcomeWindowProps): React.ReactElement => {
                         </svg>
                     </a>
                 </div>
-                <div className="hover:-translate-y-2 transition">
+                <div className="transition hover:-translate-y-2">
                     <a href="https://rjks.us" target="_blank">
-                        <img src={Logo} alt="Logo" className="w-16 h-16 rounded-full p-1" />
+                        <img src={Logo} alt="Logo" className="h-16 w-16 rounded-full p-1" />
                     </a>
                 </div>
             </div>
             <div>
                 <button
                     onClick={onClose}
-                    className="bg-indigo-500 hover:bg-indigo-600 transition text-white rounded-md px-4 py-3 w-full">
+                    className="w-full rounded-md bg-indigo-500 px-4 py-3 text-white transition hover:bg-indigo-600">
                     Next
                 </button>
             </div>
@@ -186,9 +186,9 @@ type SecurePageProps = {
 const SecurePage = ({ onClose }: SecurePageProps) => {
     return (
         <div className="space-y-4">
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-semibold">Secure and Reliable</h1>
-                <div className="w-12 h-12 rounded-full bg-violet-500 text-white">
+                <div className="h-12 w-12 rounded-full bg-violet-500 text-white">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -203,14 +203,14 @@ const SecurePage = ({ onClose }: SecurePageProps) => {
                 </div>
             </div>
 
-            <p className="200 font-light text-md">
+            <p className="200 text-md font-light">
                 For your convenience, you can safe your Ilias credentials in the
                 <strong className="font-bold"> local keychain</strong>, so you don't have to enter them every time you
                 want to access your data.
             </p>
             <div className="flex flex-col space-y-2">
-                <div className="p-2 flex justify-start items-center space-x-3">
-                    <div className="text-blue-500 w-6 h-6 p-0.5">
+                <div className="flex items-center justify-start space-x-3 p-2">
+                    <div className="h-6 w-6 p-0.5 text-blue-500">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
@@ -225,8 +225,8 @@ const SecurePage = ({ onClose }: SecurePageProps) => {
                     </div>
                     <p className="200 font-light">Store your credentials securely</p>
                 </div>
-                <div className="p-2 flex justify-start items-center space-x-3">
-                    <div className="text-emerald-500 w-6 h-6 p-0.5">
+                <div className="flex items-center justify-start space-x-3 p-2">
+                    <div className="h-6 w-6 p-0.5 text-emerald-500">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
@@ -241,7 +241,7 @@ const SecurePage = ({ onClose }: SecurePageProps) => {
             <div>
                 <button
                     onClick={onClose}
-                    className="bg-indigo-500 hover:bg-indigo-600 transition text-white rounded-md px-4 py-3 w-full">
+                    className="w-full rounded-md bg-indigo-500 px-4 py-3 text-white transition hover:bg-indigo-600">
                     Next
                 </button>
             </div>
@@ -267,9 +267,9 @@ const DisclaimerPage = ({ onClose }: DisclaimerPageProps) => {
 
     return (
         <div className="space-y-4">
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-semibold">Disclaimer</h1>
-                <div className="w-12 h-12 rounded-full bg-indigo-500 text-white">
+                <div className="h-12 w-12 rounded-full bg-indigo-500 text-white">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -284,7 +284,7 @@ const DisclaimerPage = ({ onClose }: DisclaimerPageProps) => {
                     </svg>
                 </div>
             </div>
-            <p className="200 font-light text-md">
+            <p className="200 text-md font-light">
                 This application is not affiliated with the University of Mannheim or the Ilias platform. It is a
                 personal project developed by{' '}
                 <a href="https://rjks.us/" className="text-blue-500 hover:underline">
@@ -292,8 +292,8 @@ const DisclaimerPage = ({ onClose }: DisclaimerPageProps) => {
                 </a>{' '}
             </p>
             <div className="flex flex-col space-y-2">
-                <div className="p-2 flex justify-start items-center space-x-3">
-                    <div className="text-violet-500 w-6 h-6 p-0.5">
+                <div className="flex items-center justify-start space-x-3 p-2">
+                    <div className="h-6 w-6 p-0.5 text-violet-500">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
@@ -304,8 +304,8 @@ const DisclaimerPage = ({ onClose }: DisclaimerPageProps) => {
                     </div>
                     <p className="200 font-light">Project under development</p>
                 </div>
-                <div className="p-2 flex justify-start items-center space-x-3">
-                    <div className="text-emerald-500 w-6 h-6 p-0.5">
+                <div className="flex items-center justify-start space-x-3 p-2">
+                    <div className="h-6 w-6 p-0.5 text-emerald-500">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
@@ -325,10 +325,10 @@ const DisclaimerPage = ({ onClose }: DisclaimerPageProps) => {
                 <button
                     onClick={openLoginModal}
                     disabled={loading}
-                    className="bg-indigo-500 hover:bg-indigo-600 disabled:bg-indigo-600 disabled:cursor-not-allowed transition text-white rounded-md px-4 py-3 w-full relative">
+                    className="relative w-full rounded-md bg-indigo-500 px-4 py-3 text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-indigo-600">
                     {loading ? 'Continue in other window' : 'Proceed to Login (Ilias)'}
                     {loading && (
-                        <div className="absolute w-6 h-6 min-w-[1.5rem] border-4 border-t-4 border-gray-300 border-t-indigo-500 rounded-full animate-spin right-2 top-3"></div>
+                        <div className="absolute right-2 top-3 h-6 w-6 min-w-[1.5rem] animate-spin rounded-full border-4 border-t-4 border-gray-300 border-t-indigo-500"></div>
                     )}
                 </button>
             </div>

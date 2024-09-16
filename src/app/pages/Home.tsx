@@ -229,14 +229,14 @@ export default function Home(): React.ReactElement {
 
     return (
         <div className="flex justify-between">
-            <div className="h-screen fixed w-[5.5rem] bg-dark-gray flex flex-col justify-between overflow-y-scroll">
-                <div className="flex flex-col items-center divide-y-2 divide-dark-gray-3 space-y-4">
-                    <div className="mt-6 w-14 h-14 transition cursor-pointer flex justify-center items-center p-2">
-                        <img src={Logo} alt="Ilias Logo" className="w-14 h-14" />
+            <div className="fixed flex h-screen w-[5.5rem] flex-col justify-between overflow-y-scroll bg-dark-gray">
+                <div className="flex flex-col items-center space-y-4 divide-y-2 divide-dark-gray-3">
+                    <div className="mt-6 flex h-14 w-14 cursor-pointer items-center justify-center p-2 transition">
+                        <img src={Logo} alt="Ilias Logo" className="h-14 w-14" />
                     </div>
                     <div className="py-4 text-white">{pageIcons}</div>
                 </div>
-                <div className="flex justify-center items-center text-white">
+                <div className="flex items-center justify-center text-white">
                     {routes.map((route, index) => {
                         if (route.text !== 'Settings') return null;
 
@@ -252,9 +252,9 @@ export default function Home(): React.ReactElement {
                     })}
                 </div>
             </div>
-            <div className="w-full min-h-screen bg-dark-gray-3 ml-[5.5rem] p-8">
+            <div className="ml-[5.5rem] min-h-screen w-full bg-dark-gray-3 p-8">
                 <SaveCredentialsWarning show={!hasCredsSaved && hasSetUpWizard} />
-                <div className="min-h-[60vh] relative">
+                <div className="relative min-h-[60vh]">
                     <FetchingIndicator />
                     <Suspense fallback={<div>Loading...</div>}>
                         {appState.showCurrentDirectory ? (
@@ -277,7 +277,7 @@ export default function Home(): React.ReactElement {
                         )}
                     </Suspense>
                 </div>
-                <div className="flex justify-center font-light items-center pt-8 text-gray-300 space-x-1">
+                <div className="flex items-center justify-center space-x-1 pt-8 font-light text-gray-300">
                     <span>{new Date().getFullYear()} &copy; Ilias Ultimate by</span>
                     <a href="https://rjks.us/" target="_blank" className="text-white hover:underline">
                         Robert Julian Kratz
@@ -307,10 +307,10 @@ const NavigationListItem = ({
         <div
             onClick={onClick}
             className={classNames(
-                'w-14 h-14 flex justify-center items-center p-4 m-4 transition cursor-pointer hover:rounded-[1.5rem] shadow-sm hover:shadow-md',
+                'm-4 flex h-14 w-14 cursor-pointer items-center justify-center p-4 shadow-sm transition hover:rounded-[1.5rem] hover:shadow-md',
                 selcted
-                    ? 'bg-dark-gray-3 hover:bg-dark-gray-2 rounded-[1.2rem]'
-                    : 'bg-dark-gray-2 hover:bg-dark-gray-3 rounded-[2rem]'
+                    ? 'rounded-[1.2rem] bg-dark-gray-3 hover:bg-dark-gray-2'
+                    : 'rounded-[2rem] bg-dark-gray-2 hover:bg-dark-gray-3'
             )}>
             {selectedIcon && selcted ? selectedIcon : icon}
             <span className="sr-only">{text}</span>
