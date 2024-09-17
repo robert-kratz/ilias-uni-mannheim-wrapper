@@ -98,6 +98,7 @@ app.on('ready', async () => {
     const ret = globalShortcut.register(shortcut, () => {
         console.log('Shortcut pressed, resetting store');
         resetStore();
+        store.reset();
         dropAllTables();
     });
 
