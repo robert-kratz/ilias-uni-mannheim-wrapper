@@ -30,6 +30,7 @@ ipcMain.handle(
                     sessionId: getSessionToken(),
                     userId,
                     doCache,
+                    parentFolderId: null,
                     courseId: course.id,
                     onEvent: (event) => {
                         getMainWindow().webContents.send('application-scrape', event);
@@ -136,8 +137,7 @@ ipcMain.handle(
                 sessionId: getSessionToken(),
                 userId,
                 doCache,
-                //TODO: ADD PRARENT ID TO DORECTORY; OTHERWISE IT WILL NOT WORK
-
+                parentFolderId: directoryId,
                 directoryId: directoryId,
                 onEvent: (event) => {
                     getMainWindow().webContents.send('application-scrape', event);

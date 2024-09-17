@@ -12,6 +12,7 @@ type UpdateDirectoryType = {
     userId: string;
     sessionId: string;
     doCache?: boolean;
+    parentFolderId: string | null;
     onEvent: (event: ScrapeEvent) => void;
 };
 
@@ -27,6 +28,7 @@ export function updateDirectory({
     courseId,
     sessionId,
     onEvent,
+    parentFolderId,
     userId,
     doCache,
 }: UpdateDirectoryType): Promise<UpdateDirectoryReturnType> {
@@ -82,6 +84,7 @@ export function updateDirectory({
                     sessionId,
                     userId,
                     target: directoryId.replace('d-', ''),
+                    parentFolderId: parentFolderId,
                     courseId: cId,
                     onEvent,
                 });
@@ -110,6 +113,7 @@ export function updateDirectory({
                 fetchUserPage = await fetchConentPage({
                     sessionId,
                     userId,
+                    parentFolderId: null,
                     target: cId.replace('c-', ''),
                     courseId: cId,
                     onEvent,

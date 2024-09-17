@@ -172,11 +172,20 @@ export default function Home(): React.ReactElement {
 
         const onApplicationScrape = (event: Electron.IpcRendererEvent, data: ScrapeEvent) => {
             if (data.type === 'new-item') {
-                console.log('New item: ', data);
-
-                if (appState.showCurrentDirectory && appState.showCurrentDirectory?.directoryId === data.ref_id) {
-                    fetchApplicationState();
-                }
+                if (appState.showCurrentDirectory)
+                    window.api
+                        .openDirectory(
+                            appState.showCurrentDirectory.directoryId
+                                ? appState.showCurrentDirectory.directoryId
+                                : appState.showCurrentDirectory.courseId,
+                            false
+                        )
+                        .then((value: OpenDirectoryResponse) => {
+                            dispatch(setShowCurrentDirectory({ showCurrentDirectory: value }));
+                        })
+                        .catch((error: string) => {
+                            console.error('Error opening directory: ', error);
+                        });
             }
         };
 

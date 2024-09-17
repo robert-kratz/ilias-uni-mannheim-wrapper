@@ -60,7 +60,7 @@ export default function DirectoryPage({ directory, closeDirectory, goToDirectory
                     {directory.parentName && directory.parentName !== directory.courseName && (
                         <div
                             onClick={() => goToDirectory(directory.parentId)}
-                            className="bg-light-gray-2 border-light-gray-3 flex cursor-pointer items-center justify-start space-x-2 rounded-md border-2 p-3 text-dark-gray-2 transition dark:border-dark-gray dark:bg-dark-gray-2 dark:hover:bg-dark-gray">
+                            className="bg-light-gray-2 border-light-gray-3 dark:text-dark-text-2 flex cursor-pointer items-center justify-start space-x-2 rounded-md border-2 p-3 text-dark-gray-2 transition dark:border-dark-gray dark:bg-dark-gray-2 dark:hover:bg-dark-gray">
                             <div className="h-6 w-6">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +81,7 @@ export default function DirectoryPage({ directory, closeDirectory, goToDirectory
                         directory.directoryName !== directory.courseName && (
                             <div
                                 onClick={() => goToDirectory(directory.directoryId)}
-                                className="bg-light-gray-2 border-light-gray-3 flex cursor-pointer items-center justify-start space-x-2 rounded-md border-2 p-3 text-dark-gray-2 transition dark:border-dark-gray dark:bg-dark-gray-2 dark:hover:bg-dark-gray">
+                                className="bg-light-gray-2 border-light-gray-3 dark:text-dark-text-2 flex cursor-pointer items-center justify-start space-x-2 rounded-md border-2 p-3 text-dark-gray-2 transition dark:border-dark-gray dark:bg-dark-gray-2 dark:hover:bg-dark-gray">
                                 <div className="h-6 w-6">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
