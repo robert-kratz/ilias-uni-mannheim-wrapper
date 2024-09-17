@@ -48,7 +48,7 @@ export default function FavouriteBadge({ item, onItemFavourite }: Props) {
         <div
             onClick={toggleFavourite}
             className={classNames(
-                'h-5 w-5 cursor-pointer text-yellow-600',
+                'h-5 w-5 cursor-pointer text-yellow-500 dark:text-yellow-600',
                 item.matchingEntityType == 'file' ? 'hidden' : ''
             )}>
             {isFavourite ? (

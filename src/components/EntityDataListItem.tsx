@@ -43,7 +43,7 @@ export function EntityDataListItem({
     console.log('Item:', item);
 
     return (
-        <div className="flex w-full cursor-pointer items-center justify-between rounded-md bg-dark-gray-2 p-4 transition hover:scale-[100.75%]">
+        <div className="bg-light-gray-2 flex w-full cursor-pointer items-center justify-between rounded-md p-4 transition hover:scale-[100.75%] dark:bg-dark-gray-2">
             <div
                 onClick={() =>
                     item.matchingEntityType === 'directory' || item.matchingEntityType === 'course'
@@ -88,10 +88,12 @@ export function EntityDataListItem({
                     ) : null}
                 </div>
                 <div>
-                    <h3 className="flex items-center justify-start space-x-2 text-white">
+                    <h3 className="text-light-text-2 dark:text-dark-text-2 flex items-center justify-start space-x-2">
                         {item.parentId !== item.courseId && item.parentId != null && showRoute && (
                             <>
-                                <span className="text-sm text-gray-300">{item.parentName}</span>
+                                <span className="text-light-text-2 dark:text-dark-text-3 text-sm">
+                                    {item.parentName}
+                                </span>
                                 <span>/</span>
                             </>
                         )}
@@ -102,7 +104,7 @@ export function EntityDataListItem({
                         </span>
                     </h3>
                     {item.matchingEntityType !== 'course' && (
-                        <p className="space-x-2 text-xs text-gray-400">
+                        <p className="text-light-text-3 dark:text-dark-text-3 space-x-2 text-xs">
                             <span>In: {item.courseTitle}</span>
                         </p>
                     )}
@@ -112,7 +114,7 @@ export function EntityDataListItem({
                 {item.matchingEntityType == 'directory' && showFavourite && (
                     <FavouriteBadge item={item} key={item.id} onItemFavourite={onItemFavourite} />
                 )}
-                <div className="h-10 w-10 cursor-pointer p-2 text-gray-300">
+                <div className="text-light-text-3 dark:text-dark-text-3 h-10 w-10 cursor-pointer p-2">
                     {item.matchingEntityType === 'file' ? (
                         <div onClick={() => downloadFile(item.id, item.name)}>
                             <svg

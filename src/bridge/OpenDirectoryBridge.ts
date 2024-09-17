@@ -137,6 +137,7 @@ ipcMain.handle(
                 userId,
                 doCache,
                 //TODO: ADD PRARENT ID TO DORECTORY; OTHERWISE IT WILL NOT WORK
+
                 directoryId: directoryId,
                 onEvent: (event) => {
                     getMainWindow().webContents.send('application-scrape', event);

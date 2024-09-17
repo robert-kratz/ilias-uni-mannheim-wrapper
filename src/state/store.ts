@@ -16,6 +16,7 @@ const userPersistConfig = {
         'currentFirstSetupWizardPage',
         'searchResults',
         'selectedSearchFilter',
+        'themeMode',
     ],
 };
 

@@ -92,21 +92,21 @@ export default function IliasPage({ openDirectory, open }: IliasPageProps) {
 
     return (
         <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-white">Settings</h1>
+            <h1 className="text-light-text dark:text-dark-text text-2xl font-bold">Settings</h1>
             <div className="py-2">
                 {userCourses.map((year) => {
                     return (
                         <div
                             key={year.year}
-                            className="w-full cursor-pointer rounded-md bg-dark-gray-2 font-light text-white shadow-md transition">
-                            <div className="sticky top-0 z-10 flex items-center justify-between rounded-md bg-dark-gray-2 p-4">
+                            className="bg-light-gray-2 w-full cursor-pointer rounded-md font-light text-dark-gray-2 shadow-md transition dark:bg-dark-gray-2 dark:text-white">
+                            <div className="bg-light-gray-3 sticky top-0 z-10 flex items-center justify-between rounded-md p-4 dark:bg-dark-gray-2">
                                 <h2 className="text-xl font-semibold">{year.year}</h2>
                                 <div className="h-10 w-10">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
                                         fill="currentColor"
-                                        className="size-6 p-2 text-gray-400 transition hover:text-gray-300">
+                                        className="size-6 text-light-text-2 dark:text-dark-text-2 p-2 transition hover:text-gray-300">
                                         <path
                                             fillRule="evenodd"
                                             d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z"
@@ -115,7 +115,7 @@ export default function IliasPage({ openDirectory, open }: IliasPageProps) {
                                     </svg>
                                 </div>
                             </div>
-                            <ul className="space-y-4 px-4 pb-4">
+                            <ul className="space-y-4 p-4">
                                 {year.courses.map((elements) => {
                                     console.log(elements);
 
@@ -125,7 +125,7 @@ export default function IliasPage({ openDirectory, open }: IliasPageProps) {
                                     return (
                                         <li
                                             key={elements.link}
-                                            className="flex items-center justify-start space-x-2 rounded-md bg-dark-gray-3 p-4 transition hover:scale-[100.75%]">
+                                            className="bg-light-gray-3 flex items-center justify-start space-x-2 rounded-md p-4 transition hover:scale-[100.75%] dark:bg-dark-gray-3">
                                             <div className="h-10 w-10 p-1 text-violet-500">
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -137,10 +137,13 @@ export default function IliasPage({ openDirectory, open }: IliasPageProps) {
                                                         d="M2.25 5.25a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3V15a3 3 0 0 1-3 3h-3v.257c0 .597.237 1.17.659 1.591l.621.622a.75.75 0 0 1-.53 1.28h-9a.75.75 0 0 1-.53-1.28l.621-.622a2.25 2.25 0 0 0 .659-1.59V18h-3a3 3 0 0 1-3-3V5.25Zm1.5 0v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5Z"
                                                         clipRule="evenodd"
                                                     />
+                                                    s
                                                 </svg>
                                             </div>
                                             <div>
-                                                <h3>{elements.title}</h3>
+                                                <h3 className="text-light-text-2 dark:text-dark-text-2">
+                                                    {elements.title}
+                                                </h3>
                                                 {/* <p className="text-gray-400 text-xs">{description}</p> */}
                                             </div>
                                         </li>
@@ -166,8 +169,13 @@ export default function IliasPage({ openDirectory, open }: IliasPageProps) {
                                                 </svg>
                                             </div>
                                             <div>
-                                                <h3>{elements.title}</h3>
-                                                <p className="text-xs text-gray-400">{elements.description}</p>
+                                                <h3 className="text-light-text-2 dark:text-dark-text-2">
+                                                    {' '}
+                                                    {elements.title}
+                                                </h3>
+                                                <p className="text-light-text-2 dark:text-dark-text-3 text-xs">
+                                                    {elements.description}
+                                                </p>
                                             </div>
                                         </li>
                                     );

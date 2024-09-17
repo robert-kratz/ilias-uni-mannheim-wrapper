@@ -101,7 +101,7 @@ type FavoritesSectionProps = {
 export function FavoritesSection({ favorites, openDirectory, removeFromFavorites }: FavoritesSectionProps) {
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <h1 className="text-2xl font-bold text-white">Favorites</h1>
+            <h1 className="text-light-text dark:text-dark-text text-2xl font-bold">Favorites</h1>
             {/* {favorites?.map((favorite, index) => (
             <EntityDataListItem
                 key={index}
@@ -111,24 +111,26 @@ export function FavoritesSection({ favorites, openDirectory, removeFromFavorites
             />
         ))} */}
             {favorites.map((course, index) => (
-                <div key={index} className="space-y-2 bg-dark-gray-2 rounded-md p-4">
+                <div key={index} className="bg-light-gray-2 space-y-2 rounded-md p-4 dark:bg-dark-gray-2">
                     <div
-                        className="p-4 rounded-md bg-dark-gray-3 flex justify-start items-center space-x-4 cursor-pointer"
+                        className="bg-light-gray-3 flex cursor-pointer items-center justify-start space-x-4 rounded-md p-4 dark:bg-dark-gray-3"
                         onClick={() => openDirectory(course.courseId)}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                             fill="currentColor"
-                            className="size-6 text-violet-500 w-7 h-7">
+                            className="size-6 h-7 w-7 text-violet-500">
                             <path
                                 fillRule="evenodd"
                                 d="M2.25 5.25a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3V15a3 3 0 0 1-3 3h-3v.257c0 .597.237 1.17.659 1.591l.621.622a.75.75 0 0 1-.53 1.28h-9a.75.75 0 0 1-.53-1.28l.621-.622a2.25 2.25 0 0 0 .659-1.59V18h-3a3 3 0 0 1-3-3V5.25Zm1.5 0v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5Z"
                                 clipRule="evenodd"
                             />
                         </svg>
-                        <h1 className="text-gray-200 text-lg font-medium">{course.courseName}</h1>
+                        <h1 className="text-light-text-2 dark:text-dark-text-2 text-lg font-medium">
+                            {course.courseName}
+                        </h1>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 py-2">
+                    <div className="grid grid-cols-1 gap-4 py-2 md:grid-cols-2 lg:grid-cols-3">
                         {course.entities.map((favorite, index) => (
                             <FavoriteSectionItem
                                 removeFromFavorites={removeFromFavorites}
@@ -141,8 +143,8 @@ export function FavoritesSection({ favorites, openDirectory, removeFromFavorites
                 </div>
             ))}
             {favorites.length == 0 && (
-                <div className="flex justify-center items-center h-32">
-                    <h1 className="text-gray-300 text-sm">No favorites yet</h1>
+                <div className="flex h-32 items-center justify-center">
+                    <h1 className="text-sm text-gray-300">No favorites yet</h1>
                 </div>
             )}
         </Suspense>
@@ -157,15 +159,15 @@ type FavoriteSectionItemProps = {
 
 export function FavoriteSectionItem({ item, openDirectory, removeFromFavorites }: FavoriteSectionItemProps) {
     return (
-        <div className="p-4 bg-dark-gray-3 hover:scale-[100.75%] transition rounded-md w-full flex justify-between items-center cursor-pointer">
+        <div className="bg-light-gray-3 flex w-full cursor-pointer items-center justify-between rounded-md p-4 transition hover:scale-[100.75%] dark:bg-dark-gray-3">
             <div
                 onClick={() =>
                     item.matchingEntityType === 'directory' || item.matchingEntityType === 'course'
                         ? openDirectory(item.id)
                         : {}
                 }
-                className="flex justify-start items-center space-x-2 ">
-                <div className="w-8 h-8 p-1">
+                className="flex items-center justify-start space-x-2">
+                <div className="h-8 w-8 p-1">
                     {item.matchingEntityType === 'file' ? (
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -202,20 +204,20 @@ export function FavoriteSectionItem({ item, openDirectory, removeFromFavorites }
                     ) : null}
                 </div>
                 <div>
-                    <h3 className="text-gray-300 space-x-2 flex justify-start items-center">
-                        <span className="text-md font-normal cursor-pointer">
+                    <h3 className="text-light-text-2 dark:text-dark-text-2 flex items-center justify-start space-x-2">
+                        <span className="text-md cursor-pointer font-normal">
                             {item.name.length + (item.parentName?.length || 0) > 80
                                 ? item.name.slice(0, 80) + '.' + item.type + '...'
                                 : item.name}
                         </span>
                     </h3>
-                    <p className="text-gray-300 text-sm">
+                    <p className="text-light-text-2 dark:text-dark-text-2 text-sm">
                         {item.parentId !== item.courseId && item.parentId != null && <span>{item.parentName}</span>}
                     </p>
                 </div>
             </div>
-            <div className="flex justify-end items-center space-x-3">
-                <div className="text-gray-300 w-10 h-10 p-2 cursor-pointer">
+            <div className="flex items-center justify-end space-x-3">
+                <div className="text-light-text-2 dark:text-dark-text-2 h-10 w-10 cursor-pointer p-2">
                     <a
                         target="_blank"
                         href={`https://ilias.uni-mannheim.de/ilias.php?baseClass=ilrepositorygui&cmd=view&ref_id=${item.id?.replace(

@@ -49,6 +49,9 @@ declare global {
             isDirectoryFavourite: (directoryId: string) => Promise<boolean>;
             openFileExplorer: (path: string) => Promise<void>;
             getFavorites: () => Promise<EntityDataResponseItem[] | null>;
+            getSystemTheme: () => Promise<string>;
+            onThemeChanged: (callback: (event: Electron.IpcRendererEvent, data: string) => void) => void;
+            removeThemeChangedListener: (callback: (event: Electron.IpcRendererEvent, data: string) => void) => void;
         };
     }
 }

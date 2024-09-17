@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { OpenDirectoryResponse, EntityDataResponseItem } from '../types/objects';
 
+type ThemeMode = 'light' | 'dark' | 'system';
+
 interface ApplicationState {
     currentHomePageIndex: number;
     currentSearchQuery: string;
@@ -10,6 +12,7 @@ interface ApplicationState {
     selectedSearchFilter: 'files' | 'directories' | 'courses' | 'none';
     searchResults: EntityDataResponseItem[];
     showCurrentDirectory: OpenDirectoryResponse | null;
+    themeMode: ThemeMode;
 }
 
 const initialState: ApplicationState = {
@@ -21,6 +24,7 @@ const initialState: ApplicationState = {
     currentSearchQuery: '',
     searchResults: [],
     showCurrentDirectory: null,
+    themeMode: 'system',
 };
 
 const userSlice = createSlice({
@@ -54,6 +58,9 @@ const userSlice = createSlice({
         ) {
             state.selectedSearchFilter = action.payload.selectedSearchFilter;
         },
+        setThemeMode(state, action: PayloadAction<{ themeMode: ThemeMode }>) {
+            state.themeMode = action.payload.themeMode;
+        },
     },
 });
 
@@ -66,5 +73,6 @@ export const {
     setCurrentTutorialDialogPage,
     setLoadingIndicatorTextShown,
     setShowCurrentDirectory,
+    setThemeMode,
 } = userSlice.actions;
 export default userSlice.reducer;

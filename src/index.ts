@@ -143,6 +143,7 @@ import './bridge/UserBridge';
 import './bridge/FavouriteBridge';
 import './bridge/DownloadFile';
 import './bridge/OpenDirectoryBridge';
+import './bridge/AppTheme';
 
 export const setSessionToken = (token: string) => {
     sessionToken = token;

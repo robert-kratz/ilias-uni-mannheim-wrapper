@@ -48,6 +48,13 @@ contextBridge.exposeInMainWorld('api', {
     isDirectoryFavourite: (directoryId: string) => ipcRenderer.invoke('is-directory-favourite', directoryId),
     openFileExplorer: (path: string) => ipcRenderer.invoke('open-file-explorer', path),
     getFavorites: () => ipcRenderer.invoke('get-favorites'),
+    getSystemTheme: () => ipcRenderer.invoke('get-system-theme'),
+    onThemeChanged: (callback: (event: Electron.IpcRendererEvent, data: string) => void) => {
+        ipcRenderer.on('theme-changed', callback);
+    },
+    removeThemeChangedListener: (callback: (event: Electron.IpcRendererEvent, data: string) => void) => {
+        ipcRenderer.removeListener('theme-changed', callback);
+    },
 });
 
 console.log('Preload script loaded');

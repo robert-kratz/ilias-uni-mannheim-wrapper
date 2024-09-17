@@ -95,7 +95,7 @@ const WelcomePage = ({ onClose }: WelcomeWindowProps): React.ReactElement => {
                 </div>
             </div>
             <h1 className="text-2xl font-semibold">Ilias Ultimate</h1>
-            <p className="text-md font-light text-gray-200">
+            <p className="text-md font-light text-gray-300">
                 This application allows you to manage your courses and files at the{' '}
                 <a href="https://ilias.uni-stuttgart.de" className="text-blue-500 hover:underline">
                     University of Mannheim's Ilias

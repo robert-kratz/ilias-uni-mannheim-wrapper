@@ -4,8 +4,12 @@ import AppRoutes from '../routes';
 import { Suspense, useEffect, useReducer, useState } from 'react';
 import TutorialDialog from '../components/dialogs/TutorialDialog';
 import FirstSetupDialog from '../components/dialogs/FirstSetupDialog';
+import { useSelector } from 'react-redux';
+import { RootState } from '../state/store';
 
 const App: React.FC = () => {
+    const mode = useSelector((state: RootState) => state.app.themeMode);
+
     const [firstStartUp, setFirstStartUp] = useState<boolean>(true);
     const [credentialsSaved, setCredentialsSaved] = useState<boolean>(false);
 
@@ -68,6 +72,33 @@ const App: React.FC = () => {
             window.api.removeReloadListener(handleReload);
         };
     }, []);
+
+    useEffect(() => {
+        const root = document.documentElement;
+
+        const applyTheme = (theme: 'light' | 'dark') => {
+            root.classList.remove('light', 'dark');
+            root.classList.add(theme);
+        };
+
+        if (mode === 'system') {
+            window.api.getSystemTheme().then((systemTheme) => {
+                applyTheme(systemTheme as 'light' | 'dark');
+            });
+
+            const handleThemeChanged = (_event: any, systemTheme: 'light' | 'dark') => {
+                applyTheme(systemTheme);
+            };
+
+            window.api.onThemeChanged(handleThemeChanged);
+
+            return () => {
+                window.api.removeThemeChangedListener(handleThemeChanged);
+            };
+        } else {
+            applyTheme(mode);
+        }
+    }, [mode]);
 
     //finaly sereve the app
     return (
