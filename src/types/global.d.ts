@@ -1,3 +1,4 @@
+import { StatsResponse } from 'src/bridge/StatsBridge';
 import { ScrapeMessage, SearchDataResponseItem, StaticContentAlert, User, EntityDataResponseItem } from './objects';
 
 // in einer Datei wie global.d.ts
@@ -20,18 +21,7 @@ declare global {
             removeReloadListener: (callback: (event: Electron.IpcRendererEvent, data: ReloadMessage) => void) => void;
             onSearch: (query: string, year: string) => Promise<SearchDataResponseItem[]>;
             getStaticContent: () => Promise<StaticContentAlert[] | null>;
-            getAllCourses: () => Promise<
-                Array<{
-                    year: number;
-                    courses: { title: string; link: string; description: string; type: 'Course' | 'Group' }[];
-                }>
-            >;
-            getAllGroups: () => Promise<
-                Array<{
-                    year: number;
-                    courses: { title: string; link: string; description: string; type: 'Course' | 'Group' }[];
-                }>
-            >;
+            getAllCourses: () => Promise<GetCoursesReturnType>;
             onApplicationScrape: (callback: (event: Electron.IpcRendererEvent, data: ScrapeMessage) => void) => void;
             removeApplicationScrapeListener: (
                 callback: (event: Electron.IpcRendererEvent, data: ScrapeMessage) => void
@@ -52,6 +42,9 @@ declare global {
             getSystemTheme: () => Promise<string>;
             onThemeChanged: (callback: (event: Electron.IpcRendererEvent, data: string) => void) => void;
             removeThemeChangedListener: (callback: (event: Electron.IpcRendererEvent, data: string) => void) => void;
+            getStatistics: () => Promise<StatsResponse>;
+            fetchYears: () => Promise<string[]>;
+            reloadApp: () => void;
         };
     }
 }

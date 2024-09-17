@@ -101,7 +101,7 @@ type FavoritesSectionProps = {
 export function FavoritesSection({ favorites, openDirectory, removeFromFavorites }: FavoritesSectionProps) {
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <h1 className="text-light-text dark:text-dark-text text-2xl font-bold">Favorites</h1>
+            <h1 className="text-2xl font-bold text-light-text dark:text-dark-text">Favorites</h1>
             {/* {favorites?.map((favorite, index) => (
             <EntityDataListItem
                 key={index}
@@ -111,9 +111,9 @@ export function FavoritesSection({ favorites, openDirectory, removeFromFavorites
             />
         ))} */}
             {favorites.map((course, index) => (
-                <div key={index} className="bg-light-gray-2 space-y-2 rounded-md p-4 dark:bg-dark-gray-2">
+                <div key={index} className="space-y-2 rounded-md bg-light-gray-2 p-4 dark:bg-dark-gray-2">
                     <div
-                        className="bg-light-gray-3 flex cursor-pointer items-center justify-start space-x-4 rounded-md p-4 dark:bg-dark-gray-3"
+                        className="flex cursor-pointer items-center justify-start space-x-4 rounded-md bg-light-gray-3 p-4 dark:bg-dark-gray-3"
                         onClick={() => openDirectory(course.courseId)}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -126,7 +126,7 @@ export function FavoritesSection({ favorites, openDirectory, removeFromFavorites
                                 clipRule="evenodd"
                             />
                         </svg>
-                        <h1 className="text-light-text-2 dark:text-dark-text-2 text-lg font-medium">
+                        <h1 className="text-lg font-medium text-light-text-2 dark:text-dark-text-2">
                             {course.courseName}
                         </h1>
                     </div>
@@ -144,7 +144,7 @@ export function FavoritesSection({ favorites, openDirectory, removeFromFavorites
             ))}
             {favorites.length == 0 && (
                 <div className="flex h-32 items-center justify-center">
-                    <h1 className="text-sm text-gray-300">No favorites yet</h1>
+                    <h1 className="text-sm text-light-text-2 dark:text-dark-text-3">No favorites yet</h1>
                 </div>
             )}
         </Suspense>
@@ -159,7 +159,7 @@ type FavoriteSectionItemProps = {
 
 export function FavoriteSectionItem({ item, openDirectory, removeFromFavorites }: FavoriteSectionItemProps) {
     return (
-        <div className="bg-light-gray-3 flex w-full cursor-pointer items-center justify-between rounded-md p-4 transition hover:scale-[100.75%] dark:bg-dark-gray-3">
+        <div className="flex w-full cursor-pointer items-center justify-between rounded-md bg-light-gray-3 p-4 transition hover:scale-[100.75%] dark:bg-dark-gray-3">
             <div
                 onClick={() =>
                     item.matchingEntityType === 'directory' || item.matchingEntityType === 'course'
@@ -204,20 +204,20 @@ export function FavoriteSectionItem({ item, openDirectory, removeFromFavorites }
                     ) : null}
                 </div>
                 <div>
-                    <h3 className="text-light-text-2 dark:text-dark-text-2 flex items-center justify-start space-x-2">
+                    <h3 className="flex items-center justify-start space-x-2 text-light-text-2 dark:text-dark-text-2">
                         <span className="text-md cursor-pointer font-normal">
                             {item.name.length + (item.parentName?.length || 0) > 80
                                 ? item.name.slice(0, 80) + '.' + item.type + '...'
                                 : item.name}
                         </span>
                     </h3>
-                    <p className="text-light-text-2 dark:text-dark-text-2 text-sm">
+                    <p className="text-sm text-light-text-2 dark:text-dark-text-2">
                         {item.parentId !== item.courseId && item.parentId != null && <span>{item.parentName}</span>}
                     </p>
                 </div>
             </div>
             <div className="flex items-center justify-end space-x-3">
-                <div className="text-light-text-2 dark:text-dark-text-2 h-10 w-10 cursor-pointer p-2">
+                <div className="h-10 w-10 cursor-pointer p-2 text-light-text-2 dark:text-dark-text-2">
                     <a
                         target="_blank"
                         href={`https://ilias.uni-mannheim.de/ilias.php?baseClass=ilrepositorygui&cmd=view&ref_id=${item.id?.replace(

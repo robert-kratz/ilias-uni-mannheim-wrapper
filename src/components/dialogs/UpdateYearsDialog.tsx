@@ -6,45 +6,33 @@ import { ScrapeEvent } from '../../types/objects';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../state/store';
 import { AppDispatch } from '../../state/store';
-import { setCurrentFirstSetupWizardPage } from '../../state/stateSlice';
-import SaveCredentialsDialog from './SaveCredentialsDialog';
+import { setUpdateYearDialogPage } from '../../state/stateSlice';
 
 const classNames = (...classes: string[]) => {
     return classes.filter(Boolean).join(' ');
 };
 
 /**
- * 1. WelcomeWindow, greeting the user after successful first login. Fetch Index Page.
- * 2. SelectYearWindow, show a list of all available years and let the user select one or multiple.
- * 3. FetchingDataWindow, show a loading spinner while fetching data.
- * 4. SettingsSetupWindow, let the user configure settings, save credentials, etc.
- * 5. FinishSetupWindow, show a success message with a button to close the dialog.
+ * 1. SelectYearWindow, show a list of all available years and let the user select one or multiple.
+ * 2. FetchingDataWindow, show a loading spinner while fetching data.
+ * 3. FinishSetupWindow, show a success message with a button to close the dialog.
  */
 
 type Props = {
     open: boolean;
+    onForceDialogOpen?: () => void;
     onClose: ({ success }: { success: boolean }) => void;
 };
 
-export default function FirstSetupDialog({ open, onClose }: Props) {
+export default function UpdateYearsDialog({ open, onClose, onForceDialogOpen }: Props) {
     const appState = useSelector((state: RootState) => state.app);
     const dispatch: AppDispatch = useDispatch();
-
-    const [username, setUsername] = useState<string>('');
 
     const [aviablableYears, setAviablableYears] = useState<string[]>([]);
     const [selectedYears, setSelectedYears] = useState<string[]>([]);
 
     useEffect(() => {
-        const fetchApplicationState = async () => {
-            if (window.api) {
-                window.api.getApplicationState().then((state) => {
-                    setUsername(state.username);
-                    setAviablableYears(state.aviablableYears);
-                    setSelectedYears(state.selectedYears);
-                });
-            }
-        };
+        const fetchApplicationState = async () => {};
 
         const onReload = (event: Electron.IpcRendererEvent, data: { message: string; type: 'success' | 'error' }) => {
             fetchApplicationState();
@@ -59,22 +47,30 @@ export default function FirstSetupDialog({ open, onClose }: Props) {
         };
     }, []);
 
+    const onWelcomeWindowClose = async ({ avaiableYears }: { avaiableYears: string[] }) => {
+        setAviablableYears(avaiableYears);
+
+        onForceDialogOpen && onForceDialogOpen();
+
+        dispatch(
+            setUpdateYearDialogPage({
+                currentUpdateYearDialogPage: 1,
+            })
+        );
+    };
+
     const handleCloseEvent = async ({ success }: { success: boolean }) => {
-        if (appState.currentFirstSetupWizardPage !== 4) {
-            return;
+        if (!success && appState.currentUpdateYearDialogPage <= 1) {
+            setTimeout(() => {
+                dispatch(
+                    setUpdateYearDialogPage({
+                        currentUpdateYearDialogPage: 0,
+                    })
+                );
+            }, 300);
         }
 
         onClose && onClose({ success });
-    };
-
-    const onWelcomeWindowClose = async ({ success }: { success: boolean }) => {
-        if (success) {
-            dispatch(
-                setCurrentFirstSetupWizardPage({
-                    currentFirstSetupWizardPage: appState.currentFirstSetupWizardPage + 1,
-                })
-            );
-        }
     };
 
     const onYearSelectWindowClose = async ({ selectedYears }: { selectedYears: string[] }) => {
@@ -89,20 +85,15 @@ export default function FirstSetupDialog({ open, onClose }: Props) {
         setSelectedYears(selectedYears);
 
         dispatch(
-            setCurrentFirstSetupWizardPage({
-                currentFirstSetupWizardPage: appState.currentFirstSetupWizardPage + 1,
+            setUpdateYearDialogPage({
+                currentUpdateYearDialogPage: 2,
             })
         );
     };
 
     const onFetchDataWindowClose = async ({ success }: { success: boolean }) => {
         if (!success) {
-            dispatch(
-                setCurrentFirstSetupWizardPage({
-                    currentFirstSetupWizardPage: 1,
-                })
-            );
-
+            handleCloseEvent({ success: false });
             createToast('Error fetching data.', {
                 type: 'error',
                 timeout: 5000,
@@ -110,108 +101,85 @@ export default function FirstSetupDialog({ open, onClose }: Props) {
             return;
         }
 
-        dispatch(
-            setCurrentFirstSetupWizardPage({
-                currentFirstSetupWizardPage: appState.currentFirstSetupWizardPage + 1,
-            })
-        );
-    };
+        onForceDialogOpen && onForceDialogOpen();
 
-    const onSettingsSetupWindowClose = async () => {
         dispatch(
-            setCurrentFirstSetupWizardPage({
-                currentFirstSetupWizardPage: appState.currentFirstSetupWizardPage + 1,
+            setUpdateYearDialogPage({
+                currentUpdateYearDialogPage: 3,
             })
         );
     };
 
     const onCloseFinishSetupWindow = async () => {
-        if (window.api) {
-            window.api.setStoreValue('hasSetUpWizard', true);
-        }
+        handleCloseEvent({ success: true });
 
-        onClose && onClose({ success: true });
+        //reload the app
+        window.api.reloadApp();
     };
 
-    const currentPage = React.useMemo(() => {
-        switch (appState.currentFirstSetupWizardPage) {
+    const currentPageComponent = React.useMemo(() => {
+        switch (appState.currentUpdateYearDialogPage) {
             case 0:
-                return <WelcomeWindow usename={username} onClose={onWelcomeWindowClose} />;
+                return <WelcomeWindow onClose={onWelcomeWindowClose} />;
             case 1:
                 return <SelectYearWindow onClose={onYearSelectWindowClose} aviablableYears={aviablableYears} />;
             case 2:
                 return <FetchingDataWindow onClose={onFetchDataWindowClose} selectedYears={selectedYears} />;
             case 3:
-                return <SettingsSetupWindow onClose={onSettingsSetupWindowClose} />;
-            case 4:
                 return <FinishSetupWindow onClose={onCloseFinishSetupWindow} />;
             default:
                 return null;
         }
-    }, [appState.currentFirstSetupWizardPage, open, onClose]);
+    }, [appState.currentUpdateYearDialogPage, open, onClose]);
 
     return (
         <DialogModal open={open} onClose={() => handleCloseEvent({ success: false })}>
-            {currentPage}
+            {currentPageComponent}
         </DialogModal>
     );
 }
 
 type WelcomeWindowProps = {
-    usename: string;
-    onClose: ({ success }: { success: boolean }) => void;
+    onClose: ({ avaiableYears }: { avaiableYears: string[] }) => void;
 };
 
-const WelcomeWindow = ({ onClose, usename }: WelcomeWindowProps): React.ReactNode => {
-    const handleNext = () => {
-        onClose && onClose({ success: true });
-    };
+const WelcomeWindow = ({ onClose }: WelcomeWindowProps): React.ReactNode => {
+    useEffect(() => {
+        if (window.api) {
+            window.api
+                .fetchYears()
+                .then((years: string[]) => {
+                    console.log('Fetched years:', years);
+                    onClose && onClose({ avaiableYears: years });
+                })
+                .catch((error) => {
+                    console.error('Error fetching years:', error);
+                });
+        }
+    }, []);
 
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between space-x-4">
-                <h1 className="text-2xl font-bold">Welcome {usename}!</h1>
-                <div className="h-12 w-12 rounded-full bg-violet-500 text-white">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="size-6 p-3">
-                        <path
-                            fillRule="evenodd"
-                            d="M12 6.75a5.25 5.25 0 0 1 6.775-5.025.75.75 0 0 1 .313 1.248l-3.32 3.319c.063.475.276.934.641 1.299.365.365.824.578 1.3.64l3.318-3.319a.75.75 0 0 1 1.248.313 5.25 5.25 0 0 1-5.472 6.756c-1.018-.086-1.87.1-2.309.634L7.344 21.3A3.298 3.298 0 1 1 2.7 16.657l8.684-7.151c.533-.44.72-1.291.634-2.309A5.342 5.342 0 0 1 12 6.75ZM4.117 19.125a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75h-.008a.75.75 0 0 1-.75-.75v-.008Z"
-                            clipRule="evenodd"
-                        />
-                        <path d="m10.076 8.64-2.201-2.2V4.874a.75.75 0 0 0-.364-.643l-3.75-2.25a.75.75 0 0 0-.916.113l-.75.75a.75.75 0 0 0-.113.916l2.25 3.75a.75.75 0 0 0 .643.364h1.564l2.062 2.062 1.575-1.297Z" />
-                        <path
-                            fillRule="evenodd"
-                            d="m12.556 17.329 4.183 4.182a3.375 3.375 0 0 0 4.773-4.773l-3.306-3.305a6.803 6.803 0 0 1-1.53.043c-.394-.034-.682-.006-.867.042a.589.589 0 0 0-.167.063l-3.086 3.748Zm3.414-1.36a.75.75 0 0 1 1.06 0l1.875 1.876a.75.75 0 1 1-1.06 1.06L15.97 17.03a.75.75 0 0 1 0-1.06Z"
-                            clipRule="evenodd"
-                        />
-                    </svg>
+                <h1 className="text-2xl font-bold">Add Courses or Semester</h1>
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500 text-white">
+                    <div className="h-6 w-6 min-w-[1.5rem] animate-spin rounded-full border-4 border-t-4 border-indigo-500 border-t-gray-300"></div>
                 </div>
             </div>
             <div>
                 <p className="text-md font-light text-gray-300">
-                    <strong className="font-bold text-white">Thank You for using Ilias Ultimate!</strong>
+                    <strong className="font-bold text-white">Please wait until we scan for your courses.</strong>
                     <br />
                     <br />
-                    In the following steps you will
+                    In the following steps you will:
                 </p>
                 <ul className="text-md list-inside list-disc p-2 py-6 font-light text-gray-300">
                     <li>Select Semesters</li>
-                    <li>Index your courses</li>
-                    <li>Configure your settings</li>
                 </ul>
                 <p className="text-md font-light text-gray-300">
                     The process of indexing, depending on the amount of semesters, may take a while.
                 </p>
             </div>
-            <button
-                onClick={handleNext}
-                className="w-full rounded-md bg-indigo-500 px-4 py-3 text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-indigo-600">
-                Start Setup
-            </button>
         </div>
     );
 };
@@ -226,7 +194,15 @@ const SelectYearWindow = ({ onClose, aviablableYears }: SelectYearWindowProps): 
 
     useEffect(() => {
         //select second year by default
-        setSelectedYears([aviablableYears[1]]);
+        if (window.api) {
+            window.api.getApplicationState().then((state) => {
+                if (state.selectedYears.length > 0) {
+                    setSelectedYears(state.selectedYears);
+                } else {
+                    setSelectedYears([aviablableYears[1]]);
+                }
+            });
+        }
     }, [aviablableYears]);
 
     const handleYearSelect = (year: string) => {
@@ -258,15 +234,6 @@ const SelectYearWindow = ({ onClose, aviablableYears }: SelectYearWindowProps): 
                     <p className="text-sm font-light text-gray-300">
                         Please select the semesters you want to index in this application.
                     </p>
-                </div>
-                <div className="h-12 w-12 min-w-[3rem] rounded-full bg-emerald-500 text-white">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="size-6 p-3">
-                        <path d="M18.75 12.75h1.5a.75.75 0 0 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM12 6a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 6ZM12 18a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 18ZM3.75 6.75h1.5a.75.75 0 1 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM5.25 18.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 0 1.5ZM3 12a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 3 12ZM9 3.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM12.75 12a2.25 2.25 0 1 1 4.5 0 2.25 2.25 0 0 1-4.5 0ZM9 15.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z" />
-                    </svg>
                 </div>
             </div>
             <div className="max-h-96 space-y-2 overflow-y-scroll">
@@ -425,66 +392,6 @@ const FetchingDataWindow = ({ onClose, selectedYears }: FetchingDataWindowProps)
                 <p className="text-sm text-gray-300">
                     Indexing may take a while, depending on the amount of semesters. (Approx.{' '}
                     {Math.round(selectedYears.length * 1.5)} minutes)
-                </p>
-            </div>
-        </div>
-    );
-};
-
-type SettingsSetupWindowProps = {
-    onClose: () => void;
-};
-
-const SettingsSetupWindow = ({ onClose }: SettingsSetupWindowProps): React.ReactNode => {
-    const [saveCredentialsOpen, setSaveCredentialsOpen] = useState(false);
-
-    const handleNext = () => {
-        onClose && onClose();
-    };
-
-    const onSaveCredentialsClose = ({ success }: { success: boolean }) => {
-        if (success) {
-            onClose && onClose();
-        }
-
-        setSaveCredentialsOpen(false);
-    };
-
-    return (
-        <div className="space-y-4">
-            <SaveCredentialsDialog open={saveCredentialsOpen} onClose={onSaveCredentialsClose} />
-            <div className="flex items-center justify-between space-x-4">
-                <div>
-                    <h1 className="text-2xl font-bold">Finish Setup</h1>
-                </div>
-                <div className="h-12 w-12 min-w-[3rem] rounded-full bg-violet-500 text-white">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        className="size-6 p-3">
-                        <path
-                            fillRule="evenodd"
-                            d="M12 3.75a6.715 6.715 0 0 0-3.722 1.118.75.75 0 1 1-.828-1.25 8.25 8.25 0 0 1 12.8 6.883c0 3.014-.574 5.897-1.62 8.543a.75.75 0 0 1-1.395-.551A21.69 21.69 0 0 0 18.75 10.5 6.75 6.75 0 0 0 12 3.75ZM6.157 5.739a.75.75 0 0 1 .21 1.04A6.715 6.715 0 0 0 5.25 10.5c0 1.613-.463 3.12-1.265 4.393a.75.75 0 0 1-1.27-.8A6.715 6.715 0 0 0 3.75 10.5c0-1.68.503-3.246 1.367-4.55a.75.75 0 0 1 1.04-.211ZM12 7.5a3 3 0 0 0-3 3c0 3.1-1.176 5.927-3.105 8.056a.75.75 0 1 1-1.112-1.008A10.459 10.459 0 0 0 7.5 10.5a4.5 4.5 0 1 1 9 0c0 .547-.022 1.09-.067 1.626a.75.75 0 0 1-1.495-.123c.041-.495.062-.996.062-1.503a3 3 0 0 0-3-3Zm0 2.25a.75.75 0 0 1 .75.75c0 3.908-1.424 7.485-3.781 10.238a.75.75 0 0 1-1.14-.975A14.19 14.19 0 0 0 11.25 10.5a.75.75 0 0 1 .75-.75Zm3.239 5.183a.75.75 0 0 1 .515.927 19.417 19.417 0 0 1-2.585 5.544.75.75 0 0 1-1.243-.84 17.915 17.915 0 0 0 2.386-5.116.75.75 0 0 1 .927-.515Z"
-                            clipRule="evenodd"
-                        />
-                    </svg>
-                </div>
-            </div>
-            <div>
-                <p className="text-md text-gray-300">
-                    You can now save your credentials to login automatically in the future. These credentials are{' '}
-                    <strong className="font-bold">saved on your local machine</strong> and are not shared with anyone.
-                </p>
-            </div>
-            <button
-                onClick={() => setSaveCredentialsOpen(true)}
-                className="w-full rounded-md bg-indigo-500 px-4 py-3 text-white transition hover:bg-indigo-600 disabled:cursor-not-allowed disabled:bg-indigo-600">
-                Save Credentials
-            </button>
-            <div className="flex items-center justify-center">
-                <p onClick={handleNext} className="cursor-pointer text-xs text-gray-400">
-                    Skip for now
                 </p>
             </div>
         </div>

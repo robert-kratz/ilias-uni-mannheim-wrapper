@@ -3,7 +3,7 @@ import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 import platformSettings from '../platformSettings.json';
-import { getSessionToken } from '../index';
+import { getMainWindow, getSessionToken } from '../index';
 
 ipcMain.handle('download-file', async (event, fileId: string, name: string) => {
     const result = await dialog.showOpenDialog({
@@ -33,20 +33,25 @@ ipcMain.handle('download-file', async (event, fileId: string, name: string) => {
 
             console.log('Downloading file:', platformSettings.FILE_URL + fileId);
 
-            // Extract filename from Content-Disposition header or URL
-            let filename = name;
+            // Extract filename from Content-Disposition header or use provided name
+            let filename = name || 'downloaded_file';
             const contentDisposition = response.headers['content-disposition'];
             if (contentDisposition && contentDisposition.includes('filename=')) {
                 filename = contentDisposition.split('filename=')[1].split(';')[0].replace(/"/g, '');
+            }
+
+            // Ensure filename is not undefined
+            if (!filename) {
+                filename = 'downloaded_file';
             }
 
             const filePath = path.join(directoryPath, filename);
             const writer = fs.createWriteStream(filePath);
             response.data.pipe(writer);
 
-            const write = await new Promise((resolve, reject) => {
-                writer.on('finish', () => resolve('File downloaded successfully'));
-                writer.on('error', (err) => reject(err));
+            await new Promise((resolve, reject) => {
+                writer.on('finish', resolve);
+                writer.on('error', reject);
             });
 
             return {
@@ -76,4 +81,12 @@ ipcMain.handle('open-file-explorer', async (event, path: string) => {
             event.sender.send('open-file-explorer-error', errorMessage);
         }
     });
+});
+
+ipcMain.handle('reload-app', async () => {
+    const mainWindow = getMainWindow();
+
+    if (mainWindow) {
+        mainWindow.reload();
+    }
 });

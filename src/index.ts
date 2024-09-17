@@ -134,7 +134,6 @@ app.on('activate', () => {
 //load ipc handlers from bridge files
 import './bridge/ApplicationStoreBridge';
 import './bridge/CourseBridge';
-import './bridge/GroupBridge';
 import './bridge/InitalLoginBridge';
 import './bridge/ScrapeBridge';
 import './bridge/SearchBridge';
@@ -145,6 +144,8 @@ import './bridge/FavouriteBridge';
 import './bridge/DownloadFile';
 import './bridge/OpenDirectoryBridge';
 import './bridge/AppTheme';
+import './bridge/StatsBridge';
+import './bridge/FetchYearsBridge';
 
 export const setSessionToken = (token: string) => {
     sessionToken = token;

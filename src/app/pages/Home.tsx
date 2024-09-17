@@ -238,8 +238,8 @@ export default function Home(): React.ReactElement {
 
     return (
         <div className="flex justify-between">
-            <div className="bg-light-gray-3 fixed flex h-screen w-[5.5rem] flex-col justify-between overflow-y-scroll dark:bg-dark-gray">
-                <div className="divide-light-gray-2 flex flex-col items-center space-y-4 divide-y-2 dark:divide-dark-gray-3">
+            <div className="fixed flex h-screen w-[5.5rem] flex-col justify-between overflow-y-scroll bg-light-gray-3 dark:bg-dark-gray">
+                <div className="flex flex-col items-center space-y-4 divide-y-2 divide-light-gray-2 dark:divide-dark-gray-3">
                     <div className="mt-6 flex h-14 w-14 cursor-pointer items-center justify-center p-2 transition">
                         <img src={Logo} alt="Ilias Logo" className="h-14 w-14" />
                     </div>
@@ -286,12 +286,12 @@ export default function Home(): React.ReactElement {
                         )}
                     </Suspense>
                 </div>
-                <div className="text-light-text-2 dark:text-dark-text-3 flex items-center justify-center space-x-1 pt-8 font-light">
+                <div className="flex items-center justify-center space-x-1 pt-8 font-light text-light-text-2 dark:text-dark-text-3">
                     <span>{new Date().getFullYear()} &copy; Ilias Ultimate by</span>
                     <a
                         href="https://rjks.us/"
                         target="_blank"
-                        className="text-light-text dark:text-dark-text hover:underline">
+                        className="text-light-text hover:underline dark:text-dark-text">
                         Robert Julian Kratz
                     </a>
                 </div>
@@ -319,10 +319,10 @@ const NavigationListItem = ({
         <div
             onClick={onClick}
             className={classNames(
-                'text-light-text-2 dark:text-dark-text-3 m-4 flex h-14 w-14 cursor-pointer items-center justify-center p-4 shadow-sm transition hover:rounded-[1.5rem] hover:shadow-sm hover:dark:shadow-md',
+                'm-4 flex h-14 w-14 cursor-pointer items-center justify-center p-4 text-light-text-2 shadow-sm transition hover:rounded-[1.5rem] hover:shadow-sm dark:text-dark-text-3 hover:dark:shadow-md',
                 selcted
-                    ? 'bg-light-gray-1 hover:bg-light-gray-2 rounded-[1.2rem] dark:bg-dark-gray-3 hover:dark:bg-dark-gray-2'
-                    : 'bg-light-gray-1 hover:bg-light-gray-2 rounded-[2rem] dark:bg-dark-gray-2 hover:dark:bg-dark-gray-3'
+                    ? 'rounded-[1.2rem] bg-light-gray-1 hover:bg-light-gray-2 dark:bg-dark-gray-3 hover:dark:bg-dark-gray-2'
+                    : 'rounded-[2rem] bg-light-gray-1 hover:bg-light-gray-2 dark:bg-dark-gray-2 hover:dark:bg-dark-gray-3'
             )}>
             {selectedIcon && selcted ? selectedIcon : icon}
             <span className="sr-only">{text}</span>

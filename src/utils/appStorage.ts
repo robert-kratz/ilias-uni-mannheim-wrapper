@@ -10,7 +10,6 @@ export type StoreType = {
     aviablableYears: string[];
     selectedYears: string[];
     searchResults: EntityDataResponseItem[];
-    yearsToKeepUpToDate: string[];
 };
 
 const store = new Store<StoreType>({
@@ -23,7 +22,6 @@ const store = new Store<StoreType>({
         aviablableYears: [],
         selectedYears: [],
         searchResults: [],
-        yearsToKeepUpToDate: [],
     },
 });
 
@@ -41,7 +39,6 @@ const resetStore = () => {
     store.set('selectedYears', []);
     store.set('hasSetUpWizard', false);
     store.set('searchResults', []);
-    store.set('yearsToKeepUpToDate', []);
 };
 
 export { store, resetStore, getApplicationState };

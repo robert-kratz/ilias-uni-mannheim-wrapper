@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { Course } from '../types/objects';
+import { GetCoursesReturnType } from '../bridge/CourseBridge';
 
 type IliasPageProps = {
     open: boolean;
@@ -6,73 +8,41 @@ type IliasPageProps = {
 };
 
 export default function IliasPage({ openDirectory, open }: IliasPageProps) {
-    const [userCourses, setUserCourses] = useState<
+    const [userSemesers, setUserSemesers] = useState<
         Array<{
-            year: number;
-            courses: { title: string; link: string; description: string }[];
-            groups: { title: string; link: string; description: string }[];
+            year: string;
+            courses: Array<Course>;
+            groups: Array<Course>;
         }>
     >([]);
 
-    const fetchApplicationState = async () => {
-        if (window.api) {
-            const promises = [window.api.getAllCourses(), window.api.getAllGroups()];
-
-            const [courses, groups] = await Promise.all(promises);
-
-            let currentData: Array<{
-                year: number;
-                courses: { title: string; link: string; description: string }[];
-                groups: { title: string; link: string; description: string }[];
-            }> = [];
-
-            courses.forEach((currentYear: any) => {
-                const year = currentYear.year;
-
-                let yearIndex = currentData.findIndex((y) => y.year === year);
-
-                if (yearIndex === -1) {
-                    yearIndex = currentData.push({ year: year, courses: [], groups: [] }) - 1;
-                }
-
-                let courses = currentYear.courses;
-
-                courses.forEach((course: any) => {
-                    currentData[yearIndex].courses.push({
-                        title: course.title,
-                        link: course.id,
-                        description: course.description,
-                    });
-                });
-            });
-
-            groups.forEach((currentYear: any) => {
-                const year = currentYear.year;
-
-                let yearIndex = currentData.findIndex((y) => y.year === year);
-
-                if (yearIndex === -1) {
-                    yearIndex = currentData.push({ year: year, courses: [], groups: [] }) - 1;
-                }
-
-                let groups = currentYear.groups;
-
-                groups.forEach((group: any) => {
-                    currentData[yearIndex].groups.push({
-                        title: group.title,
-                        link: group.id,
-                        description: group.description,
-                    });
-                });
-            });
-
-            console.log(currentData);
-
-            setUserCourses(currentData);
-        }
-    };
-
     useEffect(() => {
+        const fetchApplicationState = async () => {
+            if (window.api) {
+                window.api.getAllCourses().then((data: GetCoursesReturnType) => {
+                    if (data.success) {
+                        const courses = data.courses;
+                        const groups = data.groups;
+
+                        const years = courses.map((course) => course.year);
+                        const uniqueYears = [...new Set(years)];
+
+                        const userCourses = uniqueYears.map((year) => {
+                            return {
+                                year: year,
+                                courses: courses.filter((course) => course.year === year),
+                                groups: groups.filter((group) => group.year === year),
+                            };
+                        });
+
+                        setUserSemesers(userCourses);
+
+                        console.log(userCourses);
+                    }
+                });
+            }
+        };
+
         fetchApplicationState();
 
         const handleReload = (
@@ -92,31 +62,18 @@ export default function IliasPage({ openDirectory, open }: IliasPageProps) {
 
     return (
         <div className="space-y-2">
-            <h1 className="text-light-text dark:text-dark-text text-2xl font-bold">Settings</h1>
+            {/* <h1 className="text-2xl font-bold text-light-text dark:text-dark-text">Ilias</h1> */}
             <div className="py-2">
-                {userCourses.map((year) => {
+                {userSemesers.map((semester) => {
                     return (
                         <div
-                            key={year.year}
-                            className="bg-light-gray-2 w-full cursor-pointer rounded-md font-light text-dark-gray-2 shadow-md transition dark:bg-dark-gray-2 dark:text-white">
-                            <div className="bg-light-gray-3 sticky top-0 z-10 flex items-center justify-between rounded-md p-4 dark:bg-dark-gray-2">
-                                <h2 className="text-xl font-semibold">{year.year}</h2>
-                                <div className="h-10 w-10">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        fill="currentColor"
-                                        className="size-6 text-light-text-2 dark:text-dark-text-2 p-2 transition hover:text-gray-300">
-                                        <path
-                                            fillRule="evenodd"
-                                            d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z"
-                                            clipRule="evenodd"
-                                        />
-                                    </svg>
-                                </div>
+                            key={semester.year}
+                            className="w-full cursor-pointer rounded-md bg-light-gray-2 font-light text-dark-gray-2 shadow-md transition dark:bg-dark-gray-2 dark:text-white">
+                            <div className="sticky top-0 z-10 flex items-center justify-between rounded-md bg-light-gray-3 p-4 dark:bg-dark-gray-2">
+                                <h2 className="text-xl font-semibold">{semester.year}</h2>
                             </div>
                             <ul className="space-y-4 p-4">
-                                {year.courses.map((elements) => {
+                                {semester.courses.map((elements) => {
                                     console.log(elements);
 
                                     let description =
@@ -124,8 +81,9 @@ export default function IliasPage({ openDirectory, open }: IliasPageProps) {
 
                                     return (
                                         <li
-                                            key={elements.link}
-                                            className="bg-light-gray-3 flex items-center justify-start space-x-2 rounded-md p-4 transition hover:scale-[100.75%] dark:bg-dark-gray-3">
+                                            key={elements.id}
+                                            onClick={() => openDirectory(elements.id)}
+                                            className="flex items-center justify-start space-x-2 rounded-md bg-light-gray-3 p-4 transition hover:scale-[100.75%] dark:bg-dark-gray-3">
                                             <div className="h-10 w-10 p-1 text-violet-500">
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -149,10 +107,11 @@ export default function IliasPage({ openDirectory, open }: IliasPageProps) {
                                         </li>
                                     );
                                 })}
-                                {year.groups.map((elements) => {
+                                {semester.groups.map((elements) => {
                                     return (
                                         <li
-                                            key={elements.link}
+                                            key={elements.id}
+                                            onClick={() => openDirectory(elements.id)}
                                             className="flex items-center justify-start space-x-2 rounded-md bg-dark-gray-3 p-4 transition hover:scale-[100.75%]">
                                             <div className="h-10 w-10 p-1 text-emerald-500">
                                                 <svg
@@ -170,10 +129,9 @@ export default function IliasPage({ openDirectory, open }: IliasPageProps) {
                                             </div>
                                             <div>
                                                 <h3 className="text-light-text-2 dark:text-dark-text-2">
-                                                    {' '}
                                                     {elements.title}
                                                 </h3>
-                                                <p className="text-light-text-2 dark:text-dark-text-3 text-xs">
+                                                <p className="text-xs text-light-text-2 dark:text-dark-text-3">
                                                     {elements.description}
                                                 </p>
                                             </div>

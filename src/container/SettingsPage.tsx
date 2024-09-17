@@ -6,9 +6,15 @@ import { AppDispatch } from '../state/store';
 import { RootState } from '../state/store';
 import Logo from '../../assets/rjks_logo_dark-256.svg';
 import ThemeSwitcher from '../components/ThemeSwitcher';
+import { StatsResponse } from '../bridge/StatsBridge';
+import UpdateYearsDialog from '../components/dialogs/UpdateYearsDialog';
 
 type SettingsPageProps = {
     open: boolean;
+};
+
+const classNames = (...classes: string[]) => {
+    return classes.filter(Boolean).join(' ');
 };
 
 export default function SettingsPage({ open }: SettingsPageProps) {
@@ -18,10 +24,16 @@ export default function SettingsPage({ open }: SettingsPageProps) {
     const appState = useSelector((state: RootState) => state.app);
     const dispatch: AppDispatch = useDispatch();
 
+    const [selectedYears, setSelectedYears] = useState<string[]>([]);
+    const [availableYears, setAvailableYears] = useState<string[]>([]);
+    const [statistics, setStatistics] = useState<StatsResponse | null>(null);
+    const [credentialsSaved, setCredentialsSaved] = useState<boolean>(false);
+
     const [currentDialogState, updateDialogState] = useReducer(
         (state: any, newState: any) => ({ ...state, ...newState }),
         {
             confirmationDialog: false,
+            updateYearsDialog: false,
         }
     );
 
@@ -33,6 +45,12 @@ export default function SettingsPage({ open }: SettingsPageProps) {
                 });
                 window.api.getApplicationState().then((value) => {
                     setCurrentUserId(value.userId);
+                    setSelectedYears(value.selectedYears);
+                    setCredentialsSaved(value.credentialsSaved);
+                    setAvailableYears(value.aviablableYears);
+                });
+                window.api.getStatistics().then((data) => {
+                    setStatistics(data);
                 });
             }
         };
@@ -62,30 +80,35 @@ export default function SettingsPage({ open }: SettingsPageProps) {
 
     return (
         <div className="space-y-2">
+            <UpdateYearsDialog
+                open={currentDialogState.updateYearsDialog}
+                onForceDialogOpen={() => updateDialogState({ updateYearsDialog: true })}
+                onClose={() => updateDialogState({ updateYearsDialog: false })}
+            />
             <ConfirmationDialog open={currentDialogState.confirmationDialog} onClose={closeConfirmationDialog} />
-            <h1 className="text-light-text dark:text-dark-text dark:text-light-gray text-2xl font-bold">Settings</h1>
+            <h1 className="dark:text-light-gray text-2xl font-bold text-light-text dark:text-dark-text">Settings</h1>
             <div className="grid grid-cols-4 gap-4 py-2">
-                <div className="bg-light-gray-3 col-span-2 space-y-2 rounded-md p-4 dark:bg-dark-gray-2">
-                    <h2 className="text-light-text-2 dark:text-dark-text-2 text-lg font-bold">User List</h2>
-                    <div className="bg-light-gray-2 flex cursor-pointer items-center justify-between space-x-4 rounded-md p-4 dark:bg-dark-gray-3">
+                <div className="col-span-2 space-y-2 rounded-md bg-light-gray-3 p-4 dark:bg-dark-gray-2">
+                    <h2 className="text-lg font-bold text-light-text-2 dark:text-dark-text-2">User List</h2>
+                    <div className="flex cursor-pointer items-center justify-between space-x-4 rounded-md bg-light-gray-2 p-4 dark:bg-dark-gray-3">
                         {userList.map((user) => (
                             <>
                                 <h2
                                     key={user.id}
-                                    className="text-md text-light-text-2 dark:text-dark-text-2 font-normal">
+                                    className="text-md font-normal text-light-text-2 dark:text-dark-text-2">
                                     {user.email}
                                 </h2>
                                 {currentUserId === user.id && (
                                     <div className="rounded-md bg-indigo-500 p-2">
-                                        <h1 className="text-sm font-bold text-white">Current User</h1>
+                                        <h1 className="text-sm font-semibold text-white">Current User</h1>
                                     </div>
                                 )}
                             </>
                         ))}
                     </div>
                 </div>
-                <div className="bg-light-gray-3 col-span-2 grid grid-cols-4 gap-4 rounded-md p-4 dark:bg-dark-gray-2">
-                    <div className="bg-light-gray-2 flex cursor-pointer items-center justify-center space-x-4 rounded-md p-4 transition hover:scale-[103%] dark:bg-dark-gray-3">
+                <div className="col-span-2 grid grid-cols-4 gap-4 rounded-md bg-light-gray-3 p-4 dark:bg-dark-gray-2">
+                    <div className="flex cursor-pointer items-center justify-center space-x-4 rounded-md bg-light-gray-2 p-4 transition hover:scale-[103%] dark:bg-dark-gray-3">
                         <div className="flex flex-col items-center space-y-2">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -98,12 +121,12 @@ export default function SettingsPage({ open }: SettingsPageProps) {
                                     clipRule="evenodd"
                                 />
                             </svg>
-                            <span className="text-light-text-2 text-md dark:text-dark-text-2 text-center font-semibold">
-                                0
+                            <span className="text-md text-center font-semibold text-light-text-2 dark:text-dark-text-2">
+                                {statistics?.stats?.totalCourses || 0}
                             </span>
                         </div>
                     </div>
-                    <div className="bg-light-gray-2 flex cursor-pointer items-center justify-center space-x-4 rounded-md p-4 transition hover:scale-[103%] dark:bg-dark-gray-3">
+                    <div className="flex cursor-pointer items-center justify-center space-x-4 rounded-md bg-light-gray-2 p-4 transition hover:scale-[103%] dark:bg-dark-gray-3">
                         <div className="flex flex-col items-center space-y-2">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -117,12 +140,12 @@ export default function SettingsPage({ open }: SettingsPageProps) {
                                 />
                                 <path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" />
                             </svg>
-                            <span className="text-light-text-2 text-md dark:text-dark-text-2 text-center font-semibold">
-                                0
+                            <span className="text-md text-center font-semibold text-light-text-2 dark:text-dark-text-2">
+                                {statistics?.stats?.totalFiles || 0}
                             </span>
                         </div>
                     </div>
-                    <div className="bg-light-gray-2 flex cursor-pointer items-center justify-center space-x-4 rounded-md p-4 transition hover:scale-[103%] dark:bg-dark-gray-3">
+                    <div className="flex cursor-pointer items-center justify-center space-x-4 rounded-md bg-light-gray-2 p-4 transition hover:scale-[103%] dark:bg-dark-gray-3">
                         <div className="flex flex-col items-center space-y-2">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -131,12 +154,12 @@ export default function SettingsPage({ open }: SettingsPageProps) {
                                 className="size-6 h-10 w-10 text-emerald-500">
                                 <path d="M19.906 9c.382 0 .749.057 1.094.162V9a3 3 0 0 0-3-3h-3.879a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H6a3 3 0 0 0-3 3v3.162A3.756 3.756 0 0 1 4.094 9h15.812ZM4.094 10.5a2.25 2.25 0 0 0-2.227 2.568l.857 6A2.25 2.25 0 0 0 4.951 21H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-2.227-2.568H4.094Z" />
                             </svg>
-                            <span className="text-light-text-2 text-md dark:text-dark-text-2 text-center font-semibold">
-                                0
+                            <span className="text-md text-center font-semibold text-light-text-2 dark:text-dark-text-2">
+                                {statistics?.stats?.totalDirectory || 0}
                             </span>
                         </div>
                     </div>
-                    <div className="bg-light-gray-2 flex cursor-pointer items-center justify-center space-x-4 rounded-md p-4 transition hover:scale-[103%] dark:bg-dark-gray-3">
+                    <div className="flex cursor-pointer items-center justify-center space-x-4 rounded-md bg-light-gray-2 p-4 transition hover:scale-[103%] dark:bg-dark-gray-3">
                         <div className="flex flex-col items-center space-y-2">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -151,27 +174,36 @@ export default function SettingsPage({ open }: SettingsPageProps) {
                                 <path d="M5.082 14.254a8.287 8.287 0 0 0-1.308 5.135 9.687 9.687 0 0 1-1.764-.44l-.115-.04a.563.563 0 0 1-.373-.487l-.01-.121a3.75 3.75 0 0 1 3.57-4.047ZM20.226 19.389a8.287 8.287 0 0 0-1.308-5.135 3.75 3.75 0 0 1 3.57 4.047l-.01.121a.563.563 0 0 1-.373.486l-.115.04c-.567.2-1.156.349-1.764.441Z" />
                             </svg>
 
-                            <span className="text-light-text-2 text-md dark:text-dark-text-2 text-center font-semibold">
-                                0
+                            <span className="text-md text-center font-semibold text-light-text-2 dark:text-dark-text-2">
+                                {statistics?.stats?.totalGroups || 0}
                             </span>
                         </div>
                     </div>
                 </div>
-                <div className="bg-light-gray-3 col-span-2 space-y-2 rounded-md p-4 dark:bg-dark-gray-2">
-                    <h2 className="text-light-text-2 dark:text-dark-text-2 text-lg font-bold">Saved Credentials</h2>
-                    <div className="bg-light-gray-2 flex cursor-pointer items-center justify-between space-x-4 rounded-md p-4 dark:bg-dark-gray-3">
+                <div className="col-span-2 space-y-2 rounded-md bg-light-gray-3 p-4 dark:bg-dark-gray-2">
+                    <h2 className="text-lg font-bold text-light-text-2 dark:text-dark-text-2">Saved Credentials</h2>
+                    <div className="flex cursor-pointer items-center justify-between space-x-4 rounded-md bg-light-gray-2 p-4 dark:bg-dark-gray-3">
                         {userList.map((user) => (
                             <>
                                 <h2
                                     key={user.id}
-                                    className="text-md text-light-text-2 dark:text-dark-text-2 font-normal">
+                                    className="text-sm font-normal text-light-text-2 dark:text-dark-text-2">
                                     {user.email}
                                 </h2>
                             </>
                         ))}
+                        {credentialsSaved ? (
+                            <div className="rounded-md bg-green-600 px-3 py-2 shadow-sm">
+                                <h1 className="text-sm font-semibold text-white">Saved</h1>
+                            </div>
+                        ) : (
+                            <div className="rounded-md bg-red-600 px-3 py-2 shadow-sm">
+                                <h1 className="text-sm font-semibold text-white">Not Saved</h1>
+                            </div>
+                        )}
                     </div>
                 </div>
-                <div className="bg-light-gray-3 col-span-1 flex flex-col justify-center space-y-4 rounded-md p-4 dark:bg-dark-gray-2">
+                <div className="col-span-1 flex flex-col justify-center space-y-4 rounded-md bg-light-gray-3 p-4 dark:bg-dark-gray-2">
                     <div className="flex items-center justify-center space-x-6">
                         <div className="transition hover:scale-[103%]">
                             <a
@@ -197,17 +229,66 @@ export default function SettingsPage({ open }: SettingsPageProps) {
                             </a>
                         </div>
                     </div>
-                    <span className="text-light-text-3 dark:text-dark-text-2 text-center text-xs font-normal">
+                    <span className="text-center text-xs font-normal text-light-text-3 dark:text-dark-text-2">
                         &copy; {new Date().getFullYear()} Robert Kratz. All rights reserved.
                     </span>
                 </div>
-                <div className="bg-light-gray-3 col-span-1 space-y-2 rounded-md p-4 dark:bg-dark-gray-2">
-                    <h2 className="text-light-text-2 dark:text-dark-text-2 text-lg font-bold">Theme</h2>
+                <div className="col-span-1 space-y-2 rounded-md bg-light-gray-3 p-4 dark:bg-dark-gray-2">
+                    <h2 className="text-lg font-bold text-light-text-2 dark:text-dark-text-2">Theme</h2>
                     <ThemeSwitcher />
                 </div>
-                <div className="bg-light-gray-3 col-span-1 space-y-2 rounded-md p-4 dark:bg-dark-gray-2">
-                    <h2 className="text-light-text-2 dark:text-dark-text-2 text-lg font-bold">Reset</h2>
-                    <div className="bg-light-gray-2 flex cursor-pointer items-center justify-between space-x-4 rounded-md p-4 dark:bg-dark-gray-3">
+                <div className="col-span-3 space-y-2 rounded-md bg-light-gray-3 p-4 dark:bg-dark-gray-2">
+                    <div className="flex w-full items-center justify-between pb-4">
+                        <h2 className="text-lg font-bold text-light-text-2 dark:text-dark-text-2">
+                            Add Course or Semester
+                        </h2>
+                        <div>
+                            <button
+                                className="rounded-md bg-violet-500 px-4 py-2 text-sm font-semibold text-dark-text-2 shadow-sm transition hover:bg-violet-600"
+                                onClick={() =>
+                                    appState.currentUpdateYearDialogPage === 0 &&
+                                    updateDialogState({ updateYearsDialog: true })
+                                }>
+                                Select Semester
+                            </button>
+                        </div>
+                    </div>
+                    <div className="grid cursor-pointer grid-cols-6 gap-2 rounded-md">
+                        {availableYears.map((year, index) => {
+                            if (year === 'MSDNAA') return;
+
+                            const isSelected = selectedYears.includes(year);
+
+                            if (index == 7) {
+                                return (
+                                    <div
+                                        key={index}
+                                        className="flex items-center justify-center text-xs text-light-text-2 dark:text-dark-text-2">
+                                        and {availableYears.length - 7} more..
+                                    </div>
+                                );
+                            }
+
+                            return (
+                                <div
+                                    key={index}
+                                    className={classNames(
+                                        'flex h-full w-full items-center justify-center rounded-md border-2 bg-light-gray-2 p-3 dark:bg-dark-gray-3',
+                                        isSelected
+                                            ? 'border-emerald-500 dark:border-emerald-600'
+                                            : 'border-light-gray-3 dark:border-dark-gray'
+                                    )}>
+                                    <p className="text-sm font-normal text-light-text-2 dark:text-dark-text-2">
+                                        {year}
+                                    </p>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+                <div className="col-span-1 space-y-2 rounded-md bg-light-gray-3 p-4 dark:bg-dark-gray-2">
+                    <h2 className="text-lg font-bold text-light-text-2 dark:text-dark-text-2">Reset</h2>
+                    <div className="flex cursor-pointer items-center justify-between space-x-4 rounded-md bg-light-gray-2 p-4 dark:bg-dark-gray-3">
                         <button
                             onClick={() => updateDialogState({ confirmationDialog: true })}
                             className="w-full max-w-xs rounded-md bg-red-500 px-4 py-3 text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-red-600">

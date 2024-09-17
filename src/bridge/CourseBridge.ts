@@ -1,35 +1,44 @@
-import { ipcMain, BrowserWindow } from 'electron';
+import { ipcMain } from 'electron';
 import db from '../utils/database/database';
+import { store } from '../utils/appStorage';
+import { Course, Group } from '../types/objects';
 
-ipcMain.handle('get-all-courses', async () => {
+export type GetCoursesReturnType = {
+    success: boolean;
+    courses: Course[];
+    groups: Group[];
+};
+
+ipcMain.handle('get-all-courses', async (): Promise<GetCoursesReturnType> => {
+    const userId = store.get('userId') as string;
+
+    if (!userId) {
+        console.error('User not found');
+        return {
+            success: false,
+            courses: [],
+            groups: [],
+        };
+    }
+
     try {
-        const courses: any = db.prepare('SELECT * FROM courses').all();
+        const courses = db.prepare('SELECT * FROM courses WHERE userId = ?').all(userId) as Course[];
+        const groups = db.prepare('SELECT * FROM groups WHERE userId = ?').all(userId) as Group[];
 
-        let updatedCourses: Array<{
-            year: number;
-            courses: { title: string; link: string; description: string; type: 'Course' | 'Group' }[];
-        }> = [];
+        console.log('Fetched courses: ', courses);
+        console.log('Fetched groups: ', groups);
 
-        courses.forEach((course: any) => {
-            const year = course.year;
-
-            let yearIndex = updatedCourses.findIndex((y) => y.year === year);
-
-            if (yearIndex === -1) {
-                yearIndex = updatedCourses.push({ year: year, courses: [] }) - 1;
-            }
-
-            updatedCourses[yearIndex].courses.push({
-                title: course.title,
-                link: course.id,
-                description: course.description,
-                type: 'Course',
-            });
-        });
-
-        return updatedCourses;
+        return {
+            success: true,
+            courses,
+            groups,
+        };
     } catch (error) {
         console.error('Error fetching courses: ', error);
-        return [];
+        return {
+            success: false,
+            courses: [],
+            groups: [],
+        };
     }
 });

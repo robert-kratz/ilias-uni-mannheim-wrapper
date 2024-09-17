@@ -7,6 +7,7 @@ interface ApplicationState {
     currentHomePageIndex: number;
     currentSearchQuery: string;
     currentTutorialDialogPage: number;
+    currentUpdateYearDialogPage: number;
     currentFirstSetupWizardPage: number;
     loadingIndicatorTextShown: boolean;
     selectedSearchFilter: 'files' | 'directories' | 'courses' | 'none';
@@ -19,6 +20,7 @@ const initialState: ApplicationState = {
     currentHomePageIndex: 0,
     currentFirstSetupWizardPage: 0,
     currentTutorialDialogPage: 0,
+    currentUpdateYearDialogPage: 0,
     loadingIndicatorTextShown: true,
     selectedSearchFilter: 'none',
     currentSearchQuery: '',
@@ -61,6 +63,9 @@ const userSlice = createSlice({
         setThemeMode(state, action: PayloadAction<{ themeMode: ThemeMode }>) {
             state.themeMode = action.payload.themeMode;
         },
+        setUpdateYearDialogPage(state, action: PayloadAction<{ currentUpdateYearDialogPage: number }>) {
+            state.currentUpdateYearDialogPage = action.payload.currentUpdateYearDialogPage;
+        },
     },
 });
 
@@ -74,5 +79,6 @@ export const {
     setLoadingIndicatorTextShown,
     setShowCurrentDirectory,
     setThemeMode,
+    setUpdateYearDialogPage,
 } = userSlice.actions;
 export default userSlice.reducer;

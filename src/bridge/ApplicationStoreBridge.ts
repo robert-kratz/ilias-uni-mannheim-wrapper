@@ -17,8 +17,8 @@ ipcMain.handle('get-application-state', async (event) => {
 
 ipcMain.handle('reset-application', async (event) => {
     resetStore();
+    store.reset();
     dropAllTables();
-
     getMainWindow().reload();
 });
 

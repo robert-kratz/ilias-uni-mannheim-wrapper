@@ -28,7 +28,6 @@ contextBridge.exposeInMainWorld('api', {
         ipcRenderer.removeListener('page-reload', callback);
     },
     getAllCourses: () => ipcRenderer.invoke('get-all-courses'),
-    getAllGroups: () => ipcRenderer.invoke('get-all-groups'),
     getStaticContent: () => ipcRenderer.invoke('get-static-content'),
     onSearch: (query: string, year?: string) => ipcRenderer.invoke('search', query, year),
     onApplicationScrape: (callback: (event: Electron.IpcRendererEvent, data: ScrapeEvent) => void) => {
@@ -55,6 +54,9 @@ contextBridge.exposeInMainWorld('api', {
     removeThemeChangedListener: (callback: (event: Electron.IpcRendererEvent, data: string) => void) => {
         ipcRenderer.removeListener('theme-changed', callback);
     },
+    getStatistics: () => ipcRenderer.invoke('get-statistics'),
+    fetchYears: () => ipcRenderer.invoke('fetch-years'),
+    reloadApp: () => ipcRenderer.invoke('reload-app'),
 });
 
 console.log('Preload script loaded');
