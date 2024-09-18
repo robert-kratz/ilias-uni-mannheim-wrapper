@@ -78,10 +78,6 @@ export default function UpdateYearsDialog({ open, onClose, onForceDialogOpen }: 
             return;
         }
 
-        if (window.api) {
-            window.api.setStoreValue('selectedYears', selectedYears);
-        }
-
         setSelectedYears(selectedYears);
 
         dispatch(
@@ -102,6 +98,10 @@ export default function UpdateYearsDialog({ open, onClose, onForceDialogOpen }: 
         }
 
         onForceDialogOpen && onForceDialogOpen();
+
+        if (window.api) {
+            window.api.setStoreValue('selectedYears', selectedYears);
+        }
 
         dispatch(
             setUpdateYearDialogPage({
