@@ -3,7 +3,7 @@ import { OpenDirectoryResponse, EntityDataResponseItem } from '../types/objects'
 
 type ThemeMode = 'light' | 'dark' | 'system';
 
-interface ApplicationState {
+export interface ApplicationState {
     currentHomePageIndex: number;
     currentSearchQuery: string;
     currentTutorialDialogPage: number;

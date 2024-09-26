@@ -6,7 +6,7 @@ import { ScrapeEvent } from '../../types/objects';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../state/store';
 import { AppDispatch } from '../../state/store';
-import { setUpdateYearDialogPage } from '../../state/stateSlice';
+import { setUpdateYearDialogPage } from '../../state/slice';
 
 const classNames = (...classes: string[]) => {
     return classes.filter(Boolean).join(' ');
@@ -34,7 +34,7 @@ export default function UpdateYearsDialog({ open, onClose, onForceDialogOpen }: 
     useEffect(() => {
         const fetchApplicationState = async () => {};
 
-        const onReload = (event: Electron.IpcRendererEvent, data: { message: string; type: 'success' | 'error' }) => {
+        const onReload = () => {
             fetchApplicationState();
         };
 

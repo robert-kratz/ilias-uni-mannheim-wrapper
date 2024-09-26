@@ -154,7 +154,7 @@ const AlertBox = ({ icon, onClick, className, content }: AlertBoxProps) => {
                 className
             )}>
             <div className="h-6 w-6">{icon}</div>
-            <p>{content}</p>
+            <p className="text-sm">{content}</p>
         </div>
     );
 };

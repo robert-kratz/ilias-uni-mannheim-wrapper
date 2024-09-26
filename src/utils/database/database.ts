@@ -31,18 +31,6 @@ export function createTablesIfNotExists(): void {
       `
         ).run();
 
-        // Event Logger Table
-        db.prepare(
-            `
-        CREATE TABLE IF NOT EXISTS eventLogger (
-          id TEXT PRIMARY KEY,
-          iat DATE,
-          type TEXT,
-          value TEXT
-        )
-      `
-        ).run();
-
         // Groups Table
         db.prepare(
             `

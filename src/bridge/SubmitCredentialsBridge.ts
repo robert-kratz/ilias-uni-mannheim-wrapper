@@ -25,7 +25,7 @@ ipcMain.handle('submit-credentials', async (event, { username, password }) => {
                     console.log('Authenticated with token: ', token);
                     console.log('Credentials saved', username, password);
 
-                    getMainWindow().webContents.send('page-reload', {
+                    getMainWindow().webContents.send('page-message', {
                         message: 'Credentials validated and saved for next login.',
                         type: 'success',
                     });

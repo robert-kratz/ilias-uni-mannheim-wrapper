@@ -30,6 +30,8 @@ const createIliasAuthenticationWindow = ({
     const showWindowOnFirstStart =
         behavior === 'FORCE_USER_LOGIN' || presavedCredentials.password === '' || presavedCredentials.username === '';
 
+    let hasSendResponse = false;
+
     let loginWindow = new BrowserWindow({
         width: 600,
         height: 632,
@@ -99,7 +101,10 @@ const createIliasAuthenticationWindow = ({
 
                     loginWindow.close();
 
-                    onAuthenticated(false); //SUCCESS: FALSE
+                    if (!hasSendResponse) {
+                        onAuthenticated(false); //SUCCESS: FALSE
+                        hasSendResponse = true;
+                    }
                 }
             }
         }
@@ -133,7 +138,10 @@ const createIliasAuthenticationWindow = ({
 
                 // // Close the login window
                 try {
-                    onAuthenticated(true, PHPSESSID?.value);
+                    if (!hasSendResponse) {
+                        onAuthenticated(true, PHPSESSID?.value);
+                        hasSendResponse = true;
+                    }
                 } catch (error) {
                     console.error('Error authenticating: ', error);
                 }

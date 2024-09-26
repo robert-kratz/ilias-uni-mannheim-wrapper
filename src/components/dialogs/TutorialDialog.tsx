@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import DialogModal from '../DialogModalTemplate';
 import { AppDispatch, RootState } from '../../state/store';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCurrentTutorialDialogPage } from '../../state/stateSlice';
+import { setCurrentTutorialDialogPage } from '../../state/slice';
 import Logo from '../../../assets/rjks_logo_dark-256.svg';
 
 type Props = {
@@ -17,7 +17,7 @@ export default function TutorialDialog({ open, onClose }: Props) {
     useEffect(() => {
         const fetchApplicationState = async () => {};
 
-        const onReload = (event: Electron.IpcRendererEvent, data: { message: string; type: 'success' | 'error' }) => {
+        const onReload = () => {
             fetchApplicationState();
         };
 

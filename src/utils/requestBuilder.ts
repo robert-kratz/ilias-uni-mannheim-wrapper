@@ -1,10 +1,11 @@
-import axios from "axios";
+import axios from 'axios';
+import platformSettings from '../platformSettings.json';
 
-const ERROR_STRINGS = ["Anmeldung", "Error"];
+const ERROR_STRINGS = ['Anmeldung', 'Error'];
 
 // Create an axios instance
 const requestBuilder = axios.create({
-  baseURL: "https://ilias.uni-mannheim.de",
+    baseURL: platformSettings.BASE_URL,
 });
 
 /**
@@ -14,11 +15,11 @@ const requestBuilder = axios.create({
  * @returns <Promise> response data
  */
 export function fetchUrl(url: string, sessionId: string): Promise<any> {
-  return requestBuilder.get(url, {
-    headers: {
-      Cookie: `PHPSESSID=${sessionId}`,
-    },
-  });
+    return requestBuilder.get(url, {
+        headers: {
+            Cookie: `PHPSESSID=${sessionId}`,
+        },
+    });
 }
 
 /**
@@ -27,17 +28,17 @@ export function fetchUrl(url: string, sessionId: string): Promise<any> {
  * @returns <Promise> true if the session token is alive, false otherwise
  */
 export function isSessionTokenAlive(sessionId: string): Promise<boolean> {
-  return requestBuilder
-    .get("/ilias.php?baseClass=ilDashboardGUI&cmd=jumpToSelectedItems", {
-      headers: {
-        Cookie: `PHPSESSID=${sessionId}`,
-      },
-    })
-    .then((response: any) => {
-      //check if the html contains one of the following strings
-      const html = response.data as string;
+    return requestBuilder
+        .get('/ilias.php?baseClass=ilDashboardGUI&cmd=jumpToSelectedItems', {
+            headers: {
+                Cookie: `PHPSESSID=${sessionId}`,
+            },
+        })
+        .then((response: any) => {
+            //check if the html contains one of the following strings
+            const html = response.data as string;
 
-      return !ERROR_STRINGS.some((str) => html.includes(str));
-    })
-    .catch(() => false);
+            return !ERROR_STRINGS.some((str) => html.includes(str));
+        })
+        .catch(() => false);
 }

@@ -4,12 +4,12 @@ import AppRoutes from '../routes';
 import { Suspense, useEffect, useReducer, useState } from 'react';
 import TutorialDialog from '../components/dialogs/TutorialDialog';
 import FirstSetupDialog from '../components/dialogs/FirstSetupDialog';
-import { useSelector } from 'react-redux';
-import { RootState } from '../state/store';
+import usePageRefresh from '../hooks/usePageRefresh';
+import useApplicationState from '../hooks/useApplicationState';
+import useApplicationTheme from '../hooks/useApplicationTheme';
+import useToastPipeline from '../hooks/useToastPipeline';
 
 const App: React.FC = () => {
-    const mode = useSelector((state: RootState) => state.app.themeMode);
-
     const [firstStartUp, setFirstStartUp] = useState<boolean>(true);
     const [credentialsSaved, setCredentialsSaved] = useState<boolean>(false);
 
@@ -21,86 +21,37 @@ const App: React.FC = () => {
         }
     );
 
-    const fetchApplicationState = async () => {
-        if (window.api) {
-            window.api.getApplicationState().then((state) => {
-                console.log('Application state: ', state);
+    useApplicationTheme(); //Apply the theme on component mount
 
-                setCredentialsSaved(state.credentialsSaved);
+    useToastPipeline(); //Listen for toast messages
 
-                let isFirstStart = state.isFirstStartUp;
-                let hasDoneWizard = state.hasSetUpWizard;
+    const loadComponent = async () => {
+        const appState = await useApplicationState();
 
-                if (isFirstStart && !hasDoneWizard) {
-                    updateDialogState({ tutorialDialog: true });
-                    updateDialogState({ firstSetupDialog: false });
-                }
+        setCredentialsSaved(appState.credentialsSaved);
 
-                if (!isFirstStart && !hasDoneWizard) {
-                    updateDialogState({ firstSetupDialog: true });
-                    updateDialogState({ tutorialDialog: false });
-                }
-            });
+        let isFirstStart = appState.isFirstStartUp;
+        let hasDoneWizard = appState.hasSetUpWizard;
+
+        if (isFirstStart && !hasDoneWizard) {
+            updateDialogState({ tutorialDialog: true });
+            updateDialogState({ firstSetupDialog: false });
+        }
+
+        if (!isFirstStart && !hasDoneWizard) {
+            updateDialogState({ firstSetupDialog: true });
+            updateDialogState({ tutorialDialog: false });
         }
     };
 
+    usePageRefresh(() => {
+        loadComponent(); // Fetch the application state on page refresh
+    });
+
     useEffect(() => {
-        fetchApplicationState();
-
-        const handleReload = (
-            event: Electron.IpcRendererEvent,
-            { message, type }: { message: string; type: 'success' | 'error' }
-        ) => {
-            console.log(`Received message: ${message} with type: ${type}`);
-            // Process the message based on type
-            //reload the app
-
-            if (message && type) {
-                createToast(message, {
-                    type: type,
-                    timeout: 3000,
-                });
-            }
-
-            fetchApplicationState();
-        };
-
-        window.api.onReload(handleReload);
-
-        return () => {
-            // Assuming you expose a remove method as well
-            window.api.removeReloadListener(handleReload);
-        };
+        loadComponent(); // Fetch the application state on component mount
     }, []);
 
-    useEffect(() => {
-        const root = document.documentElement;
-
-        const applyTheme = (theme: 'light' | 'dark') => {
-            root.classList.remove('light', 'dark');
-            root.classList.add(theme);
-        };
-
-        if (mode === 'system') {
-            window.api.getSystemTheme().then((systemTheme) => {
-                applyTheme(systemTheme as 'light' | 'dark');
-            });
-
-            const handleThemeChanged = (_event: any, systemTheme: 'light' | 'dark') => {
-                applyTheme(systemTheme);
-            };
-
-            window.api.onThemeChanged(handleThemeChanged);
-
-            return () => {
-                window.api.removeThemeChangedListener(handleThemeChanged);
-            };
-        } else {
-            applyTheme(mode);
-        }
-    }, [mode]);
-
-    //finaly sereve the app
     return (
         <>
             <TutorialDialog

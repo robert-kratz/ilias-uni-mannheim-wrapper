@@ -45,10 +45,7 @@ export default function IliasPage({ openDirectory, open }: IliasPageProps) {
 
         fetchApplicationState();
 
-        const handleReload = (
-            event: Electron.IpcRendererEvent,
-            { message, type }: { message: string; type: 'success' | 'error' }
-        ) => {
+        const handleReload = () => {
             fetchApplicationState();
         };
 

@@ -51,43 +51,16 @@ async function main() {
 
     //start fetching the user index page
     if (!isFirstStartUp && hasSetUpWizard) {
-        let loginWindow: BrowserWindow | null = null;
-
-        try {
-            const username = store.get('username') || '';
-            const password = hasCredentialsSaved ? await getPassword(username) : '';
-
-            const userId = (store.get('userId') as string) || '';
-
-            loginWindow = createIliasAuthenticationWindow({
-                preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
-                behavior: 'ATTEMP_AUTO_LOGIN',
-                async onAuthenticated(success, token) {
-                    sessionToken = token;
-
-                    if (success) {
-                        console.log('Authenticated with token: ', token);
-                    }
-
-                    console.log('Credentials validated: ', success);
-
-                    mainWindow.webContents.send('page-reload', {
-                        message: 'Course data fetched',
+        attempRequestToService({
+            onAuthenticated: async (success, token) => {
+                if (success) {
+                    mainWindow.webContents.send('page-message', {
+                        message: 'Successfully logged in',
                         type: 'success',
                     });
-                },
-                presavedCredentials: {
-                    username,
-                    password,
-                },
-            });
-            loginWindow.on('closed', () => {
-                loginWindow = null;
-                console.log('Login window has been closed and dereferenced');
-            });
-        } catch (error) {
-            console.error('Error opening login window: ', error);
-        }
+                }
+            },
+        });
     }
 }
 
@@ -146,6 +119,7 @@ import './bridge/OpenDirectoryBridge';
 import './bridge/AppTheme';
 import './bridge/StatsBridge';
 import './bridge/FetchYearsBridge';
+import { attempRequestToService } from './utils/authenticationProvider';
 
 export const setSessionToken = (token: string) => {
     sessionToken = token;

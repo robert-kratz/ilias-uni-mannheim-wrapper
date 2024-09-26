@@ -1,7 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { ScrapeEvent } from './types/objects';
 
-interface ReloadMessage {
+export interface ToastMessage {
     message: string;
     type: 'success' | 'error';
 }
@@ -21,11 +21,17 @@ contextBridge.exposeInMainWorld('api', {
     getStoreValue: (key: string) => ipcRenderer.invoke('getStoreValue', key),
     setStoreValue: (key: string, value: any) => ipcRenderer.invoke('setStoreValue', key, value),
     openLoginWindow: () => ipcRenderer.invoke('open-login-window'),
-    onReload: (callback: (event: Electron.IpcRendererEvent, data: ReloadMessage) => void) => {
-        ipcRenderer.on('page-reload', callback);
+    onMessage: (callback: (event: Electron.IpcRendererEvent, data: ToastMessage) => void) => {
+        ipcRenderer.on('page-message', callback);
     },
-    removeReloadListener: (callback: (event: Electron.IpcRendererEvent, data: ReloadMessage) => void) => {
-        ipcRenderer.removeListener('page-reload', callback);
+    removeMessageListener: (callback: (event: Electron.IpcRendererEvent, data: ToastMessage) => void) => {
+        ipcRenderer.removeListener('page-message', callback);
+    },
+    onReload: (callback: (event: Electron.IpcRendererEvent) => void) => {
+        ipcRenderer.on('reload', callback);
+    },
+    removeReloadListener: (callback: (event: Electron.IpcRendererEvent) => void) => {
+        ipcRenderer.removeListener('reload', callback);
     },
     getAllCourses: () => ipcRenderer.invoke('get-all-courses'),
     getStaticContent: () => ipcRenderer.invoke('get-static-content'),

@@ -53,8 +53,7 @@ export default function FileBrowser({ open, openDirectory }: FileBrowserProps) {
 
         fetchApplicationState();
 
-        const onReload = (event: Electron.IpcRendererEvent, data: { message: string; type: 'success' | 'error' }) => {
-            console.log('onReload', data);
+        const onReload = () => {
             fetchApplicationState();
         };
 

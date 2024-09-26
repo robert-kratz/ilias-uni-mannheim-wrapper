@@ -17,8 +17,20 @@ declare global {
             removeCredentialsValidatedListener: (
                 callback: (event: Electron.IpcRendererEvent, data: { isValid: boolean }) => void
             ) => void;
-            onReload: (callback: (event: Electron.IpcRendererEvent, data: ReloadMessage) => void) => void;
-            removeReloadListener: (callback: (event: Electron.IpcRendererEvent, data: ReloadMessage) => void) => void;
+            onReload: (callback: (event: Electron.IpcRendererEvent) => void) => void;
+            removeReloadListener: (callback: (event: Electron.IpcRendererEvent) => void) => void;
+            onMessage: (
+                callback: (
+                    event: Electron.IpcRendererEvent,
+                    data: { message: string; type: 'success' | 'error' }
+                ) => void
+            ) => void;
+            removeMessageListener: (
+                callback: (
+                    event: Electron.IpcRendererEvent,
+                    data: { message: string; type: 'success' | 'error' }
+                ) => void
+            ) => void;
             onSearch: (query: string, year: string) => Promise<SearchDataResponseItem[]>;
             getStaticContent: () => Promise<StaticContentAlert[] | null>;
             getAllCourses: () => Promise<GetCoursesReturnType>;

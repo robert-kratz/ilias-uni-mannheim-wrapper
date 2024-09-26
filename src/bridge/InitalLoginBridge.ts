@@ -68,10 +68,12 @@ ipcMain.handle('open-login-window', async () => {
 
                 store.set('aviablableYears', aviablableYears);
 
-                getMainWindow().webContents.send('page-reload', {
+                getMainWindow().webContents.send('page-message', {
                     message: 'Successfully authenticated',
                     type: 'success',
                 });
+
+                getMainWindow().reload();
             },
             presavedCredentials: {
                 username: username,

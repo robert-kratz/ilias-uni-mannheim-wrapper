@@ -6,7 +6,7 @@ import { ScrapeEvent } from '../../types/objects';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../state/store';
 import { AppDispatch } from '../../state/store';
-import { setCurrentFirstSetupWizardPage } from '../../state/stateSlice';
+import { setCurrentFirstSetupWizardPage } from '../../state/slice';
 import SaveCredentialsDialog from './SaveCredentialsDialog';
 
 const classNames = (...classes: string[]) => {
@@ -46,7 +46,7 @@ export default function FirstSetupDialog({ open, onClose }: Props) {
             }
         };
 
-        const onReload = (event: Electron.IpcRendererEvent, data: { message: string; type: 'success' | 'error' }) => {
+        const onReload = () => {
             fetchApplicationState();
         };
 

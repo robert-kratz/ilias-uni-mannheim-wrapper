@@ -1,53 +1,35 @@
 import React, { Suspense, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../state/store';
 import Logo from '../../../assets/ilias_logo_transparent.svg';
 
 import { SaveCredentialsWarning } from '../../components/Alerts';
 import IliasPage from '../../container/IliasPage';
 import SearchPage from '../../container/SearchPage';
-import { setCurrentHomePageIndex, setShowCurrentDirectory } from '../../state/stateSlice';
+import { setCurrentHomePageIndex, setShowCurrentDirectory } from '../../state/slice';
 import FetchingIndicator from '../../container/FetchingIndicator';
 import SettingsPage from '../../container/SettingsPage';
 import { OpenDirectoryResponse, ScrapeEvent } from '../../types/objects';
 import DirectoryPage from '../../container/DirectoryPage';
 import FileBrowser from '../../container/FileBrowser';
-
-const classNames = (...classes: string[]) => {
-    return classes.filter(Boolean).join(' ');
-};
+import useRenderState from '../../hooks/useRenderState';
+import classNames from '../../utils/classNames';
+import usePageNavigation from '../../hooks/usePageNavigation';
+import usePageRefresh from '../../hooks/usePageRefresh';
+import { useDataFetched } from '../../hooks/useDataFetched';
 
 export default function Home(): React.ReactElement {
-    const appState = useSelector((state: RootState) => state.app);
-    const dispatch: AppDispatch = useDispatch();
+    const { appState, dispatch } = useRenderState();
+    const { openPage, closePages, currentPageId } = usePageNavigation({
+        onError: (error: string) => {
+            console.error('Error opening directory: ', error);
+        },
+    });
 
-    //get the current page from the store
-    const currentPage = useSelector((appState: RootState) => appState.app.currentHomePageIndex);
-
-    const [currentUsername, setCurrentUsername] = React.useState('');
+    const currentNavigationPage = appState.currentHomePageIndex;
 
     const [hasCredsSaved, setHasCredsSaved] = React.useState(false);
     const [hasSetUpWizard, setHasSetUpWizard] = React.useState(false);
-    const [loading, setLoading] = React.useState(true);
 
-    const openDirectory = async (directoryId: string) => {
-        if (window.api) {
-            try {
-                window.api
-                    .openDirectory(directoryId, true)
-                    .then((value: OpenDirectoryResponse) => {
-                        dispatch(setShowCurrentDirectory({ showCurrentDirectory: value }));
-                    })
-                    .catch((error: string) => {
-                        console.error('Error opening directory: ', error);
-                    });
-            } catch (error) {
-                console.error('Error opening directory: ', error);
-            }
-        }
-    };
-
-    const goToPage = (index: number) => {
+    const navigateToSection = (index: number) => {
         dispatch(
             setCurrentHomePageIndex({
                 currentHomePageIndex: index,
@@ -59,7 +41,7 @@ export default function Home(): React.ReactElement {
     let routes = [
         {
             text: 'Search',
-            component: <SearchPage openDirectory={openDirectory} open={currentPage === 0} />,
+            component: <SearchPage openDirectory={openPage} open={currentNavigationPage === 0} />,
             icon: (
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
                     <path
@@ -81,7 +63,7 @@ export default function Home(): React.ReactElement {
         },
         {
             text: 'File Browser',
-            component: <FileBrowser openDirectory={openDirectory} open={currentPage === 1} />,
+            component: <FileBrowser openDirectory={openPage} open={currentNavigationPage === 1} />,
             icon: (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -105,7 +87,7 @@ export default function Home(): React.ReactElement {
         },
         {
             text: 'Ilias',
-            component: <IliasPage openDirectory={openDirectory} open={currentPage === 2} />,
+            component: <IliasPage openDirectory={openPage} open={currentNavigationPage === 2} />,
             icon: (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -129,7 +111,7 @@ export default function Home(): React.ReactElement {
         },
         {
             text: 'Settings',
-            component: <SettingsPage open={currentPage === 3} />,
+            component: <SettingsPage open={currentNavigationPage === 3} />,
             icon: (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -158,54 +140,38 @@ export default function Home(): React.ReactElement {
         },
     ];
 
+    const loadComponent = async () => {
+        if (window.api) {
+            window.api.getApplicationState().then((value) => {
+                setHasSetUpWizard(value.hasSetUpWizard);
+                setHasCredsSaved(value.credentialsSaved);
+            });
+        }
+    };
+
     useEffect(() => {
-        const fetchApplicationState = async () => {
-            if (window.api) {
-                window.api.getApplicationState().then((value) => {
-                    console.log('Application state', value);
-                    setCurrentUsername(value.username);
-                    setHasSetUpWizard(value.hasSetUpWizard);
-                    setHasCredsSaved(value.credentialsSaved);
-                });
-            }
-        };
-
-        const onApplicationScrape = (event: Electron.IpcRendererEvent, data: ScrapeEvent) => {
-            if (data.type === 'new-item') {
-                if (appState.showCurrentDirectory)
-                    window.api
-                        .openDirectory(
-                            appState.showCurrentDirectory.directoryId
-                                ? appState.showCurrentDirectory.directoryId
-                                : appState.showCurrentDirectory.courseId,
-                            false
-                        )
-                        .then((value: OpenDirectoryResponse) => {
-                            dispatch(setShowCurrentDirectory({ showCurrentDirectory: value }));
-                        })
-                        .catch((error: string) => {
-                            console.error('Error opening directory: ', error);
-                        });
-            }
-        };
-
-        setLoading(true);
-        fetchApplicationState();
-
-        const onReload = () => {
-            fetchApplicationState();
-        };
-
-        window.api.onApplicationScrape(onApplicationScrape);
-        window.api.onReload(onReload);
-
-        setLoading(false);
-
-        return () => {
-            window.api.removeApplicationScrapeListener(onApplicationScrape);
-            window.api.removeReloadListener(onReload);
-        };
+        loadComponent();
     }, []);
+
+    usePageRefresh(loadComponent);
+    useDataFetched((_: Electron.IpcRendererEvent, data: ScrapeEvent) => {
+        if (data.type === 'new-item') {
+            if (appState.showCurrentDirectory)
+                window.api
+                    .openDirectory(
+                        appState.showCurrentDirectory.directoryId
+                            ? appState.showCurrentDirectory.directoryId
+                            : appState.showCurrentDirectory.courseId,
+                        false
+                    )
+                    .then((value: OpenDirectoryResponse) => {
+                        dispatch(setShowCurrentDirectory({ showCurrentDirectory: value }));
+                    })
+                    .catch((error: string) => {
+                        console.error('Error opening directory: ', error);
+                    });
+        }
+    });
 
     const pageIcons = React.useMemo(() => {
         return routes.map((route, index) => {
@@ -219,8 +185,8 @@ export default function Home(): React.ReactElement {
                     icon={route.icon}
                     selectedIcon={route.iconSelected}
                     text={route.text}
-                    onClick={() => goToPage(index)}
-                    selcted={currentPage === index}
+                    onClick={() => navigateToSection(index)}
+                    selcted={currentNavigationPage === index}
                 />
             );
         });
@@ -229,7 +195,7 @@ export default function Home(): React.ReactElement {
     const pageComponents = React.useMemo(() => {
         return routes.map((route, index) => {
             return (
-                <div key={index} className={classNames(currentPage === index ? 'block' : 'hidden')}>
+                <div key={index} className={classNames(currentNavigationPage === index ? 'block' : 'hidden')}>
                     {route.component}
                 </div>
             );
@@ -254,7 +220,7 @@ export default function Home(): React.ReactElement {
                                 key={index}
                                 icon={route.icon}
                                 text={route.text}
-                                onClick={() => goToPage(index)}
+                                onClick={() => navigateToSection(index)}
                                 selcted={false}
                             />
                         );
@@ -268,21 +234,12 @@ export default function Home(): React.ReactElement {
                     <Suspense fallback={<div>Loading...</div>}>
                         {appState.showCurrentDirectory ? (
                             <DirectoryPage
-                                directory={appState.showCurrentDirectory}
-                                closeDirectory={() => dispatch(setShowCurrentDirectory({ showCurrentDirectory: null }))}
-                                goToDirectory={openDirectory}
+                                directory={currentPageId}
+                                closeDirectory={closePages}
+                                goToDirectory={openPage}
                             />
                         ) : (
-                            <>
-                                {/* {currentUsername && (
-                                    <div className="w-full border-dark-gray border-b-2 my-2">
-                                        <h1 className="text-white text-2xl font-bold py-3 ">
-                                            Welcome, {currentUsername}
-                                        </h1>
-                                    </div>
-                                )} */}
-                                {pageComponents}
-                            </>
+                            pageComponents
                         )}
                     </Suspense>
                 </div>

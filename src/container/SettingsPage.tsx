@@ -1,13 +1,16 @@
 import { useEffect, useReducer, useState } from 'react';
-import { User } from '../types/objects';
+
+import { StaticContentAlert, User } from '../types/objects';
 import ConfirmationDialog from '../components/dialogs/ConfirmationDialog';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../state/store';
-import { RootState } from '../state/store';
-import Logo from '../../assets/rjks_logo_dark-256.svg';
 import ThemeSwitcher from '../components/ThemeSwitcher';
 import { StatsResponse } from '../bridge/StatsBridge';
 import UpdateYearsDialog from '../components/dialogs/UpdateYearsDialog';
+import useRenderState from '../hooks/useRenderState';
+import useApplicationState from '../hooks/useApplicationState';
+import usePageRefresh from '../hooks/usePageRefresh';
+import { StaticContentAlertSection } from '../components/Alerts';
+
+import Logo from '../../assets/rjks_logo_dark-256.svg';
 
 type SettingsPageProps = {
     open: boolean;
@@ -21,13 +24,13 @@ export default function SettingsPage({ open }: SettingsPageProps) {
     const [userList, setUserList] = useState<User[]>([]);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
-    const appState = useSelector((state: RootState) => state.app);
-    const dispatch: AppDispatch = useDispatch();
+    const { appState, dispatch } = useRenderState();
 
     const [selectedYears, setSelectedYears] = useState<string[]>([]);
     const [availableYears, setAvailableYears] = useState<string[]>([]);
     const [statistics, setStatistics] = useState<StatsResponse | null>(null);
     const [credentialsSaved, setCredentialsSaved] = useState<boolean>(false);
+    const [staticContentAlert, setStaticContentAlert] = useState<StaticContentAlert[] | null>(null);
 
     const [currentDialogState, updateDialogState] = useReducer(
         (state: any, newState: any) => ({ ...state, ...newState }),
@@ -37,37 +40,37 @@ export default function SettingsPage({ open }: SettingsPageProps) {
         }
     );
 
+    const loadComponent = async () => {
+        const applicationState = await useApplicationState();
+
+        setCurrentUserId(applicationState.userId);
+        setSelectedYears(applicationState.selectedYears);
+        setCredentialsSaved(applicationState.credentialsSaved);
+        setAvailableYears(applicationState.aviablableYears);
+
+        window.api.getUserList().then((data) => {
+            setUserList(data);
+        });
+        window.api.getStatistics().then((data) => {
+            setStatistics(data);
+        });
+        window.api.getStaticContent().then((data) => {
+            setStaticContentAlert(data);
+        });
+    };
+
+    usePageRefresh(() => {
+        loadComponent();
+    });
+
     useEffect(() => {
-        const fetchApplicationState = async () => {
-            if (window.api) {
-                window.api.getUserList().then((data) => {
-                    setUserList(data);
-                });
-                window.api.getApplicationState().then((value) => {
-                    setCurrentUserId(value.userId);
-                    setSelectedYears(value.selectedYears);
-                    setCredentialsSaved(value.credentialsSaved);
-                    setAvailableYears(value.aviablableYears);
-                });
-                window.api.getStatistics().then((data) => {
-                    setStatistics(data);
-                });
-            }
-        };
-
-        fetchApplicationState();
-
-        const onReload = (event: Electron.IpcRendererEvent, data: { message: string; type: 'success' | 'error' }) => {
-            fetchApplicationState();
-        };
-
-        window.api.onReload(onReload);
-
-        return () => {
-            window.api.removeReloadListener(onReload);
-        };
+        loadComponent();
     }, [open]);
 
+    /**
+     * Closes the confirmation dialog and resets the application
+     * @param { success: boolean }
+     */
     const closeConfirmationDialog = ({ success }: { success: boolean }) => {
         updateDialogState({ confirmationDialog: false });
 
@@ -87,6 +90,9 @@ export default function SettingsPage({ open }: SettingsPageProps) {
             />
             <ConfirmationDialog open={currentDialogState.confirmationDialog} onClose={closeConfirmationDialog} />
             <h1 className="dark:text-light-gray text-2xl font-bold text-light-text dark:text-dark-text">Settings</h1>
+            {staticContentAlert && staticContentAlert.length > 0 ? (
+                <StaticContentAlertSection alerts={staticContentAlert} />
+            ) : null}
             <div className="grid grid-cols-4 gap-4 py-2">
                 <div className="col-span-2 space-y-2 rounded-md bg-light-gray-3 p-4 dark:bg-dark-gray-2">
                     <h2 className="text-lg font-bold text-light-text-2 dark:text-dark-text-2">User List</h2>
@@ -296,9 +302,6 @@ export default function SettingsPage({ open }: SettingsPageProps) {
                         </button>
                     </div>
                 </div>
-                {/* <div className="bg-light-gray-3 col-span-4 space-y-2 rounded-md p-4 dark:bg-dark-gray-2">
-                    <div className="bg-light-gray-2 flex cursor-pointer items-center justify-between space-x-4 rounded-md p-4 dark:bg-dark-gray-3"></div>
-                </div> */}
             </div>
         </div>
     );

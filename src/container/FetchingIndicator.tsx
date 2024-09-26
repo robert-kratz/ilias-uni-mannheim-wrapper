@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../state/store';
 import { RootState } from '../state/store';
-import { setLoadingIndicatorTextShown } from '../state/stateSlice';
+import { setLoadingIndicatorTextShown } from '../state/slice';
 import { useEffect, useState } from 'react';
 import { ScrapeEvent } from '../types/objects';
 import { createToast } from 'vercel-toast';
@@ -71,7 +71,7 @@ export default function FetchingIndicator() {
     return (
         <div
             onClick={toggleLoadingIndicator}
-            className="border-light-gray-3 bg-light-gray-2 hover:bg-light-gray-3 fixed bottom-6 left-28 z-10 flex cursor-pointer items-center justify-center rounded-md border-2 shadow-md transition dark:border-dark-gray dark:bg-dark-gray-2 hover:dark:bg-dark-gray-3">
+            className="fixed bottom-6 left-28 z-10 flex cursor-pointer items-center justify-center rounded-md border-2 border-light-gray-3 bg-light-gray-2 shadow-md transition hover:bg-light-gray-3 dark:border-dark-gray dark:bg-dark-gray-2 hover:dark:bg-dark-gray-3">
             <div
                 className={classNames(
                     'group bg-emerald-500 p-4',
@@ -80,7 +80,7 @@ export default function FetchingIndicator() {
                 <div className="right-4 top-4 h-6 w-6 min-w-[1.5rem] animate-spin rounded-full border-4 border-t-4 border-emerald-300 border-t-emerald-900"></div>
             </div>
             <div className={classNames('p-4', !appState.loadingIndicatorTextShown && 'hidden')}>
-                <p className="text-light-text-2 dark:text-dark-text-2 text-sm">
+                <p className="text-sm text-light-text-2 dark:text-dark-text-2">
                     {lastScrapeEvent?.name && lastScrapeEvent?.ref_id ? (
                         <a
                             href={isFile ? fileUrl : dirUrl}

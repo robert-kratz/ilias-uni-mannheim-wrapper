@@ -4,7 +4,7 @@ import storage from 'redux-persist/lib/storage'; // defaults to localStorage for
 import { combineReducers } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
 
-import userReducer from './stateSlice';
+import userReducer from './slice';
 
 const userPersistConfig = {
     key: 'state',

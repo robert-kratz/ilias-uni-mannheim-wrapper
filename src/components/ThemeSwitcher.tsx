@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../state/store';
-import { setThemeMode } from '../state/stateSlice';
+import { setThemeMode } from '../state/slice';
 
 const ThemeSwitcher = () => {
     const dispatch = useDispatch();

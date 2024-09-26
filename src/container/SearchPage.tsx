@@ -1,42 +1,32 @@
 import debounce from 'debounce';
 import { Suspense, useEffect, useState } from 'react';
-import { EntityDataResponseItem, EntitySearchCurrentState, StaticContentAlert } from '../types/objects';
-import { StaticContentAlertSection } from '../components/Alerts';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../state/store';
-import { AppDispatch } from '../state/store';
-import { setCurrentSearchQuery, setSearchResults, setSelectedSearchFilter } from '../state/stateSlice';
-import FavouriteBadge from '../components/FavouriteBadge';
-import { StoreType } from '../utils/appStorage';
-import { createToast } from 'vercel-toast';
-import { EntityDataListItem } from '../components/EntityDataListItem';
 
-const classNames = (...classes: string[]) => {
-    return classes.filter(Boolean).join(' ');
-};
+import { EntityDataResponseItem, EntitySearchCurrentState } from '../types/objects';
+import { setCurrentSearchQuery, setSearchResults, setSelectedSearchFilter } from '../state/slice';
+import { EntityDataListItem } from '../components/EntityDataListItem';
+import useRenderState from '../hooks/useRenderState';
+import classNames from '../utils/classNames';
+import usePageRefresh from '../hooks/usePageRefresh';
+import useApplicationState from '../hooks/useApplicationState';
 
 type Props = {
     open: boolean;
     openDirectory: (directoryId: string) => void;
 };
 
-export default function SearchPage({ openDirectory, open }: Props) {
-    const appState = useSelector((state: RootState) => state.app);
-    const dispatch: AppDispatch = useDispatch();
-
-    const [staticContentAlert, setStaticContentAlert] = useState<StaticContentAlert[] | null>(null);
+export default function SearchPage({ openDirectory }: Props) {
+    const { appState, dispatch } = useRenderState();
     const [loading, setLoading] = useState<boolean>(false);
-    const [currentApplicationState, setCurrentApplicationState] = useState<StoreType | null>(null);
     const [selectedYear, setSelectedYear] = useState<string | null>(null);
+
+    const [selectedYears, setSelectedYears] = useState<string[]>([]);
 
     const search = debounce((query: string, year: string | null, filter?: EntitySearchCurrentState) => {
         let currentSearchFilter = filter || appState.selectedSearchFilter;
 
         if (window.api) {
             window.api.onSearch(query, year).then((value) => {
-                const filteredSearchResults = value?.filter((result) => {
-                    console.log('currentSearchFilter', currentSearchFilter);
-
+                const filteredSearchResults = value?.filter((result: EntityDataResponseItem) => {
                     if (currentSearchFilter === 'files') {
                         return result.matchingEntityType === 'file';
                     } else if (currentSearchFilter === 'directories') {
@@ -55,44 +45,32 @@ export default function SearchPage({ openDirectory, open }: Props) {
         }
     }, 800);
 
-    const enterQuery = (query: string) => {
+    const loadComponent = async () => {
+        const applicationState = await useApplicationState();
+
+        setSelectedYears(applicationState.selectedYears);
+    };
+
+    usePageRefresh(() => loadComponent());
+
+    useEffect(() => {
+        loadComponent();
+    }, []);
+
+    /**
+     * Handles the search input
+     * @param query The search query
+     */
+    const onSearchInput = (query: string) => {
         setLoading(true);
         dispatch(setCurrentSearchQuery({ currentSearchQuery: query }));
         search(query, selectedYear);
     };
 
-    useEffect(() => {
-        const fetchApplicationState = async () => {
-            if (window.api) {
-                window.api.getStaticContent().then((value) => {
-                    setStaticContentAlert(value);
-                    console.log('fetched static content', value);
-                });
-                window.api.getApplicationState().then((value) => {
-                    setCurrentApplicationState(value);
-                    console.log('fetched application state', value);
-                });
-            }
-        };
-
-        console.log('fetching application state');
-
-        setLoading(true);
-        fetchApplicationState();
-
-        const onReload = () => {
-            fetchApplicationState();
-        };
-
-        window.api.onReload(onReload);
-
-        setLoading(false);
-
-        return () => {
-            window.api.removeReloadListener(onReload);
-        };
-    }, [open]);
-
+    /**
+     * Handles the filter change
+     * @param state The current state
+     */
     const onFilterChange = (state: EntitySearchCurrentState) => {
         setLoading(true);
         dispatch(setSelectedSearchFilter({ selectedSearchFilter: state }));
@@ -101,29 +79,26 @@ export default function SearchPage({ openDirectory, open }: Props) {
 
     return (
         <div className="space-y-2">
-            {/* {staticContentAlert && staticContentAlert.length > 0 ? (
-                <StaticContentAlertSection alerts={staticContentAlert} />
-            ) : null} */}
-            <h1 className="text-light-text dark:text-dark-text text-2xl font-bold">Settings</h1>
+            <h1 className="text-2xl font-bold text-light-text dark:text-dark-text">Settings</h1>
             <div className="flex items-center justify-between py-4">
                 <div className="relative w-full">
                     <input
                         type="text"
-                        onChange={(e) => enterQuery(e.target.value)}
+                        onChange={(e) => onSearchInput(e.target.value)}
                         value={appState.currentSearchQuery}
                         placeholder="Search for a Directory, File or Courses"
-                        className="text-light-text-2 bg-light-gray-2 border-light-gray-3 dark:text-dark-text-3 w-full rounded-l-md border p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-dark-gray dark:bg-dark-gray-2"
+                        className="w-full rounded-l-md border border-light-gray-3 bg-light-gray-2 p-4 text-light-text-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-dark-gray dark:bg-dark-gray-2 dark:text-dark-text-3"
                     />
                     {loading && (
-                        <div className="border-dark-text-3 absolute right-4 top-4 h-6 w-6 min-w-[1.5rem] animate-spin rounded-full border-4 border-t-4 border-t-indigo-500"></div>
+                        <div className="absolute right-4 top-4 h-6 w-6 min-w-[1.5rem] animate-spin rounded-full border-4 border-t-4 border-dark-text-3 border-t-indigo-500"></div>
                     )}
                 </div>
                 <EntitySearchOptions currentlySelected={appState.selectedSearchFilter} onChanges={onFilterChange} />
             </div>
             <div className="space-y-2">
-                <span className="text-light-text-3 dark:text-dark-text-3 text-sm">Search for a specific year:</span>
+                <span className="text-sm text-light-text-3 dark:text-dark-text-3">Search for a specific year:</span>
                 <div className="flex w-full justify-start space-x-2 overflow-x-scroll">
-                    {currentApplicationState?.selectedYears?.map((year, index) => {
+                    {selectedYears.map((year, index) => {
                         if (year === 'MSDNAA') return null;
 
                         let selected = selectedYear === year;
@@ -144,22 +119,22 @@ export default function SearchPage({ openDirectory, open }: Props) {
                                 key={index}
                                 onClick={toggleYear}
                                 className={classNames(
-                                    'bg-light-gray-2 hover:bg-light-gray-2 flex cursor-pointer items-center justify-center rounded-md border-2 p-3 px-4 shadow-md transition dark:bg-dark-gray-2 dark:hover:bg-dark-gray-3',
+                                    'flex cursor-pointer items-center justify-center rounded-md border-2 bg-light-gray-2 p-3 px-4 shadow-md transition hover:bg-light-gray-2 dark:bg-dark-gray-2 dark:hover:bg-dark-gray-3',
                                     selected
                                         ? 'border-emerald-500 dark:border-emerald-600'
                                         : 'border-light-gray-3 dark:border-dark-gray'
                                 )}>
-                                <span className="text-light-text-3 dark:text-dark-text-2 text-sm">{year}</span>
+                                <span className="text-sm text-light-text-3 dark:text-dark-text-2">{year}</span>
                             </div>
                         );
                     })}
                 </div>
             </div>
-            <div className="bg-light-gray-3 sticky top-0 z-10 flex items-center justify-between rounded-b-md dark:bg-dark-gray">
-                <h2 className="text-light-text-2 dark:text-dark-text-2 p-4 text-lg font-semibold">
+            <div className="sticky top-0 z-10 flex items-center justify-between rounded-b-md bg-light-gray-3 dark:bg-dark-gray">
+                <h2 className="p-4 text-lg font-semibold text-light-text-2 dark:text-dark-text-2">
                     Search Results {selectedYear && ` found in ${selectedYear}`}
                 </h2>
-                <p className="text-light-text-2 dark:text-dark-text-2 p-4 text-sm">
+                <p className="p-4 text-sm text-light-text-2 dark:text-dark-text-2">
                     {appState?.searchResults?.length} results found
                 </p>
             </div>
@@ -204,14 +179,14 @@ function EntitySearchOptions({ currentlySelected, onChanges }: EntitySearchOptio
 
     return (
         //text-light-text-2 bg-light-gray-2 border-light-gray-3
-        <div className="divide-light-gray-1 bg-light-gray-2 border-light-gray-3 flex cursor-pointer items-center justify-end divide-x-2 rounded-r-md border font-light dark:divide-dark-gray dark:border-dark-gray dark:bg-dark-gray-2">
+        <div className="flex cursor-pointer items-center justify-end divide-x-2 divide-light-gray-1 rounded-r-md border border-light-gray-3 bg-light-gray-2 font-light dark:divide-dark-gray dark:border-dark-gray dark:bg-dark-gray-2">
             <button
                 onClick={() => changeState('files')}
                 className={classNames(
                     'p-4 focus:outline-none focus:ring-0',
                     currentState === 'files'
-                        ? 'text-dark-text bg-indigo-600 hover:bg-indigo-700'
-                        : 'dark:text-dark-text-2 text-light-text-2'
+                        ? 'bg-indigo-600 text-dark-text hover:bg-indigo-700'
+                        : 'text-light-text-2 dark:text-dark-text-2'
                 )}>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -231,8 +206,8 @@ function EntitySearchOptions({ currentlySelected, onChanges }: EntitySearchOptio
                 className={classNames(
                     'p-4 focus:outline-none focus:ring-0',
                     currentState === 'courses'
-                        ? 'text-dark-text bg-violet-600 hover:bg-violet-700'
-                        : 'dark:text-dark-text-2 text-light-text-2'
+                        ? 'bg-violet-600 text-dark-text hover:bg-violet-700'
+                        : 'text-light-text-2 dark:text-dark-text-2'
                 )}>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -251,8 +226,8 @@ function EntitySearchOptions({ currentlySelected, onChanges }: EntitySearchOptio
                 className={classNames(
                     'rounded-r-md p-4 focus:outline-none focus:ring-0',
                     currentState === 'directories'
-                        ? 'text-dark-text bg-emerald-600 hover:bg-emerald-700'
-                        : 'dark:text-dark-text-2 text-light-text-2'
+                        ? 'bg-emerald-600 text-dark-text hover:bg-emerald-700'
+                        : 'text-light-text-2 dark:text-dark-text-2'
                 )}>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

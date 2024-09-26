@@ -3,6 +3,7 @@ import { getIsCurrentlyFetching, getMainWindow, getSessionToken, setIsCurrentlyF
 import { store } from '../utils/appStorage';
 import { fetchUserIndexPage } from '../utils/datafetching/wrapper';
 import { ScrapeEvent } from '../types/objects';
+import { attempRequestToService } from '../utils/authenticationProvider';
 
 //ONLY USE FOR FIRST TIME SETUP
 ipcMain.handle('start-scrape', async (event, years) => {
@@ -45,13 +46,13 @@ ipcMain.handle('start-scrape', async (event, years) => {
 
         if (scrape.success) {
             console.log('Successfully fetched user index page');
-            getMainWindow().webContents.send('page-reload', {
+            getMainWindow().webContents.send('page-message', {
                 message: 'Successfully fetched user index page',
                 type: 'success',
             });
         } else {
             console.error('Error fetching user index page');
-            getMainWindow().webContents.send('page-reload', {
+            getMainWindow().webContents.send('page-message', {
                 message: 'Error fetching user index page',
                 type: 'error',
             });
